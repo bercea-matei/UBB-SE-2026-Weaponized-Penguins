@@ -17,8 +17,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "Main",
-					"defaultDiagram": true
+					"name": "Main"
 				}
 			]
 		},
@@ -37,6 +36,7 @@
 						"$ref": "AAAAAAGc8mGK2YgryeA="
 					},
 					"name": "UseCaseDiagram1",
+					"defaultDiagram": true,
 					"ownedViews": [
 						{
 							"_type": "UMLActorView",

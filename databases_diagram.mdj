@@ -3186,7 +3186,7 @@
 									"parentStyle": true,
 									"left": 1104,
 									"top": 981,
-									"width": 168.68359375,
+									"width": 187.94873046875,
 									"height": 13,
 									"text": "UsersTokens"
 								},
@@ -3213,7 +3213,7 @@
 											"parentStyle": true,
 											"left": 1109,
 											"top": 1004,
-											"width": 158.68359375,
+											"width": 177.94873046875,
 											"height": 13
 										},
 										{
@@ -3229,7 +3229,23 @@
 											"parentStyle": true,
 											"left": 1109,
 											"top": 1019,
-											"width": 158.68359375,
+											"width": 177.94873046875,
+											"height": 13
+										},
+										{
+											"_type": "ERDColumnView",
+											"_id": "AAAAAAGdEn9XaBHPdM0=",
+											"_parent": {
+												"$ref": "AAAAAAGdEigo/xiY99s="
+											},
+											"model": {
+												"$ref": "AAAAAAGdEn9XUxHMPBk="
+											},
+											"font": "Arial;13;0",
+											"parentStyle": true,
+											"left": 1109,
+											"top": 1034,
+											"width": 177.94873046875,
 											"height": 13
 										}
 									],
@@ -3237,15 +3253,15 @@
 									"parentStyle": true,
 									"left": 1104,
 									"top": 999,
-									"width": 168.68359375,
-									"height": 38
+									"width": 187.94873046875,
+									"height": 53
 								}
 							],
 							"font": "Arial;13;0",
 							"parentStyle": false,
 							"left": 1104,
 							"top": 976,
-							"width": 168.68359375,
+							"width": 187.94873046875,
 							"height": 96,
 							"nameLabel": {
 								"$ref": "AAAAAAGdEigo/xiXjTA="
@@ -3273,7 +3289,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"parentStyle": false,
-									"left": 1330,
+									"left": 1337,
 									"top": 1049,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -3309,7 +3325,7 @@
 									},
 									"font": "Arial;13;0",
 									"parentStyle": false,
-									"left": 1298,
+									"left": 1311,
 									"top": 1048,
 									"height": 13,
 									"alpha": -0.5235987755982988,
@@ -3328,7 +3344,7 @@
 								"$ref": "AAAAAAGc3UouuO/tOAI="
 							},
 							"lineStyle": 2,
-							"points": "1390:1040;1273:1040",
+							"points": "1390:1040;1292:1040",
 							"nameLabel": {
 								"$ref": "AAAAAAGdEip5fxjK2J4="
 							},
@@ -5549,6 +5565,16 @@
 							},
 							"name": "tokens",
 							"type": "INTEGER",
+							"length": 0
+						},
+						{
+							"_type": "ERDColumn",
+							"_id": "AAAAAAGdEn9XUxHMPBk=",
+							"_parent": {
+								"$ref": "AAAAAAGdEigo/xiUCaM="
+							},
+							"name": "lastSeen",
+							"type": "DATETIME",
 							"length": 0
 						}
 					]

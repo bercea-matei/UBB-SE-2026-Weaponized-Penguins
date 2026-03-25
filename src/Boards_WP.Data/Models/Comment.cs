@@ -17,7 +17,7 @@ namespace Boards_WP.Data.Models
         private Boolean isDeleted { get; set; }
         private String ownerName { get; set; } = String.Empty;
         private byte[]? ownerPicture { get; set; }
-        private VoteType userCurrentVote { get; set; }
+        private VoteType userCurrentVote { get; set; } = VoteType.None;
 
         public String getShareLink => $"boards://post/{postID}";
 

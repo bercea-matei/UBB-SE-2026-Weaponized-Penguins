@@ -20,6 +20,7 @@ namespace Boards_WP.Data.Models
         private VoteType userCurrentVote { get; set; } = VoteType.None;
 
         public String getShareLink => $"boards://post/{postID}";
+        // testing
 
     }
 }

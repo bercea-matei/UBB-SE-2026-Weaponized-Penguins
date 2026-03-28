@@ -43,11 +43,13 @@ internal class CommentsService : ICommentsService
     }
     public void increaseComment(Comment c, int currentUserID)
     {
+        if (c.isDeleted) { throw new InvalidOperationException("Cannot vote on a deleted comment."); }
         commentsRepo.increaseScore(c);
         commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Like);
     }
     public void decreaseComment(Comment c, int currentUserID)
     {
+        if (c.isDeleted) { throw new InvalidOperationException("Cannot vote on a deleted comment."); }
         commentsRepo.decreaseScore(c);
         commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Dislike);
     }

@@ -8,10 +8,10 @@ namespace Boards_WP.Data.Repositories;
 
 public interface ICommentsRepository
 {
-    void addComment(Comment c);
-    void softDeleteComment(int commentID);
-    void increaseScore(Comment c);
-    void decreaseScore(Comment c);
-    List<Comment> getCommentsByPostID(int postID, int userID);
-    void upsertUserCommentVote(int commentID, int currentUserID, VoteType vote);
+    void AddComment(Comment c);
+    void SoftDeleteComment(int commentID);
+    void IncreaseScore(Comment c);
+    void DecreaseScore(Comment c);
+    List<Comment> GetCommentsByPostID(int postID, int userID);
+    void UpsertUserCommentVote(int commentID, int currentUserID, VoteType vote);
 }

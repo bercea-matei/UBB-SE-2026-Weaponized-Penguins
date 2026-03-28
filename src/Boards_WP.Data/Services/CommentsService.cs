@@ -21,93 +21,89 @@ internal class CommentsService : ICommentsService
         //this.notificationsRepo = notificationsRepo;
     }
 
-    public void addComment(Comment c)
+    public void AddComment(Comment c)
     {
-        validateComment(c);
-        c.creationTime = DateTime.Now;
-        c.isDeleted = false;
-        commentsRepo.addComment(c);
+        ValidateComment(c);
+        c.CreationTime = DateTime.Now;
+        c.IsDeleted = false;
+        commentsRepo.AddComment(c);
         //notificationsRepo.addNotification(c);
     }
 
-    public void softDeleteComment(Comment c, int userID)
+    public void SoftDeleteComment(Comment c, int userID)
     {
-
-        if (c.ownerID == userID)
-        {
-            c.description = "[deleted]";
-            c.isDeleted= true;
-            commentsRepo.softDeleteComment(c.commentID);
-        }
+        c.Description = "[deleted]";
+        c.IsDeleted= true;
+        commentsRepo.SoftDeleteComment(c.CommentID);
     }
-    public void increaseComment(Comment c, int currentUserID)
+    public void IncreaseComment(Comment c, int currentUserID)
     {
-        if (c.isDeleted)
+        if (c.IsDeleted)
             throw new InvalidOperationException("Cannot vote on a deleted comment.");
 
-        if (c.userCurrentVote == VoteType.Like)
+        if (c.UserCurrentVote == VoteType.Like)
         {
-            commentsRepo.decreaseScore(c);
-            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.None);
-            c.userCurrentVote = VoteType.None;
+            commentsRepo.DecreaseScore(c);
+            commentsRepo.UpsertUserCommentVote(c.CommentID, currentUserID, VoteType.None);
+            c.UserCurrentVote = VoteType.None;
         }
-        else if (c.userCurrentVote == VoteType.Dislike)
+        else if (c.UserCurrentVote == VoteType.Dislike)
         {
-            commentsRepo.increaseScore(c);
-            commentsRepo.increaseScore(c);
-            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Like);
-            c.userCurrentVote = VoteType.Like;
+            commentsRepo.IncreaseScore(c);
+            commentsRepo.IncreaseScore(c);
+            commentsRepo.UpsertUserCommentVote(c.CommentID, currentUserID, VoteType.Like);
+            c.UserCurrentVote = VoteType.Like;
         }
         else
         {
-            commentsRepo.increaseScore(c);
-            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Like);
-            c.userCurrentVote = VoteType.Like;
+            commentsRepo.IncreaseScore(c);
+            commentsRepo.UpsertUserCommentVote(c.CommentID, currentUserID, VoteType.Like);
+            c.UserCurrentVote = VoteType.Like;
         }
     }
-    public void decreaseComment(Comment c, int currentUserID)
+    public void DecreaseComment(Comment c, int currentUserID)
     {
-        if (c.isDeleted)
+        if (c.IsDeleted)
             throw new InvalidOperationException("Cannot vote on a deleted comment.");
 
-        if (c.userCurrentVote == VoteType.Dislike)
+        if (c.UserCurrentVote == VoteType.Dislike)
         {
-            commentsRepo.increaseScore(c);
-            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.None);
-            c.userCurrentVote = VoteType.None;
+            commentsRepo.IncreaseScore(c);
+            commentsRepo.UpsertUserCommentVote(c.CommentID, currentUserID, VoteType.None);
+            c.UserCurrentVote = VoteType.None;
         }
-        else if (c.userCurrentVote == VoteType.Like)
+        else if (c.UserCurrentVote == VoteType.Like)
         {
-            commentsRepo.decreaseScore(c);
-            commentsRepo.decreaseScore(c);
-            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Dislike);
-            c.userCurrentVote = VoteType.Dislike;
+            commentsRepo.DecreaseScore(c);
+            commentsRepo.DecreaseScore(c);
+            commentsRepo.UpsertUserCommentVote(c.CommentID, currentUserID, VoteType.Dislike);
+            c.UserCurrentVote = VoteType.Dislike;
         }
         else
         {
-            commentsRepo.decreaseScore(c);
-            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Dislike);
-            c.userCurrentVote = VoteType.Dislike;
+            commentsRepo.DecreaseScore(c);
+            commentsRepo.UpsertUserCommentVote(c.CommentID, currentUserID, VoteType.Dislike);
+            c.UserCurrentVote = VoteType.Dislike;
         }
 
     }
     public List<Comment> GetCommentsByPost(int postID, int currentUserID)
     {
-        return commentsRepo.getCommentsByPostID(postID, currentUserID);
+        return commentsRepo.GetCommentsByPostID(postID, currentUserID);
     }
-    public void validateComment(Comment c)
+    public static void ValidateComment(Comment c)
     {
-        if (string.IsNullOrWhiteSpace(c.description))
+        if (string.IsNullOrWhiteSpace(c.Description))
             throw new ArgumentException("Comment description cannot be empty.");
-        if (c.description.Length > MAX_DESCRIPTION_LENGTH)
+        if (c.Description.Length > MAX_DESCRIPTION_LENGTH)
             throw new ArgumentException("Comment description cannot exceed 1000 characters.");
-        if (c.indentation> MAX_INDENTATION_LEVEL)
+        if (c.Indentation> MAX_INDENTATION_LEVEL)
             throw new ArgumentException("Comment indentation cannot exceed 7 levels.");
     }
 
     public List<Comment> getCommentsByPost(int postID, int currentUserID)
     {
-        return commentsRepo.getCommentsByPostID(postID, currentUserID);
+        return commentsRepo.GetCommentsByPostID(postID, currentUserID);
     }
 }
 

@@ -8,10 +8,10 @@ namespace Boards_WP.Data.Services;
 
 public interface ICommentsService
 {
-    public void addComment(Comment c);
-    public void softDeleteComment(Comment c, int userID);
-    public void increaseComment(Comment c, int currentUserID);
-    public void decreaseComment(Comment c, int currentUserID);
-    public List<Comment> getCommentsByPost(int postID, int currentUserID);
+    public void AddComment(Comment c);
+    public void SoftDeleteComment(Comment c, int userID);
+    public void IncreaseComment(Comment c, int currentUserID);
+    public void DecreaseComment(Comment c, int currentUserID);
+    public List<Comment> GetCommentsByPost(int postID, int currentUserID);
 
 }

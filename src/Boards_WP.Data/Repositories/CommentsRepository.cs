@@ -8,41 +8,41 @@ namespace Boards_WP.Data.Repositories;
 
 public class CommentsRepository : ICommentsRepository
 {
-    private String commentsDbContext;
-    private String commentsVotesDbContext;
-    private String usersDbContext;
+    private String _commentsDbContext;
+    private String _commentsVotesDbContext;
+    private String _usersDbContext;
 
     public CommentsRepository(String commentsDbContext, String commentsVotesDbContext, String usersDbContext)
     {
-        this.commentsDbContext = commentsDbContext;
-        this.commentsVotesDbContext = commentsVotesDbContext;
-        this.usersDbContext = usersDbContext;
+        this._commentsDbContext = commentsDbContext;
+        this._commentsVotesDbContext = commentsVotesDbContext;
+        this._usersDbContext = usersDbContext;
     }
 
-    public void addComment(Comment c)
-    {
-        // TODO
-    }
-
-    public void softDeleteComment(int commentID)
-    {
-        // TODO
-    }
-    public void increaseScore(Comment c)
-    {
-        // TODO
-    }
-    public void decreaseScore(Comment c)
+    public void AddComment(Comment c)
     {
         // TODO
     }
 
-    public List<Comment> getCommentsByPostID(int postID, int userID)
+    public void SoftDeleteComment(int commentID)
+    {
+        // TODO
+    }
+    public void IncreaseScore(Comment c)
+    {
+        // TODO
+    }
+    public void DecreaseScore(Comment c)
+    {
+        // TODO
+    }
+
+    public List<Comment> GetCommentsByPostID(int postID, int userID)
     {
         // TODO
         return new List<Comment>();
     }
-    public void upsertUserCommentVote(int commentID, int currentUserID, VoteType vote)
+    public void UpsertUserCommentVote(int commentID, int currentUserID, VoteType vote)
     {
         // TODO
     }

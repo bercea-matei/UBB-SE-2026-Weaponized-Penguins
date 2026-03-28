@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 
 using Boards_WP.Data.Models;
-using Boards_WP.Data.Repositories.Interfaces;
 
 namespace Boards_WP.Data.Repositories;
 

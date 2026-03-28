@@ -14,5 +14,4 @@ namespace Boards_WP.Data.Models
         public int YesAmount { get; set; }
         public int NoAmount { get; set; }
     }
-
 }

@@ -52,8 +52,7 @@
                                     BorderBrush="#E0E0FF" 
                                     BorderThickness="1" 
                                     CornerRadius="10" 
-                                    Padding="12"
-                                    Transitions="{StaticResource {x:Null}}">
+                                    Padding="12">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>

@@ -6,8 +6,8 @@ namespace Boards_WP.Data.Models;
 
 public class CommentsVotes
 {
-    public int UserID { get; set; }
-    public int CommentID { get; set; }
+    public User User { get; init; }
+    public Comment Comment { get; init; }
     public VoteType Vote { get; set; } = VoteType.None;
 
 }

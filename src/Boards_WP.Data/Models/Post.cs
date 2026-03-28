@@ -17,6 +17,6 @@ public class Post
     public String CommunityName { get; set; } = String.Empty;
     public byte[]? CommunityPicture { get; set; }
     public VoteType UserCurrentVote { get; set; } = VoteType.None;
-    public String GetShareLink => $"boards://post/{postID}";
+    public String GetShareLink => $"boards://post/{PostID}";
     public List<Tag> Tags { get; set; } = new List<Tag>();
 }

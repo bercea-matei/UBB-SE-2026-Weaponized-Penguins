@@ -4,11 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 
+    <!-- this is for a more modern design of the search bar  -->
     <UserControl.Resources>
         <Thickness x:Key="AutoSuggestBoxBorderThicknessFocused">0</Thickness>
         <SolidColorBrush x:Key="AutoSuggestBoxBorderBrushFocused" Color="Transparent"/>
         <SolidColorBrush x:Key="AutoSuggestBoxBottomBorderBrushFocused" Color="Transparent"/>
     </UserControl.Resources>
+    
     
     <Grid Background="#E6E2FF" Height="80" Padding="20,0">
         <Grid.ColumnDefinitions>

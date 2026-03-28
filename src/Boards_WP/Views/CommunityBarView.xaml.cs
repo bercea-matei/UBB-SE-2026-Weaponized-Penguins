@@ -13,11 +13,11 @@ namespace Boards_WP.Views
 
             CommunityListView.ItemsSource = CommunityNames;
 
-            CommunityNames.Add("p/PenguinHype");
-            CommunityNames.Add("p/DotNetMastery");
-            CommunityNames.Add("p/UI_Design_Daily");
-            CommunityNames.Add("p/MechanicalKeyboards");
-            CommunityNames.Add("p/GamingUniverse");
+            CommunityNames.Add("ComputerScience");
+            CommunityNames.Add("UBB");
+            CommunityNames.Add("UI_Design_Daily");
+            CommunityNames.Add("Weaponized_Penguins");
+            CommunityNames.Add("ClujStudents");
         }
     }
 }

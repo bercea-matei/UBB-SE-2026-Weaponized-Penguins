@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Boards_WP.Data.Models;
+
 public interface ICommunitiesRepository
 {
     public void AddCommunity(Community NewCommunity);

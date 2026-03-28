@@ -13,11 +13,17 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid Background="#E6E2FF"> 
+   <Grid Background="#E6E2FF"> 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    </Grid.RowDefinitions>
 
-        <views:HeaderView Grid.Row="0" Margin="12,12,12,0"/>
+        <views:HeaderView Grid.Row="0" />
 
+        <Grid Grid.Row="1" Margin="10,0,10,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260"/> <ColumnDefinition Width="*"/>   <ColumnDefinition Width="260"/> </Grid.ColumnDefinitions>
+
+            <views:CommunityBarView Grid.Column="0"/>
         </Grid>
+   </Grid>
 </Window>

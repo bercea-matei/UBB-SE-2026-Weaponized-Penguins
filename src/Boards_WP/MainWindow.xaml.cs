@@ -1,31 +1,50 @@
+using Microsoft.UI.Xaml;
+
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
+using Boards_WP.Data.Models;
 
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
-namespace Boards_WP;
-/// <summary>
-/// An empty window that can be used on its own or navigated to within a Frame.
-/// </summary>
-public sealed partial class MainWindow : Window
+namespace Boards_WP
 {
-    public MainWindow()
+    public sealed partial class MainWindow : Window
     {
-        InitializeComponent();
+        public MainWindow()
+        {
+            this.InitializeComponent();
+
+            var posts = new List<Post>
+            {
+                new Post {
+                    Title = "How to make your CV better",
+                    OwnerName = "@AlekBindiu",
+                    CommunityName = "Computer Science",
+                    Score = 50,
+                    CommentsNumber = 30,
+                    CreationTime = new DateTime(2026, 3, 11),
+                    Description = "Text ..................................."
+                },
+                new Post {
+                    Title = ".NET Internship",
+                    OwnerName = "@Matei",
+                    CommunityName = "UBB",
+                    Score = 37,
+                    CommentsNumber = 9,
+                    CreationTime = new DateTime(2026, 3, 7),
+                    Description = "Text ..................................."
+                },
+                new Post {
+                    Title = "My First Meme!",
+                    OwnerName = "@AlexandraBochis",
+                    CommunityName = "UBB",
+                    Score = 17,
+                    CommentsNumber = 5,
+                    CreationTime = new DateTime(2026, 2, 28),
+                    Description = "Text ..................................."
+                }
+            };
+
+            FeedList.ItemsSource = posts;
+        }
     }
 }

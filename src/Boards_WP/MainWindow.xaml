@@ -32,27 +32,9 @@
 
             <views:CommunityBarView Grid.Column="0"/>
 
-            <Grid Grid.Column="1" Margin="4">
-                <ListView x:Name="FeedList" 
-                          SelectionMode="None" 
-                          Padding="0,0,10,0"
-                          Background="Transparent">
-                    
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Post">
-                            <views:PostPreviewForm PostData="{x:Bind}" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Margin" Value="0,0,0,0"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                </ListView>
-            </Grid>
+           <Grid Grid.Column="1" Margin="4">
+               <Frame x:Name="ContentFrame" />
+           </Grid>
 
             <views:NotificationsView Grid.Column="2"/>
         </Grid>

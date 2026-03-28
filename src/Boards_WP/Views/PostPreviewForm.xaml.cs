@@ -9,10 +9,13 @@ namespace Boards_WP.Views
 {
     public sealed partial class PostPreviewForm : UserControl
     {
-        // Define PostData as a DependencyProperty so the ListView can "push" data into it
+        // DependencyProperty allows the ListView to pass data into this control
         public static readonly DependencyProperty PostDataProperty =
             DependencyProperty.Register("PostData", typeof(Post), typeof(PostPreviewForm), new PropertyMetadata(null));
 
+
+        // we declare an object called "PostData" of type Post, which we will use when the user interacts with one of the posts in preview form
+        // we use this object to ensure if for example, the user likes a post, the score won't just change on screen, but will actually modify the score of the post
         public Post PostData
         {
             get => (Post)GetValue(PostDataProperty);
@@ -24,6 +27,7 @@ namespace Boards_WP.Views
             this.InitializeComponent();
         }
 
+        
         public string FormatDate(DateTime date)
         {
             return date.ToString("dd/MM/yyyy");
@@ -33,7 +37,6 @@ namespace Boards_WP.Views
         {
             if (PostData == null) return;
             PostData.Score++;
-            // Manually update the label because simple classes don't notify the UI of changes automatically
             ScoreLabel.Text = PostData.Score.ToString();
         }
 

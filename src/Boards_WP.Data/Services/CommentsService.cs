@@ -43,15 +43,54 @@ internal class CommentsService : ICommentsService
     }
     public void increaseComment(Comment c, int currentUserID)
     {
-        if (c.isDeleted) { throw new InvalidOperationException("Cannot vote on a deleted comment."); }
-        commentsRepo.increaseScore(c);
-        commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Like);
+        if (c.isDeleted)
+            throw new InvalidOperationException("Cannot vote on a deleted comment.");
+
+        if (c.userCurrentVote == VoteType.Like)
+        {
+            commentsRepo.decreaseScore(c);
+            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.None);
+            c.userCurrentVote = VoteType.None;
+        }
+        else if (c.userCurrentVote == VoteType.Dislike)
+        {
+            commentsRepo.increaseScore(c);
+            commentsRepo.increaseScore(c);
+            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Like);
+            c.userCurrentVote = VoteType.Like;
+        }
+        else
+        {
+            commentsRepo.increaseScore(c);
+            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Like);
+            c.userCurrentVote = VoteType.Like;
+        }
     }
     public void decreaseComment(Comment c, int currentUserID)
     {
-        if (c.isDeleted) { throw new InvalidOperationException("Cannot vote on a deleted comment."); }
-        commentsRepo.decreaseScore(c);
-        commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Dislike);
+        if (c.isDeleted)
+            throw new InvalidOperationException("Cannot vote on a deleted comment.");
+
+        if (c.userCurrentVote == VoteType.Dislike)
+        {
+            commentsRepo.increaseScore(c);
+            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.None);
+            c.userCurrentVote = VoteType.None;
+        }
+        else if (c.userCurrentVote == VoteType.Like)
+        {
+            commentsRepo.decreaseScore(c);
+            commentsRepo.decreaseScore(c);
+            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Dislike);
+            c.userCurrentVote = VoteType.Dislike;
+        }
+        else
+        {
+            commentsRepo.decreaseScore(c);
+            commentsRepo.upsertUserCommentVote(c.commentID, currentUserID, VoteType.Dislike);
+            c.userCurrentVote = VoteType.Dislike;
+        }
+
     }
     public List<Comment> GetCommentsByPost(int postID, int currentUserID)
     {

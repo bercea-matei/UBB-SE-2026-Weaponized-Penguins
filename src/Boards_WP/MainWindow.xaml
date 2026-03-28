@@ -10,22 +10,26 @@
     mc:Ignorable="d"
     Title="Boards_WP">
 
+
+    <!-- this is for a more modern design -->
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
+    <!-- the screen is divided in 2 rows (Row 0 is the header, Row 1 is the rest of the screen) -->
    <Grid Background="#E6E2FF"> 
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> 
-            <RowDefinition Height="*"/>    
+            <RowDefinition Height="Auto"/>  
+            <RowDefinition Height="*"/>     
         </Grid.RowDefinitions>
 
-        <views:HeaderView Grid.Row="0" />
+       
+        <views:HeaderView Grid.Row="0" />   
 
-        <Grid Grid.Row="1" Margin="10,0,10,10">
+        <Grid Grid.Row="1" Margin="10,0,10,10">  
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="260"/> 
-                <ColumnDefinition Width="*"/>   
+                <ColumnDefinition Width="260"/>  
+                <ColumnDefinition Width="*"/>     
                 <ColumnDefinition Width="260"/> 
             </Grid.ColumnDefinitions>
 

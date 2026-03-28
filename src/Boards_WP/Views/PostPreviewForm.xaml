@@ -8,7 +8,15 @@
     mc:Ignorable="d"
     Margin="0,0,0,16">
 
-    <Grid Background="White" CornerRadius="12" Padding="15" BorderBrush="#E0E0FF" BorderThickness="1">
+    <Grid Background="White" 
+        CornerRadius="12" 
+        Padding="15" 
+        BorderBrush="#E0E0FF" 
+        BorderThickness="1"
+        PointerPressed="OnPostClicked"
+        PointerEntered="Grid_PointerEntered"
+        PointerExited="Grid_PointerExited">
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="*"/>

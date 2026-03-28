@@ -1,9 +1,6 @@
 using Microsoft.UI.Xaml;
 
 using System;
-using System.Collections.Generic;
-
-using Boards_WP.Data.Models;
 
 namespace Boards_WP
 {
@@ -12,7 +9,22 @@ namespace Boards_WP
         public MainWindow()
         {
             this.InitializeComponent();
-            ContentFrame.Navigate(typeof(Boards_WP.Views.Pages.FeedView));
+
+            // 1. Tell the App class about this window so we can find it later
+            if (App.Current is App myApp)
+            {
+                myApp.m_window = this;
+            }
+
+            // 2. Load the Feed by default when the app opens
+            // Make sure the namespace matches where you put FeedView
+            ContentFrame.Navigate(typeof(Views.Pages.FeedView));
+        }
+
+        // 3. A public helper so other pages can trigger navigation easily
+        public void NavigateToPage(Type pageType, object parameter = null)
+        {
+            ContentFrame.Navigate(pageType, parameter);
         }
     }
 }

@@ -1,23 +1,22 @@
 using System;
 
-namespace Boards_WP.Data.Models
+namespace Boards_WP.Data.Models;
+
+public class Post
 {
-    public class Post
-    {
-        public int postID { get; set; }
-        public int ownerID { get; set; }
-        public int communityID { get; set; }
-        public String title { get; set; } = String.Empty;
-        public String description { get; set; } = String.Empty;
-        public byte[]? image { get; set; }
-        public int score { get; set; }
-        public int commentsNumber { get; set; }
-        public DateTime creationTime { get; set; }
-        public String ownerName { get; set; } = String.Empty;
-        public String communityName { get; set; } = String.Empty;
-        public byte[]? communityPicture { get; set; }
-        public VoteType userCurrentVote { get; set; } = VoteType.None;
-        public String getShareLink => $"boards://post/{postID}";
-        public List<Tag> tags { get; set; } = new List<Tag>();
-    }
+    public int PostID { get; set; }
+    public int OwnerID { get; set; }
+    public int CommunityID { get; set; }
+    public String Title { get; set; } = String.Empty;
+    public String Description { get; set; } = String.Empty;
+    public byte[]? Image { get; set; }
+    public int Score { get; set; }
+    public int CommentsNumber { get; set; }
+    public DateTime CreationTime { get; set; }
+    public String OwnerName { get; set; } = String.Empty;
+    public String CommunityName { get; set; } = String.Empty;
+    public byte[]? CommunityPicture { get; set; }
+    public VoteType UserCurrentVote { get; set; } = VoteType.None;
+    public String GetShareLink => $"boards://post/{postID}";
+    public List<Tag> Tags { get; set; } = new List<Tag>();
 }

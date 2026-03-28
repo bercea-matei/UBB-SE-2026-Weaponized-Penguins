@@ -1,10 +1,10 @@
 using System;
 
-using namespace Boards_WP.Data.Models;
+namespace Boards_WP.Data.Models;
 
 public class Tag
 {
-    public int tagID { get; set; }
-    public int categoryID { get; set; }
-    public String tagName { get; set; } = String.Empty;
+    public int TagID { get; set; }
+    public int CategoryID { get; set; }
+    public String TagName { get; set; } = String.Empty;
 }

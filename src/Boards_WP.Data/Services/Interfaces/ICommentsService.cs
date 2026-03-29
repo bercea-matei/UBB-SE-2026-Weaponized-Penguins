@@ -4,7 +4,7 @@ using System.Text;
 
 using Boards_WP.Data.Models;
 
-namespace Boards_WP.Data.Services;
+namespace Boards_WP.Data.Services.Interfaces;
 
 public interface ICommentsService
 {

@@ -13,7 +13,7 @@ namespace Boards_WP.Data.Models
         public User? Owner { get; init; }
         public String Description { get; set; } = String.Empty;
         public int Score { get; set; }
-        public DateTime CreationTime { get; init; }
+        public DateTime CreationTime { get; set; }
         public int Indentation { get; init; }
         public Boolean IsDeleted { get; set; }
         public VoteType UserCurrentVote { get; set; } = VoteType.None;

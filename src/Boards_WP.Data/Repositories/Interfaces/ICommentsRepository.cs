@@ -4,7 +4,7 @@ using System.Text;
 
 using Boards_WP.Data.Models;
 
-namespace Boards_WP.Data.Repositories;
+namespace Boards_WP.Data.Repositories.Interfaces;
 
 public interface ICommentsRepository
 {

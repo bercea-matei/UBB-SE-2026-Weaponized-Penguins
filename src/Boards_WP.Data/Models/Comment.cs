@@ -10,7 +10,7 @@ namespace Boards_WP.Data.Models
         public int CommentID { get; init; }
         public Post Post { get; init; }
         public Comment? ParentComment { get; init; }
-        public User? Owner { get; init; }
+        public User Owner { get; init; }
         public String Description { get; set; } = String.Empty;
         public int Score { get; set; }
         public DateTime CreationTime { get; set; }

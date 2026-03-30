@@ -1,0 +1,47 @@
+<UserControl
+    x:Class="Boards_WP.Views.CommentView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:Boards_WP.Data.Models"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Margin="0,0,0,10">
+        <Rectangle x:Name="ThreadLine" 
+                   Width="2" 
+                   Fill="#6A67E1" 
+                   HorizontalAlignment="Left" 
+                   Margin="-15,0,0,0"
+                   Visibility="Collapsed"/>
+
+        <Border BorderBrush="#D1D1D1" 
+                BorderThickness="1" 
+                CornerRadius="12" 
+                Background="Transparent"
+                Padding="12">
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Top">
+                    <Button Content="▲" Click="Upvote_Click" Style="{StaticResource TextBlockButtonStyle}"/>
+                    <TextBlock x:Name="ScoreLabel" 
+                               Text="{x:Bind CommentData.Score, Mode=OneWay}" 
+                               HorizontalAlignment="Center" FontWeight="Bold"/>
+                    <Button Content="▼" Click="Downvote_Click" Style="{StaticResource TextBlockButtonStyle}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                    <TextBlock Text="{x:Bind CommentData.Owner.Username}" 
+                               FontSize="12" FontWeight="Bold" Foreground="#6A67E1"/>
+                    <TextBlock Text="{x:Bind CommentData.Description}" 
+                               TextWrapping="Wrap" Margin="0,5,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -56,5 +56,32 @@ namespace Boards_WP.Views
             }
             return null;
         }
+
+        private void HomeNavigation_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if (this.XamlRoot.Content is UIElement shell)
+            {
+                var rootFrame = FindChildFrame(shell, "ContentFrame");
+
+                if (rootFrame != null)
+                {
+                    rootFrame.Navigate(typeof(FeedView));
+                }
+            }
+        }
+
+        // function for the Discover button
+        private void DiscoverNavigation_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if (this.XamlRoot.Content is UIElement shell)
+            {
+                var rootFrame = FindChildFrame(shell, "ContentFrame");
+
+                if (rootFrame != null)
+                {
+                    rootFrame.Navigate(typeof(FeedView));
+                }
+            }
+        }
     }
 }

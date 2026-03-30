@@ -5,7 +5,10 @@ namespace Boards_WP.Views
 {
     public sealed partial class CommunityBarView : UserControl
     {
+<<<<<<< HEAD
         // the communities names list we display in the navigation sidebar
+=======
+>>>>>>> main
         public ObservableCollection<string> CommunityNames { get; set; } = new();
 
         public CommunityBarView()

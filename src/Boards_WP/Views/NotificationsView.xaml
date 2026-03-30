@@ -4,9 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Boards_WP.Views">
 
+<<<<<<< HEAD
 
 
     <!-- we define how the Notifications sidebar should look like  -->
+=======
+>>>>>>> main
     <Border Background="#F0F0FF" CornerRadius="15" Margin="4">
         <Grid Padding="15">
             <Grid.RowDefinitions>
@@ -14,15 +17,21 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+<<<<<<< HEAD
             <!-- the header of the notifications sidebar (its layout) -->
+=======
+>>>>>>> main
             <TextBlock Text="Notifications" 
                        FontSize="18" 
                        FontWeight="SemiBold" 
                        Foreground="#6A67E1" 
                        Margin="0,0,0,15"/>
 
+<<<<<<< HEAD
 
             <!-- the actual list of notifications (its layout) -->
+=======
+>>>>>>> main
             <ListView x:Name="NotificationsList" 
                       Grid.Row="1"
                       SelectionMode="Single"
@@ -42,11 +51,15 @@
                         <Grid x:Name="RootGrid">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
+<<<<<<< HEAD
                                     
                                     <!-- this is for the moment when the mouse doesn't hover on notification, so nothing should happen -->
                                     <VisualState x:Name="Normal" />
 
                                     <!-- this describes how the notification should change when on hover (maybe doesn't work properly right now :) -->
+=======
+                                    <VisualState x:Name="Normal" />
+>>>>>>> main
                                     <VisualState x:Name="PointerOver">
                                         <VisualState.Setters>
                                             <Setter Target="NotificationCard.BorderBrush" Value="#6A67E1"/>
@@ -56,10 +69,14 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
+<<<<<<< HEAD
                             
 
                             <!-- how one single notification looks like -->
                             <!-- it splits the notification in 2 rows: Row 0 is for the message, Row 1 is for the time -->
+=======
+
+>>>>>>> main
                             <Border x:Name="NotificationCard"
                                     Background="White" 
                                     BorderBrush="#E0E0FF" 
@@ -72,14 +89,20 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
+<<<<<<< HEAD
                                     <!-- x:Bind Message displays the actual message -->
+=======
+>>>>>>> main
                                     <TextBlock Text="{x:Bind Message}" 
                                                FontSize="13" 
                                                Foreground="#333333" 
                                                TextWrapping="Wrap"
                                                VerticalAlignment="Center"/>
 
+<<<<<<< HEAD
                                     <!-- x:Bind Time displays the actual time -->
+=======
+>>>>>>> main
                                     <TextBlock Grid.Column="1" 
                                                Text="{x:Bind Time}" 
                                                FontSize="11" 

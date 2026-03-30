@@ -5,8 +5,12 @@ namespace Boards_WP.Views
 {
     public sealed partial class NotificationsView : UserControl
     {
+<<<<<<< HEAD
         // the list of notifications displayed in the Notifications side-bar
         // can be used to display the actual notifications of a user (not just hardcoded data like now)
+=======
+        // Simple list for backend dev to plug in
+>>>>>>> main
         public ObservableCollection<NotificationItem> Notifications { get; set; } = new();
 
         public NotificationsView()

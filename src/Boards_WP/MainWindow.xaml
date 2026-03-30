@@ -15,10 +15,7 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-<<<<<<< HEAD
     <!-- the window is divided into 2 rows (Row 0 is the header, Row 1 is the rest of the page: navigation and notifications sidebars and middle section) -->
-=======
->>>>>>> main
     <Grid Background="#E6E2FF">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -27,10 +24,7 @@
 
         <views:HeaderView Grid.Row="0" />
 
-<<<<<<< HEAD
         <!-- Row 1 is divided into 3 columns: Navigation and Notifications sidebars and middle section -->
-=======
->>>>>>> main
         <Grid Grid.Row="1" Margin="10,0,10,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="260"/>
@@ -40,17 +34,11 @@
 
             <views:CommunityBarView Grid.Column="0"/>
 
-<<<<<<< HEAD
             <!-- the middle section is a Frame; a Frame allows the middle section to change according to the user's interactions with the app -->
             <!-- Frames display different Pages (like FeedView, FullPostView etc.) -->
             <Grid Grid.Column="1" Margin="4">
                 <Frame x:Name="ContentFrame" />
             </Grid>
-=======
-           <Grid Grid.Column="1" Margin="4">
-               <Frame x:Name="ContentFrame" />
-           </Grid>
->>>>>>> main
 
             <views:NotificationsView Grid.Column="2"/>
         </Grid>

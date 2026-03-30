@@ -16,33 +16,6 @@ namespace Boards_WP.Views.Pages
             var posts = new List<Post>
             {
                 new Post {
-<<<<<<< HEAD
-                    Title = "How to make your CV better",
-                    OwnerName = "@AlexBindiu",
-                    CommunityName = "Computer Science",
-                    Score = 50,
-                    CommentsNumber = 30,
-                    CreationTime = new DateTime(2026, 3, 11),
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                },
-                new Post {
-                    Title = ".NET Internship",
-                    OwnerName = "@Matei",
-                    CommunityName = "UBB",
-                    Score = 37,
-                    CommentsNumber = 9,
-                    CreationTime = new DateTime(2026, 3, 7),
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                },
-                new Post {
-                    Title = "My First Meme!",
-                    OwnerName = "@AlexandraBochis",
-                    CommunityName = "WeaponizedPenguins",
-                    Score = 17,
-                    CommentsNumber = 5,
-                    CreationTime = new DateTime(2026, 2, 28),
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-=======
                     PostID = 1,
                     Title = "How to make your CV better",
                     Owner = new User { Username = "@AlexBindiu" },
@@ -50,7 +23,7 @@ namespace Boards_WP.Views.Pages
                     Score = 50,
                     CommentsNumber = 30,
                     CreationTime = new DateTime(2026, 3, 11),
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                 },
                 new Post {
                     PostID = 2,
@@ -60,7 +33,7 @@ namespace Boards_WP.Views.Pages
                     Score = 37,
                     CommentsNumber = 9,
                     CreationTime = new DateTime(2026, 3, 7),
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                 },
                 new Post {
                     PostID = 3,
@@ -70,8 +43,7 @@ namespace Boards_WP.Views.Pages
                     Score = 17,
                     CommentsNumber = 5,
                     CreationTime = new DateTime(2026, 2, 28),
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
->>>>>>> main
+                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                 }
             };
 

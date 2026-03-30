@@ -1,16 +1,11 @@
-<<<<<<< HEAD
+using Boards_WP.Data.Models;
+
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml.Input;
 
 using Boards_WP.Data.Models;
-=======
-using Boards_WP.Data.Models;
-
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
->>>>>>> main
 
 using System;
 
@@ -18,14 +13,6 @@ namespace Boards_WP.Views
 {
     public sealed partial class PostPreviewForm : UserControl
     {
-<<<<<<< HEAD
-        public static readonly DependencyProperty PostDataProperty =
-            DependencyProperty.Register("PostData", typeof(Post), typeof(PostPreviewForm), new PropertyMetadata(null));
-
-        // we declare an object called "PostData" of type Post, which we will use when the user interacts with one of the posts in preview form
-        // we use this object to ensure if for example, the user likes a post, the score won't just change on screen, but will actually modify the score of the post
-        // PostData allows us to communicate with the data we have and display it on screen properly
-=======
         // DependencyProperty allows the ListView to pass data into this control
         public static readonly DependencyProperty PostDataProperty =
             DependencyProperty.Register("PostData", typeof(Post), typeof(PostPreviewForm), new PropertyMetadata(null));
@@ -33,7 +20,7 @@ namespace Boards_WP.Views
 
         // we declare an object called "PostData" of type Post, which we will use when the user interacts with one of the posts in preview form
         // we use this object to ensure if for example, the user likes a post, the score won't just change on screen, but will actually modify the score of the post
->>>>>>> main
+        // PostData allows us to communicate with the data we have and display it on screen properly
         public Post PostData
         {
             get => (Post)GetValue(PostDataProperty);
@@ -45,16 +32,12 @@ namespace Boards_WP.Views
             this.InitializeComponent();
         }
 
-<<<<<<< HEAD
-=======
         
->>>>>>> main
         public string FormatDate(DateTime date)
         {
             return date.ToString("dd/MM/yyyy");
         }
 
-<<<<<<< HEAD
 
         // this is the function which opens the clicked post, from preview form to full view form
         // it tells the MainWindow to change the Frame/"main section" to the FullView of the clicke post
@@ -84,8 +67,6 @@ namespace Boards_WP.Views
 
 
         // this function is responsible with incrementing the score of the post
-=======
->>>>>>> main
         private void Upvote_Click(object sender, RoutedEventArgs e)
         {
             if (PostData == null) return;
@@ -93,17 +74,13 @@ namespace Boards_WP.Views
             ScoreLabel.Text = PostData.Score.ToString();
         }
 
-<<<<<<< HEAD
         // this function is responsible with decrementing the score of the post
-=======
->>>>>>> main
         private void Downvote_Click(object sender, RoutedEventArgs e)
         {
             if (PostData == null) return;
             PostData.Score--;
             ScoreLabel.Text = PostData.Score.ToString();
         }
-<<<<<<< HEAD
 
 
         // this function changes the cursor from arrow to hand when the mouse enters the post card
@@ -119,7 +96,5 @@ namespace Boards_WP.Views
         }
 
 
-=======
->>>>>>> main
     }
 }

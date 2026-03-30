@@ -7,7 +7,6 @@ namespace Boards_WP.Data.Models
 {
     public class Comment
     {
-<<<<<<< HEAD
         public int CommentID { get; set; }
         public Post Post { get; set; }
         public Comment? ParentComment { get; set; }
@@ -19,19 +18,6 @@ namespace Boards_WP.Data.Models
         public bool IsDeleted { get; set; }
         public VoteType UserCurrentVote { get; set; } = VoteType.None;
         public string GetShareLink => $"boards://post/{Post?.PostID}";
-=======
-        public int CommentID { get; init; }
-        public required Post ParentPost { get; init; }
-        public Comment? ParentComment { get; init; }
-        public required User Owner { get; init; }
-        public String Description { get; set; } = String.Empty;
-        public int Score { get; set; }
-        public DateTime CreationTime { get; set; }
-        public int Indentation { get; init; }
-        public bool IsDeleted { get; set; }
-        public VoteType UserCurrentVote { get; set; } = VoteType.None;
-        public String GetShareLink => $"boards://post/{ParentPost.PostID}";
->>>>>>> main
 
     }
 }

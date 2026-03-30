@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 
@@ -61,7 +62,7 @@ namespace Boards_WP.Views.Pages
                 PostID = 1,
                 Title = "Welcome!",
                 Owner = new User { Username = "@AlexBindiu" },
-                Community = new Community { Name = "Computer Science" },
+                ParentCommunity = new Community { Name = "Computer Science" },
                 Score = 50,
                 CommentsNumber = 30,
                 CreationTime = new DateTime(2026, 3, 30),
@@ -72,7 +73,7 @@ namespace Boards_WP.Views.Pages
                 PostID = 1,
                 Title = "Community Rules",
                 Owner = new User { Username = "@Alexandra" },
-                Community = new Community { Name = "Computer Science" },
+                ParentCommunity = new Community { Name = "Computer Science" },
                 Score = 34,
                 CommentsNumber = 10,
                 CreationTime = new DateTime(2026, 3, 30),
@@ -93,6 +94,11 @@ namespace Boards_WP.Views.Pages
                 // going to the FullPostView page of the selected post
                 this.Frame.Navigate(typeof(FullPostView), selectedPost);
             }
+        }
+
+        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

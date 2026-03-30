@@ -17,9 +17,9 @@ namespace Boards_WP.Views
             this.InitializeComponent();
             CommunityListView.ItemsSource = Communities;
 
-            Communities.Add(new Community { Name = "ComputerScience", Description = "Tech and coding." });
-            Communities.Add(new Community { Name = "UBB", Description = "Universitatea Babeș-Bolyai." });
-            Communities.Add(new Community { Name = "Weaponized_Penguins", Description = "Project team HQ." });
+            Communities.Add(new Community { Name = "ComputerScience", Description = "Tech and coding.", Admin = new User { Username = "System" } });
+            Communities.Add(new Community { Name = "UBB", Description = "Universitatea Babeș-Bolyai.", Admin = new User { Username = "System" } });
+            Communities.Add(new Community { Name = "Weaponized_Penguins", Description = "Project team HQ.", Admin = new User { Username = "System" } });
         }
 
         private void CommunityListView_ItemClick(object sender, ItemClickEventArgs e)

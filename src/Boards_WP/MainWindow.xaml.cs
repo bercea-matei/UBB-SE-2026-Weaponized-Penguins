@@ -1,31 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
-namespace Boards_WP;
-/// <summary>
-/// An empty window that can be used on its own or navigated to within a Frame.
-/// </summary>
-public sealed partial class MainWindow : Window
+namespace Boards_WP
 {
-    public MainWindow()
+    public sealed partial class MainWindow : Window
     {
-        InitializeComponent();
+        public MainWindow()
+        {
+            this.InitializeComponent();
+
+            // tell the App class about this window so we can find it later (in case we need the main window)
+            if (App.Current is App myApp)
+            {
+                myApp.m_window = this;
+            }
+
+            // loading the Feed by default when the app opens
+            ContentFrame.Navigate(typeof(Views.Pages.FeedView));
+        }
+        
+        // pageType: can be any page (FeedPage, FullViewPage) and represents the next page the frame needs to load
+        // parameter: is the data that needs to be displayed on this new page (and can be optional, which why we use "null")
+        public void NavigateToPage(Type pageType, object parameter = null)
+        {
+            ContentFrame.Navigate(pageType, parameter);
+        }
     }
 }

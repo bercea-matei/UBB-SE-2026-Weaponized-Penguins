@@ -3,7 +3,7 @@
 namespace Boards_WP.Data.Services;
 
 
-public class CommentsService : ICommentsService
+internal class CommentsService : ICommentsService
 {
     private readonly ICommentsRepository commentsRepo;
     //private readonly INotificationsRepository notificationsRepo;
@@ -31,7 +31,7 @@ public class CommentsService : ICommentsService
         c.IsDeleted= true;
         commentsRepo.SoftDeleteComment(c.CommentID);
     }
-    public void IncreaseScore(Comment c, int currentUserID)
+    public void IncreaseComment(Comment c, int currentUserID)
     {
         if (c.IsDeleted)
             throw new InvalidOperationException("Cannot vote on a deleted comment.");
@@ -56,7 +56,7 @@ public class CommentsService : ICommentsService
             c.UserCurrentVote = VoteType.Like;
         }
     }
-    public void DecreaseScore(Comment c, int currentUserID)
+    public void DecreaseComment(Comment c, int currentUserID)
     {
         if (c.IsDeleted)
             throw new InvalidOperationException("Cannot vote on a deleted comment.");
@@ -91,10 +91,14 @@ public class CommentsService : ICommentsService
         if (string.IsNullOrWhiteSpace(c.Description))
             throw new ArgumentException("Comment description cannot be empty.");
         if (c.Description.Length > MAX_DESCRIPTION_LENGTH)
-            throw new ArgumentException($"Comment description cannot exceed {MAX_DESCRIPTION_LENGTH} characters.");
+            throw new ArgumentException("Comment description cannot exceed 1000 characters.");
         if (c.Indentation> MAX_INDENTATION_LEVEL)
             throw new ArgumentException("Comment indentation cannot exceed 7 levels.");
     }
 
+    public List<Comment> getCommentsByPost(int postID, int currentUserID)
+    {
+        return commentsRepo.GetCommentsByPostID(postID, currentUserID);
+    }
 }
 

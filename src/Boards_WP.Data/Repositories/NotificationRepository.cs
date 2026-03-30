@@ -2,11 +2,9 @@ using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-using Boards_WP.Data.Models
+using Boards_WP.Data.Models;
 using Boards_WP.Data.Repositories.Interfaces;
-
 
 namespace Boards_WP.Data.Repositories
 {
@@ -19,7 +17,7 @@ namespace Boards_WP.Data.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task<int> AddNotificationAsync(Notification notification)
+        public int AddNotification(Notification notification)
         {
             const string query = @"
                 INSERT INTO Notifications (creationTime, postID, receiverID, actorID, actionType, isRead)
@@ -35,12 +33,12 @@ namespace Boards_WP.Data.Repositories
             command.Parameters.Add("@ActorID", SqlDbType.Int).Value = notification.Actor.UserID;
             command.Parameters.Add("@ActionType", SqlDbType.Int).Value = (int)notification.ActionType;
             command.Parameters.Add("@isRead", SqlDbType.Bit).Value = notification.IsRead;
-            
-            await connection.OpenAsync();
-            return (int)(await command.ExecuteScalarAsync())!;
+
+            connection.Open();
+            return (int)command.ExecuteScalar()!;
         }
 
-        public async Task MarkNotificationAsReadAsync(int notificationId)
+        public void MarkNotificationAsRead(int notificationId)
         {
             const string query = @"
                 UPDATE Notifications
@@ -52,11 +50,11 @@ namespace Boards_WP.Data.Repositories
 
             command.Parameters.Add("@NotificationID", SqlDbType.Int).Value = notificationId;
 
-            await connection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
+            connection.Open();
+            command.ExecuteNonQuery();
         }
 
-        public async Task<List<Notification>> GetNotificationsByUserIdAsync(int userId)
+        public List<Notification> GetNotificationsByUserId(int userId)
         {
             const string query = @"
                 SELECT
@@ -93,11 +91,11 @@ namespace Boards_WP.Data.Repositories
 
             command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
 
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            connection.Open();
+            using var reader = command.ExecuteReader();
 
             var notifications = new List<Notification>();
-            while (await reader.ReadAsync())
+            while (reader.Read())
                 notifications.Add(MapNotification(reader));
 
             return notifications;
@@ -131,7 +129,7 @@ namespace Boards_WP.Data.Repositories
             return new Notification
             {
                 NotificationID = reader.GetInt32(reader.GetOrdinal("notificationID")),
-                CreationDate = reader.GetDateTime(reader.GetOrdinal("creationTime")),
+                CreationTime = reader.GetDateTime(reader.GetOrdinal("creationTime")),
                 ActionType = (NotificationType)reader.GetInt32(reader.GetOrdinal("actionType")),
                 IsRead = reader.GetBoolean(reader.GetOrdinal("isRead")),
                 Receiver = receiver,

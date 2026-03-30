@@ -2,14 +2,12 @@ using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-using Boards_WP.Data.Models
+using Boards_WP.Data.Models;
 using Boards_WP.Data.Repositories.Interfaces;
 using Boards_WP.Data.Services.Interfaces;
 
-
-namespace Boards_WP.Data.Services : INotificationsService
+namespace Boards_WP.Data.Services
 {
     public class NotificationsService : INotificationsService
     {
@@ -20,12 +18,11 @@ namespace Boards_WP.Data.Services : INotificationsService
             _notificationsRepo = notificationsRepo;
         }
 
-        public async Task AddNotificationAsync(Notification notification)
+        public void AddNotification(Notification notification)
         {
             try
             {
-                notification.NotificationID = await _notificationsRepo.AddNotificationAsync(notification);
-
+                notification.NotificationID = _notificationsRepo.AddNotification(notification);
             }
             catch
             {
@@ -33,21 +30,21 @@ namespace Boards_WP.Data.Services : INotificationsService
             }
         }
 
-        public async Task ReadNotificationAsync(Notification notification)
+        public void ReadNotification(Notification notification)
         {
             try
             {
-                await _notificationsRepo.MarkNotificationAsReadAsync(notification);
+                _notificationsRepo.MarkNotificationAsRead(notification.NotificationID);
             }
             catch
             {
-                thow new Exception("Failed to mark notification as read");
+                throw new Exception("Failed to mark notification as read");
             }
         }
 
-        public async Task<List<Notification>> GetNotificationsByUserIDAsync(int userID)
+        public List<Notification> GetNotificationsByUserID(int userID)
         {
-            return await _notificationsRepo.GetNotificationsByUserIdAsync(userID);
+            return _notificationsRepo.GetNotificationsByUserId(userID);
         }
 
         public string GetNotificationMessage(Notification notification)

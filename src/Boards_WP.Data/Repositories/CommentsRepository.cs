@@ -1,5 +1,7 @@
-﻿using System;
+using System;
+using System.Data;
 using System.Collections.Generic;
+using Microsoft.Data.SqlClient;
 using System.Text;
 
 using Boards_WP.Data.Models;
@@ -9,43 +11,167 @@ namespace Boards_WP.Data.Repositories;
 
 public class CommentsRepository : ICommentsRepository
 {
-    private String commentsDbContext;
-    private String commentsVotesDbContext;
-    private String usersDbContext;
+    private readonly String _connectionString;
 
-    public CommentsRepository(String commentsDbContext, String commentsVotesDbContext, String usersDbContext)
+    public CommentsRepository(String connectionString)
     {
-        this.commentsDbContext = commentsDbContext;
-        this.commentsVotesDbContext = commentsVotesDbContext;
-        this.usersDbContext = usersDbContext;
+        _connectionString = connectionString;
     }
 
-    public void addComment(Comment c)
+    public void AddComment(Comment c)
     {
-        // TODO
+        const string query = @"
+            INSERT INTO Comments (postID, parentID, ownerID, description, score, creationTime, indentation, isDeleted)
+            VALUES (@postID, @parentID, @ownerID, @description, @score, @creationTime, @indentation, @isDeleted)";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(query, connection);
+
+        command.Parameters.Add("@postID", SqlDbType.Int).Value = c.ParentPost.PostID;
+        command.Parameters.Add("@parentID", SqlDbType.Int).Value = (object?)c.ParentComment?.CommentID ?? DBNull.Value;
+        command.Parameters.Add("@ownerID", SqlDbType.Int).Value = c.Owner.UserID;
+        command.Parameters.Add("@description", SqlDbType.NVarChar, 618).Value = c.Description;
+        command.Parameters.Add("@score", SqlDbType.Int).Value = c.Score;
+        command.Parameters.Add("@creationTime", SqlDbType.DateTime).Value = c.CreationTime;
+        command.Parameters.Add("@indentation", SqlDbType.Int).Value = c.Indentation;
+        command.Parameters.Add("@isDeleted", SqlDbType.Bit).Value = c.IsDeleted;
+
+        connection.Open();
+        command.ExecuteNonQuery();
     }
 
-    public void softDeleteComment(int commentID)
+    public void SoftDeleteComment(int commentID)
     {
-        // TODO
+        const string query = @"
+            UPDATE Comments 
+            SET isDeleted = 1, description = '[deleted]' 
+            WHERE commentID = @commentID";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(query, connection);
+
+        command.Parameters.Add("@commentID", SqlDbType.Int).Value = commentID;
+
+        connection.Open();
+        command.ExecuteNonQuery();
     }
-    public void increaseScore(Comment c)
+    public void IncreaseScore(Comment c)
     {
-        // TODO
+        const string query = "UPDATE Comments SET score = score + 1 WHERE commentID = @commentID";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(query, connection);
+
+        command.Parameters.Add("@commentID", SqlDbType.Int).Value = c.CommentID;
+
+        connection.Open();
+        command.ExecuteNonQuery();
+
+        c.Score += 1;
     }
-    public void decreaseScore(Comment c)
+    public void DecreaseScore(Comment c)
     {
-        // TODO
+        const string query = "UPDATE Comments SET score = score - 1 WHERE commentID = @commentID";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(query, connection);
+
+        command.Parameters.Add("@commentID", SqlDbType.Int).Value = c.CommentID;
+
+        connection.Open();
+        command.ExecuteNonQuery();
+
+        c.Score -= 1;
     }
 
-    public List<Comment> getCommentsByPostID(int postID, int userID)
+    public List<Comment> GetCommentsByPostID(int postID, int userID)
     {
-        // TODO
-        return new List<Comment>();
+        var comments = new List<Comment>();
+
+        const string query = @"
+            SELECT 
+                c.commentID, 
+                c.postID, 
+                c.parentID, 
+                c.ownerID, 
+                c.description, 
+                c.score, 
+                c.creationTime, 
+                c.indentation, 
+                c.isDeleted,
+                u.username,
+                cv.vote
+            FROM Comments c
+            INNER JOIN Users u ON c.ownerID = u.userID
+            LEFT JOIN CommentsViews cv ON c.commentID = cv.commentID AND cv.userID = @userID
+            WHERE c.postID = @postID
+            ORDER BY c.creationTime ASC";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(query, connection);
+
+        command.Parameters.Add("@postID", SqlDbType.Int).Value = postID;
+        command.Parameters.Add("@userID", SqlDbType.Int).Value = userID;
+
+        connection.Open();
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            int commentID = reader.GetInt32(0);
+            int pID = reader.GetInt32(1);
+            int? parentID = reader.IsDBNull(2) ? null : reader.GetInt32(2);
+            int ownerID = reader.GetInt32(3);
+            string description = reader.GetString(4);
+            int score = reader.GetInt32(5);
+            DateTime creationTime = reader.GetDateTime(6);
+            int indentation = reader.GetInt32(7);
+            bool isDeleted = reader.GetBoolean(8);
+            string username = reader.GetString(9);
+
+            int? voteVal = reader.IsDBNull(10) ? null : reader.GetInt32(10);
+            VoteType vote = voteVal.HasValue ? (VoteType)voteVal.Value : VoteType.None;
+
+            var comment = new Comment
+            {
+                CommentID = commentID,
+                ParentPost = new Post { PostID = pID },
+                ParentComment = parentID.HasValue ? new Comment { CommentID = parentID.Value } : null,
+                Owner = new User { UserID = ownerID, Username = username },
+                Description = description,
+                Score = score,
+                CreationTime = creationTime,
+                Indentation = indentation,
+                IsDeleted = isDeleted,
+                UserCurrentVote = vote
+            };
+
+            comments.Add(comment);
+        }
+
+        return comments;
     }
-    public void upsertUserCommentVote(int commentID, int currentUserID, VoteType vote)
+    public void UpsertUserCommentVote(int commentID, int currentUserID, VoteType vote)
     {
-        // TODO
+        const string query = @"
+            MERGE INTO CommentsViews AS target
+            USING (VALUES (@userID, @commentID, @vote)) AS source (userID, commentID, vote)
+            ON target.userID = source.userID AND target.commentID = source.commentID
+            WHEN MATCHED THEN
+                UPDATE SET vote = source.vote
+            WHEN NOT MATCHED THEN
+                INSERT (userID, commentID, vote)
+                VALUES (source.userID, source.commentID, source.vote);";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(query, connection);
+
+        command.Parameters.Add("@userID", SqlDbType.Int).Value = currentUserID;
+        command.Parameters.Add("@commentID", SqlDbType.Int).Value = commentID;
+        command.Parameters.Add("@vote", SqlDbType.Int).Value = (int)vote;
+
+        connection.Open();
+        command.ExecuteNonQuery();
     }
 
 }

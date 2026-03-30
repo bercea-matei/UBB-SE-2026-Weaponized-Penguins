@@ -4,7 +4,7 @@ namespace Boards_WP.Data.Models;
 
 public class Post
 {
-    public int PostID { get; init; }
+    public int PostID { get; set; }
     public User Owner { get; set; }
     public Community Community { get; set; }
     public string Title { get; set; } = string.Empty;

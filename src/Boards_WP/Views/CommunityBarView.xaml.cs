@@ -17,32 +17,39 @@ namespace Boards_WP.Views
             this.InitializeComponent();
             CommunityListView.ItemsSource = Communities;
 
-            Communities.Add(new Community { Name = "ComputerScience", Description = "Tech and coding." });
-            Communities.Add(new Community { Name = "UBB", Description = "Universitatea Babeș-Bolyai." });
-            Communities.Add(new Community { Name = "Weaponized_Penguins", Description = "Project team HQ." });
+            Communities.Add(new Community { Name = "ComputerScience", Description = "Tech and coding" });
+            Communities.Add(new Community { Name = "UBB", Description = "Universitatea Babeș-Bolyai" });
+            Communities.Add(new Community { Name = "Weaponized_Penguins", Description = "Project team" });
         }
+        
 
+
+        // this function identifies which community the user clicked on
+
+        // we need to find a way in which the CommunitySidebarView can communicate with the main Frame to change content
+        // according to the selected community
+
+        // but they are isolated, so we use XamlRoot and VisualTreeHelper to break out of isolation
         private void CommunityListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is Community selected)
             {
-                // Try to get the frame from the XamlRoot (the actual window the control is in)
+                // searching for the Frame (middle section) directly
                 if (this.XamlRoot.Content is Frame rootFrame)
                 {
                     rootFrame.Navigate(typeof(CommunityView), selected);
                 }
-                // If the Window.Content is a ShellPage (UserControl), we need to find the Frame inside it
+
+                // if the Frame is hidden, we need to search for it on a deeper level
                 else if (this.XamlRoot.Content is UIElement shell)
                 {
-                    // This looks specifically for a Frame named 'ContentFrame' in your ShellPage
-                    // Replace 'ContentFrame' with the x:Name you gave your Frame in ShellPage.xaml
                     var frame = FindChildFrame(shell, "ContentFrame");
                     frame?.Navigate(typeof(CommunityView), selected);
                 }
             }
         }
 
-        // A more powerful helper to find the frame by name
+        // A more powerful helper to find the frame by name (looking on deeper layers)
         private Frame FindChildFrame(DependencyObject parent, string frameName)
         {
             int count = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent);
@@ -55,6 +62,34 @@ namespace Boards_WP.Views
                 if (result != null) return result;
             }
             return null;
+        }
+
+        // function for the Home button
+        private void HomeNavigation_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if (this.XamlRoot.Content is UIElement shell)
+            {
+                var rootFrame = FindChildFrame(shell, "ContentFrame");
+
+                if (rootFrame != null)
+                {
+                    rootFrame.Navigate(typeof(FeedView));
+                }
+            }
+        }
+
+        // function for the Discover button
+        private void DiscoverNavigation_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if (this.XamlRoot.Content is UIElement shell)
+            {
+                var rootFrame = FindChildFrame(shell, "ContentFrame");
+
+                if (rootFrame != null)
+                {
+                    rootFrame.Navigate(typeof(FeedView));
+                }
+            }
         }
     }
 }

@@ -31,15 +31,19 @@
             <!-- here, we define the 3 options the user has: Home, Discover, Start Community -->
             <!-- setting SelectionMode to Single, tells the app that only one option at a time can be selected/active -->
             <ListView SelectionMode="Single" ItemContainerStyle="{StaticResource NavigationListViewStyle}">
-                <ListViewItem>
+    
+                <ListViewItem x:Name="HomeItem" Tapped="HomeNavigation_ItemClick">
                     <TextBlock Text="Home" Foreground="White" FontSize="18" FontWeight="SemiBold" />
                 </ListViewItem>
-                <ListViewItem>
+    
+                <ListViewItem x:Name="DiscoveryItem" Tapped="DiscoverNavigation_ItemClick">
                     <TextBlock Text="Discovery" Foreground="White" FontSize="18" FontWeight="SemiBold" />
                 </ListViewItem>
-                <ListViewItem>
+    
+                <ListViewItem x:Name="StartCommunityItem">
                     <TextBlock Text="Start Community" Foreground="White" FontSize="18" FontWeight="SemiBold" />
                 </ListViewItem>
+    
             </ListView>
 
             <!-- in this section, we describe how the name of the communities that the user is part of should look like -->

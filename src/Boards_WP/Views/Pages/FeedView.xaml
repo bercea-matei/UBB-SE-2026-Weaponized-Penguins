@@ -22,6 +22,8 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
             
+
+            <!-- here, we specify that the posts should stretch accross the entire width of the middle section -->
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

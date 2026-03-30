@@ -4,9 +4,15 @@ namespace Boards_WP.Data.Models;
 
 public class Post
 {
+<<<<<<< HEAD
     public int PostID { get; init; }
     public User Owner { get; init; }
     public Community ParentCommunity { get; init; }
+=======
+    public int PostID { get; set; }
+    public User Owner { get; set; }
+    public Community Community { get; set; }
+>>>>>>> filip/community-view
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public byte[]? Image { get; set; }

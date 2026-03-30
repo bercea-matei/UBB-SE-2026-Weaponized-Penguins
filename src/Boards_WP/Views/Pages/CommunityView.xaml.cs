@@ -1,36 +1,19 @@
-<<<<<<< HEAD
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
-=======
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
->>>>>>> filip/community-view
 
 using Boards_WP.Data.Models;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-<<<<<<< HEAD
 using Microsoft.UI.Xaml.Data;
-=======
->>>>>>> filip/community-view
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 
 
 namespace Boards_WP.Views.Pages
-<<<<<<< HEAD
-{
-    public sealed partial class CommunityView : Page
-    {
-        public Community CurrentCommunity { get; set; } // the one the user is looking at
-        public ObservableCollection<Post> CommunityPosts { get; set; } = new ObservableCollection<Post>();
-=======
 {   
 
     // we will use INotifyPropertyChanged to tell the interface to change whenever a variable changes in C#
@@ -62,37 +45,20 @@ namespace Boards_WP.Views.Pages
                 this.Bindings.Update(); // updates the button visibility
             }
         }
->>>>>>> filip/community-view
 
         // properties for XAML binding
         public BitmapImage BannerImage => ConvertToBitmap(CurrentCommunity?.Banner);
         public BitmapImage ProfileImage => ConvertToBitmap(CurrentCommunity?.Picture);
-<<<<<<< HEAD
-        public string MemberCountText => $"{CurrentCommunity?.MembersNumber} members";
-=======
         public string MemberCountText => $"{CurrentCommunity?.MembersNumber ?? 0} members";
 
         public Visibility BoolToVisibility(bool isOpen) => isOpen ? Visibility.Visible : Visibility.Collapsed;
         public Visibility InverseBoolToVisibility(bool isOpen) => isOpen ? Visibility.Collapsed : Visibility.Visible;
->>>>>>> filip/community-view
 
         public CommunityView()
         {
             this.InitializeComponent();
         }
 
-<<<<<<< HEAD
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            if (e.Parameter is Community community)
-            {
-                CurrentCommunity = community;
-                Bindings.Update();
-                LoadCommunityPosts(community.CommunityID);
-            }
-        }
-
-=======
 
         // put the _currentCommunity in CurrentCommunity (for display)
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -133,7 +99,6 @@ namespace Boards_WP.Views.Pages
             System.Diagnostics.Debug.WriteLine("Navigating to Create Post...");
         }
 
->>>>>>> filip/community-view
         // this function converts byte[] (from the images in the database) into BitmapImage, because XAML doesn't know byte[]
         private BitmapImage ConvertToBitmap(byte[] data)
         {
@@ -157,11 +122,7 @@ namespace Boards_WP.Views.Pages
                 PostID = 1,
                 Title = "Welcome!",
                 Owner = new User { Username = "@AlexBindiu" },
-<<<<<<< HEAD
-                ParentCommunity = new Community { Name = "Computer Science" },
-=======
-                Community = new Community { Name = "Computer Science" },
->>>>>>> filip/community-view
+                ParentCommunity = new Community { Name = "Computer Science", Admin = new User { Username = "System" } },
                 Score = 50,
                 CommentsNumber = 30,
                 CreationTime = new DateTime(2026, 3, 30),
@@ -172,11 +133,7 @@ namespace Boards_WP.Views.Pages
                 PostID = 1,
                 Title = "Community Rules",
                 Owner = new User { Username = "@Alexandra" },
-<<<<<<< HEAD
-                ParentCommunity = new Community { Name = "Computer Science" },
-=======
-                Community = new Community { Name = "Computer Science" },
->>>>>>> filip/community-view
+                ParentCommunity = new Community { Name = "Computer Science", Admin = new User { Username = "System" } },
                 Score = 34,
                 CommentsNumber = 10,
                 CreationTime = new DateTime(2026, 3, 30),
@@ -198,14 +155,9 @@ namespace Boards_WP.Views.Pages
                 this.Frame.Navigate(typeof(FullPostView), selectedPost);
             }
         }
-<<<<<<< HEAD
-
-        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
-=======
         
         // this function sends a notification to Windows UI, announcing that the IsMember variable has changed
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
->>>>>>> filip/community-view
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

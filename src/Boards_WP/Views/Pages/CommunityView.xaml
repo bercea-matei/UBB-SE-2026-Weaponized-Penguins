@@ -6,30 +6,6 @@
     xmlns:views="using:Boards_WP.Views"
     Background="Transparent">
 
-<<<<<<< HEAD
-    <Grid Background="Transparent">
-        <ScrollViewer>
-           <StackPanel Spacing="10">
-
-                <!-- this is the background banner -->
-                <Grid Height="180">
-                    <Border CornerRadius="15,15,0,0" Background="#AFAFFF" Margin="0,0,0,40">
-                        <Image Source="{x:Bind BannerImage, Mode=OneWay}" Stretch="UniformToFill"/>
-                    </Border>
-
-                    <!-- profile picture, name, number of members -->
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="20,0,0,0">
-                        <PersonPicture ProfilePicture="{x:Bind ProfileImage, Mode=OneWay}" 
-                                        DisplayName="{x:Bind CurrentCommunity.Name, Mode=OneWay}"
-                                        Height="80" Width="80" 
-                                        BorderBrush="White" BorderThickness="4"/>
-            
-                        <StackPanel Margin="15,40,0,0">
-                            <TextBlock Text="{x:Bind CurrentCommunity.Name, Mode=OneWay}" 
-                                        FontSize="28" FontWeight="Bold" Foreground="Black"/>
-                            <TextBlock Text="{x:Bind MemberCountText, Mode=OneWay}" 
-                                        FontSize="14" Foreground="Gray"/>
-=======
     <Grid>
         <ScrollViewer>
             <StackPanel Spacing="10">
@@ -66,35 +42,20 @@
                                             Background="#FFE0E0" Foreground="Red" BorderBrush="Red" BorderThickness="1" CornerRadius="8"/>
                                 </StackPanel>
                             </StackPanel>
->>>>>>> filip/community-view
                         </StackPanel>
                     </StackPanel>
                 </Grid>
 
-<<<<<<< HEAD
                 <!-- community description -->
                 <Border Background="White" CornerRadius="12" Margin="20,0" Padding="15" BorderBrush="#E0E0E0" BorderThickness="1">
-                    <TextBlock Text="{x:Bind CurrentCommunity.Description, Mode=OneWay}" 
-                                TextWrapping="Wrap" FontSize="15"/>
+                    <TextBlock Text="{x:Bind CurrentCommunity.Description, Mode=OneWay}" TextWrapping="Wrap" FontSize="15"/>
                 </Border>
 
                 <!-- community feed: a list of PostPreviewForm-->
                 <ItemsControl ItemsSource="{x:Bind CommunityPosts, Mode=OneWay}" Margin="20,10">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:Post">
-                            <views:PostPreviewForm PostData="{x:Bind}" 
-                                                    Margin="0,0,0,15" 
-                                                    PointerPressed="ClickOnPostFromCommunity"/>
-=======
-                <Border Background="White" CornerRadius="12" Margin="20,0" Padding="15" BorderBrush="#E0E0E0" BorderThickness="1">
-                    <TextBlock Text="{x:Bind CurrentCommunity.Description, Mode=OneWay}" TextWrapping="Wrap" FontSize="15"/>
-                </Border>
-
-                <ItemsControl ItemsSource="{x:Bind CommunityPosts, Mode=OneWay}" Margin="20,10">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:Post">
                             <views:PostPreviewForm PostData="{x:Bind}" Margin="0,0,0,15"/>
->>>>>>> filip/community-view
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

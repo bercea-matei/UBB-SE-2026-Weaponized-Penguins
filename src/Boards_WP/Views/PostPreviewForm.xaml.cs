@@ -52,13 +52,15 @@ namespace Boards_WP.Views
             }
         }
 
-        // helper to find the Frame without protection level errors
+        // XAML creates a Visual Tree, which is a hierarchy of elements (Grids inside Borders inside Lists)
+        // this function searches for a specific element hidden deep in this tree
+        // we use the generic T because we can look for any type of element (button, frame etc.)
         private T FindChildElementByName<T>(DependencyObject parent, string name) where T : DependencyObject
         {
-            for (int i = 0; i < Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent); i++)
+            for (int i = 0; i < Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent); i++) // starts at top level, counting how many children there are
             {
                 var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(parent, i);
-                if (child is T element && (element as FrameworkElement)?.Name == name) return element;
+                if (child is T element && (element as FrameworkElement)?.Name == name) return element; // checks type and name of element
                 var result = FindChildElementByName<T>(child, name);
                 if (result != null) return result;
             }

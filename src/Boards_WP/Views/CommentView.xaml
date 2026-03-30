@@ -8,6 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Margin="0,0,0,10">
+        <!-- this is the line purple line appearing left to a child comment -->
         <Rectangle x:Name="ThreadLine" 
                    Width="2" 
                    Fill="#6A67E1" 
@@ -15,12 +16,14 @@
                    Margin="-15,0,0,0"
                    Visibility="Collapsed"/>
 
+        <!-- the rounded rectangle for the comment -->
         <Border BorderBrush="#D1D1D1" 
                 BorderThickness="1" 
                 CornerRadius="12" 
                 Background="Transparent"
                 Padding="12">
             
+            <!-- we split the commment into 2 columns: Column0 which is for the score, Column1 which is for the text -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
@@ -29,6 +32,8 @@
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Top">
                     <Button Content="▲" Click="Upvote_Click" Style="{StaticResource TextBlockButtonStyle}"/>
+
+                    <!-- Mode=OnWay is for displaying the new the score if it gets incremented/decremented -->
                     <TextBlock x:Name="ScoreLabel" 
                                Text="{x:Bind CommentData.Score, Mode=OneWay}" 
                                HorizontalAlignment="Center" FontWeight="Bold"/>

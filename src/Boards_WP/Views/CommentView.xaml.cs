@@ -6,7 +6,9 @@ using Boards_WP.Data.Models;
 namespace Boards_WP.Views
 {
     public sealed partial class CommentView : UserControl
-    {
+    {   
+
+        // just like we had a variable for posts in preview form, CommentData is an object of type Comment
         public static readonly DependencyProperty CommentDataProperty =
             DependencyProperty.Register("CommentData", typeof(Comment), typeof(CommentView),
                 new PropertyMetadata(null, OnDataChanged));
@@ -22,15 +24,20 @@ namespace Boards_WP.Views
             this.InitializeComponent();
         }
 
+
+        // this function creates that nested look for the comments
+        // d is the comment which triggered the change (the comment that received a reply)
+        // e is a package which contains all the information about the change that just happened (it has e.NewValue and e.OldValue)
+        // e.OldValue is the data before change, e.NewValue is the data that was just assigned
         private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (CommentView)d;
-            if (e.NewValue is Comment comment)
+            if (e.NewValue is Comment comment) // taking the new comment and reading its indentation
             {
                 // adding the new line, so moving the comment a bit to the right based on its indendation
                 control.Margin = new Thickness(comment.Indentation * 35, 0, 0, 12);
 
-                if (comment.Indentation > 0)
+                if (comment.Indentation > 0) // if it is a reply, display the line
                 {
                     control.ThreadLine.Visibility = Visibility.Visible;
                 }

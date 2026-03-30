@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
+=======
+>>>>>>> main
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -12,6 +15,7 @@ namespace Boards_WP.Views.Pages
 {
     public sealed partial class FullPostView : Page
     {
+<<<<<<< HEAD
       
         public ObservableCollection<Comment> PostComments { get; set; } = new ObservableCollection<Comment>();
 
@@ -21,6 +25,15 @@ namespace Boards_WP.Views.Pages
 
         }
 
+=======
+        public FullPostView()
+        {
+            this.InitializeComponent();
+        }
+
+
+        // we use this function to display the preview form of the clicked post (so that when we enter full view post, the preview form gets shown at the top, above the comments)
+>>>>>>> main
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -28,6 +41,7 @@ namespace Boards_WP.Views.Pages
             // checking if the data we were given is actually an object of type Post, if yes, we display its preview form 
             if (e.Parameter is Post selectedPost)
             {
+<<<<<<< HEAD
                 
                 FullPostHeader.PostData = selectedPost;
                 var hardcodedComments = new List<Comment>
@@ -76,17 +90,32 @@ namespace Boards_WP.Views.Pages
                 {
                     PostComments.Add(c);
                 }
+=======
+                FullPostHeader.PostData = selectedPost;
+>>>>>>> main
             }
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
+<<<<<<< HEAD
             if (this.Frame.CanGoBack) // take back the user to the page they were previously on
             {
                 this.Frame.GoBack();
             }
             else  // in case there is no history, take the user back to the FeedView
             {
+=======
+            // checking if there is a page to go back to, if there is, then we go back to it
+            // CanGoBack is a built-in property that remembers where the user was
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+            }
+            else
+            {
+                // if we dont have a previous page to go back to, we tell the app to go back to the FeedView
+>>>>>>> main
                 this.Frame.Navigate(typeof(FeedView));
             }
         }

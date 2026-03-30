@@ -8,7 +8,6 @@ public class UsersMoodRepository : IUsersMoodRepository
     public UsersMoodRepository(string connectionString)
     {
         _connectionString = connectionString;
-
     }
 
     public Dictionary<int, int> GetUsersMoodScores(int userID, int categoryCount)
@@ -66,13 +65,13 @@ public class UsersMoodRepository : IUsersMoodRepository
         }
     }
 
-    private Dictionary<int, int> GetDefaultDistribution(int categoryCount)
+    internal Dictionary<int, int> GetDefaultDistribution(int categoryCount)
     {
         var defaults = new Dictionary<int, int>();
         int baseScore = _interestUnits / categoryCount;
         int leftover = _interestUnits % categoryCount;
 
-        for (int i = 1; i <= 30; i++)
+        for (int i = 1; i <= categoryCount; i++)
         {
             defaults.Add(i, (leftover > 0) ? baseScore + 1 : baseScore);
             if(leftover > 0) leftover--;

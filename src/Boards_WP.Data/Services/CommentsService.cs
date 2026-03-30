@@ -1,28 +1,48 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using Boards_WP.Data.Models;
+using Boards_WP.Data.Repositories.Interfaces;
 
 namespace Boards_WP.Data.Services;
 
-
-internal class CommentsService : ICommentsService
+public class CommentsService : ICommentsService
 {
     private readonly ICommentsRepository commentsRepo;
-    //private readonly INotificationsRepository notificationsRepo;
+    private readonly INotificationRepository notificationsRepo;
     const int MAX_DESCRIPTION_LENGTH = 618;
     const int MAX_INDENTATION_LEVEL = 7;
 
-    public CommentsService(ICommentsRepository commentsReop/*, INotificationsRepository notificationsRepo*/)
+    public CommentsService(ICommentsRepository commentsRepo, INotificationRepository notificationsRepo)
     {
-        this.commentsRepo = commentsReop;
-        //this.notificationsRepo = notificationsRepo;
+        this.commentsRepo = commentsRepo;
+        this.notificationsRepo = notificationsRepo;
     }
 
     public void AddComment(Comment c)
     {
         ValidateComment(c);
-        c.CreationTime = DateTime.Now;
+        c.CreationTime = DateTime.UtcNow;
         c.IsDeleted = false;
         commentsRepo.AddComment(c);
-        //notificationsRepo.addNotification(c);
+
+        if (c.ParentPost != null && c.Owner != null)
+        {
+            User receiver = c.ParentComment != null ? c.ParentComment.Owner : c.ParentPost.Owner;
+
+            // Generate a notification if they are not replying to themselves
+            if (receiver != null && receiver.UserID != c.Owner.UserID)
+            {
+                notificationsRepo.AddNotification(new Notification
+                {
+                    RelatedPost = c.ParentPost,
+                    Actor = c.Owner,
+                    Receiver = receiver,
+                    ActionType = c.ParentComment != null ? NotificationType.ReplyToComment : NotificationType.CommentOnPost,
+                    CreationTime = DateTime.UtcNow,
+                    IsRead = false
+                });
+            }
+        }
     }
 
     public void SoftDeleteComment(Comment c, int userID)

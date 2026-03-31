@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace Boards_WP.Data.Services;
@@ -9,7 +10,7 @@ public class PostsService : IPostsService
     private readonly IPostsRepository _postsRepo;
     private readonly IUsersRepository _usersRepo;
     private readonly ITagsRepository _tagsRepo;
-    //community service
+    private readonly ICommunitiesService _communitiesService;
     private readonly UserSession _userSession;
     private readonly IUsersMoodRepository _usersMoodRepository;
     private int _cachedCategoryCount = 0;
@@ -17,25 +18,53 @@ public class PostsService : IPostsService
 
     private List<Post> _lastLikesOfCurrentUser= new List<Post>();  
 
-    public PostsService(IPostsRepository postsRepo, IUsersRepository usersRepo, ITagsRepository _tagsRepo, UserSession userSession, IUsersMoodRepository usersMoodRepository)
+    public PostsService(IPostsRepository postsRepo, IUsersRepository usersRepo, ITagsRepository _tagsRepo, 
+        UserSession userSession, IUsersMoodRepository usersMoodRepository, ICommunitiesService communitiesService)
     {
         _postsRepo = postsRepo;
         _usersRepo = usersRepo;
         _tagsRepo = _tagsRepo;
         _userSession = userSession;
         _usersMoodRepository = usersMoodRepository;
+        _communitiesService = communitiesService;
     }
 
 
     public void AddPost(Post post)
     {
-        //todo : validate post
-        if (string.IsNullOrWhiteSpace(post.Title))
-            throw new ArgumentException("Post title cannot be empty.");
+        ValidatePost(post);
 
         _postsRepo.AddPost(post);
     }
 
+    public void ValidatePost(Post post)
+    {
+        if (post == null)
+            throw new ArgumentNullException(nameof(post));
+
+        if (post.Owner == null)
+            throw new ArgumentException("A post must have an Owner.", nameof(post));
+
+        if (post.ParentCommunity == null)
+            throw new ArgumentException("A post must belong to a Community.", nameof(post));
+
+        if (string.IsNullOrWhiteSpace(post.Title))
+            throw new ArgumentException("Title is required.", nameof(post));
+
+        if (post.Title.Length > 100)
+            throw new ArgumentException("Title cannot exceed 100 characters.", nameof(post));
+
+        if (!string.IsNullOrWhiteSpace(post.Description) && post.Description.Length > 3000)
+            throw new ArgumentException("Description cannot exceed 3000 characters.", nameof(post));
+
+        if (post.Tags != null && post.Tags.Count > 10)
+            throw new ArgumentException("A post cannot have more than 10 tags.", nameof(post));
+
+        if (post.CommentsNumber < 0)
+            throw new ArgumentException("Comments number cannot be negative.", nameof(post));
+        if (post.Image.Length > 10485760)
+            throw new ArgumentException("Image cannot exceed 10 MB.", nameof(post));
+    }
 
     public Post GetPostByPostID(int postId)
     {
@@ -44,7 +73,12 @@ public class PostsService : IPostsService
 
     public void DeletePost(int postId)
     {
-        _postsRepo.DeletePost(postId);
+
+        if(_userSession.CurrentUser == _postsRepo.GetPostByPostID(postId).Owner)
+            _postsRepo.DeletePost(postId);
+        else if (_userSession.CurrentUser == _postsRepo.GetPostByPostID(postId).ParentCommunity.Admin)
+            _postsRepo.DeletePost(postId);
+        else throw new UnauthorizedAccessException("Only the owner of the post can delete it.");
     }
 
     public void IncreaseScore(int postId)
@@ -58,6 +92,9 @@ public class PostsService : IPostsService
             
             _postsRepo.SetUserVoteForPost(userId, postId, VoteType.None);
             _postsRepo.DecreaseScore(postId);
+
+            _lastLikesOfCurrentUser.RemoveAll(p => p.PostID == postId);
+
         }
         else if (currentVote == VoteType.Dislike)
         {
@@ -66,11 +103,24 @@ public class PostsService : IPostsService
 
             _postsRepo.IncreaseScore(postId);
             _postsRepo.IncreaseScore(postId);
+
+            Post likedPost = _postsRepo.GetPostByPostID(postId);
+            _lastLikesOfCurrentUser.Insert(0, likedPost);
+
+            if (_lastLikesOfCurrentUser.Count > 5)
+                _lastLikesOfCurrentUser.RemoveAt(_lastLikesOfCurrentUser.Count - 1);
         }
         else
         { 
             _postsRepo.SetUserVoteForPost(userId, postId, VoteType.Like);
             _postsRepo.IncreaseScore(postId);
+
+            
+            Post likedPost = _postsRepo.GetPostByPostID(postId);
+            _lastLikesOfCurrentUser.Insert(0, likedPost);
+
+            if (_lastLikesOfCurrentUser.Count > 5)
+                _lastLikesOfCurrentUser.RemoveAt(_lastLikesOfCurrentUser.Count - 1);
         }
     }
 
@@ -98,11 +148,15 @@ public class PostsService : IPostsService
         {
             _postsRepo.SetUserVoteForPost(userId, postId, VoteType.Dislike);
             _postsRepo.DecreaseScore(postId);
+
+            _lastLikesOfCurrentUser.RemoveAll(p => p.PostID == postId);
         }
     }
 
     public List<Post> GetPostsByCommunityID(int communityId)
     {
+
+        //todo pagination?
         return _postsRepo.GetPostsByCommunityIDs(new[] { communityId });
     }
 
@@ -142,18 +196,62 @@ public class PostsService : IPostsService
         return scoredCandidates;
     }
 
-    public ThemeColor DetermineFeedThemeColorByLastLikes()
-    {
-        throw new NotImplementedException();
-        //todo
-    }
-
     public ThemeColor DetermineThemeForASinglePost(Post post)
     {
-        throw new NotImplementedException();
-        //todo
+        if (post == null) return ThemeColor.Default;
+        return CalculateDominantColor(new[] { post });
     }
 
+    public ThemeColor DetermineFeedThemeColorByLastLikes()
+    {
+        if (_lastLikesOfCurrentUser == null || !_lastLikesOfCurrentUser.Any())
+            return ThemeColor.Default;
+        var relevantPosts = _lastLikesOfCurrentUser.Take(5);
+
+        return CalculateDominantColor(relevantPosts);
+    }
+
+    private readonly int[] _tagWeights = { 34, 21, 13, 8, 5, 3, 2, 1, 1, 1 };
+
+    private ThemeColor CalculateDominantColor(IEnumerable<Post> posts)
+    {
+        
+        var colorScores = new Dictionary<ThemeColor, int>
+        {
+            { ThemeColor.Pink, 0 },
+            { ThemeColor.Orange, 0 },
+            { ThemeColor.Turquoise, 0 },
+            { ThemeColor.Yellow, 0 },
+            { ThemeColor.Blue, 0 },
+            { ThemeColor.Green, 0 },
+            { ThemeColor.Red, 0 },
+            { ThemeColor.Purple, 0 }
+        };
+
+            foreach (var post in posts)
+            {
+                if (post.Tags == null) continue;
+
+                for (int i = 0; i < post.Tags.Count; i++)
+                {
+                    
+                    int weight = (i < _tagWeights.Length) ? _tagWeights[i] : 1;
+
+                    int categoryId = post.Tags[i].CategoryBelongingTo.CategoryID;
+                    ThemeColor tagColor = CategoryThemeMapper.GetColorForCategoryId(categoryId);
+
+                   
+                    if (tagColor != ThemeColor.Default && colorScores.ContainsKey(tagColor))
+                        colorScores[tagColor] += weight;
+                    
+                }
+            }
+
+        
+        var winningColor = colorScores.OrderByDescending(kvp => kvp.Value).First();
+
+        return winningColor.Value > 0 ? winningColor.Key : ThemeColor.Default;
+    }
 
     public void UpdateUserPreferences(int userID, Post p, bool hasCommented)
     {

@@ -7,7 +7,7 @@ public class UserInterestsTests
     public UserInterestsTests()
     {
         //--no repos for testing the alg math -> pass null
-        _service = new PostsService(null!, null!, null!, null!, null!);
+        _service = new PostsService(null!, null!, null!, null!, null!, null!);
     }
 
     private Dictionary<int, int> GetStartingScores(int count)

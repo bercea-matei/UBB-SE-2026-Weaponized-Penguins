@@ -10,6 +10,6 @@ namespace Boards_WP.Data.Models
         public byte[]? Picture { get; set; }
         public byte[]? Banner { get; set; }
         public int MembersNumber { get; set; }
-        public required User Admin { get; set; }
+        public User Admin { get; set; }
     }
 }

@@ -68,6 +68,48 @@ public class PostsRepository : IPostsRepository
     }
 
 
+    //works with postview - useful for service like/disklike logic
+    public VoteType GetUserVoteForPost(int userId, int postId)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        const string query = "SELECT vote FROM PostsViews WHERE userID = @UserID AND postID = @PostID";
+        using var command = new SqlCommand(query, connection);
+
+        command.Parameters.AddWithValue("@UserID", userId);
+        command.Parameters.AddWithValue("@PostID", postId);
+
+        connection.Open();
+        var result = command.ExecuteScalar();
+
+
+        if (result == null) return VoteType.None;
+
+        return (VoteType)Convert.ToInt32(result);
+    }
+
+    public void SetUserVoteForPost(int userId, int postId, VoteType vote)
+    {
+        using var connection = new SqlConnection(_connectionString);
+
+        const string query = @"
+        IF @Vote = 0
+            DELETE FROM PostsViews WHERE userID = @UserID AND postID = @PostID;
+        ELSE
+        BEGIN
+            UPDATE PostsViews SET vote = @Vote WHERE userID = @UserID AND postID = @PostID;
+            IF @@ROWCOUNT = 0
+                INSERT INTO PostsViews (userID, postID, vote) VALUES (@UserID, @PostID, @Vote);
+        END";
+
+        using var command = new SqlCommand(query, connection);
+        command.Parameters.AddWithValue("@UserID", userId);
+        command.Parameters.AddWithValue("@PostID", postId);
+
+        command.Parameters.AddWithValue("@Vote", (int)vote);
+
+        connection.Open();
+        command.ExecuteNonQuery();
+    }
 
     public void DeletePost(int postID)
     {

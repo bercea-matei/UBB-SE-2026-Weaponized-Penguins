@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using Boards_WP.Data.Models;
 using Boards_WP.Data.Repositories.Interfaces;
+using Boards_WP.Data.Services.Interfaces;
 
 namespace Boards_WP.Data.Services;
+
 
 public class CommentsService : ICommentsService
 {
@@ -21,26 +23,22 @@ public class CommentsService : ICommentsService
     public void AddComment(Comment c)
     {
         ValidateComment(c);
-        c.CreationTime = DateTime.UtcNow;
+        c.CreationTime = DateTime.Now;
         c.IsDeleted = false;
         commentsRepo.AddComment(c);
 
         if (c.ParentPost != null && c.Owner != null)
         {
-            User receiver = c.ParentComment != null ? c.ParentComment.Owner : c.ParentPost.Owner;
-
-            // Generate a notification if they are not replying to themselves
-            if (receiver != null && receiver.UserID != c.Owner.UserID)
+            var notification = new Notification
             {
-                notificationsRepo.AddNotification(new Notification
-                {
-                    RelatedPost = c.ParentPost,
-                    Actor = c.Owner,
-                    Receiver = receiver,
-                    ActionType = c.ParentComment != null ? NotificationType.ReplyToComment : NotificationType.CommentOnPost,
-                    CreationTime = DateTime.UtcNow,
-                    IsRead = false
-                });
+                RelatedPost = c.ParentPost,
+                Receiver = c.ParentPost.Owner,
+                Actor = c.Owner,
+                ActionType = c.ParentComment == null ? NotificationType.CommentOnPost : NotificationType.ReplyToComment
+            };
+            if (notification.Receiver != null && notification.Receiver.UserID != notification.Actor.UserID)
+            {
+                notificationsRepo.AddNotification(notification);
             }
         }
     }
@@ -111,14 +109,9 @@ public class CommentsService : ICommentsService
         if (string.IsNullOrWhiteSpace(c.Description))
             throw new ArgumentException("Comment description cannot be empty.");
         if (c.Description.Length > MAX_DESCRIPTION_LENGTH)
-            throw new ArgumentException("Comment description cannot exceed 1000 characters.");
+            throw new ArgumentException("Comment description cannot exceed 618 characters.");
         if (c.Indentation> MAX_INDENTATION_LEVEL)
             throw new ArgumentException("Comment indentation cannot exceed 7 levels.");
-    }
-
-    public List<Comment> getCommentsByPost(int postID, int currentUserID)
-    {
-        return commentsRepo.GetCommentsByPostID(postID, currentUserID);
     }
 }
 

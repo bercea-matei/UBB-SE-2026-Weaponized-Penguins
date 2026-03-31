@@ -7,10 +7,11 @@ namespace Boards_WP.Data.Services;
 public class CommunitiesService : ICommunitiesService
 {
     private readonly ICommunitiesRepository _communitiesRepo;
-
-    public CommunitiesService(ICommunitiesRepository communitiesRepo)
+    private readonly IPostsService _postsService;
+    public CommunitiesService(ICommunitiesRepository communitiesRepo, IPostsService postsService)
     {
         _communitiesRepo = communitiesRepo;
+        _postsService = postsService;
     }
     public void AddCommunity(Community AddedCommunity)
     {

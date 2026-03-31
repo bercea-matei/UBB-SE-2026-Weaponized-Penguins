@@ -60,27 +60,36 @@ namespace Boards_WP.Views.Pages
         }
 
 
-        
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            CommunityPosts.Clear();
 
-            // 1) navigating from sidebar (parameter is a Community)
+            // 1) the parameter is a Community (either from Sidebar or CreateCommunityView)
             if (e.Parameter is Community community)
             {
                 CurrentCommunity = community;
-                IsMember = false;
-                 
+                CommunityPosts.Clear();
+                LoadDefaultPosts();
+
+                // check if I am the creator (Admin) to decide if I'm already a member
+                if (community.Admin?.Username == "@Me")
+                {
+                    IsMember = true;
+                }
+                else
+                {
+                    IsMember = false;
+                }
             }
-            // 2) returning from CreatePostView (parameter is the new Post)
+            // 2) the parameter is a Post (returning from CreatePostView)
             else if (e.Parameter is Post newPost)
             {
                 CurrentCommunity = newPost.ParentCommunity;
-                IsMember = true; // User must be a member to have created a post
+                IsMember = true;
+
                 CommunityPosts.Add(newPost);
             }
-            LoadDefaultPosts();
             this.Bindings.Update();
         }
 

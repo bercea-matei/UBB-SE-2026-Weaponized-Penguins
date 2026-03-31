@@ -1,19 +1,23 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using Boards_WP.Data.Models;
+using Boards_WP.Data.Repositories.Interfaces;
+using Boards_WP.Data.Services.Interfaces;
 
 namespace Boards_WP.Data.Services;
 
 
-internal class CommentsService : ICommentsService
+public class CommentsService : ICommentsService
 {
     private readonly ICommentsRepository commentsRepo;
-    //private readonly INotificationsRepository notificationsRepo;
+    private readonly INotificationRepository notificationsRepo;
     const int MAX_DESCRIPTION_LENGTH = 618;
     const int MAX_INDENTATION_LEVEL = 7;
 
-    public CommentsService(ICommentsRepository commentsReop/*, INotificationsRepository notificationsRepo*/)
+    public CommentsService(ICommentsRepository commentsRepo, INotificationRepository notificationsRepo)
     {
-        this.commentsRepo = commentsReop;
-        //this.notificationsRepo = notificationsRepo;
+        this.commentsRepo = commentsRepo;
+        this.notificationsRepo = notificationsRepo;
     }
 
     public void AddComment(Comment c)
@@ -22,7 +26,21 @@ internal class CommentsService : ICommentsService
         c.CreationTime = DateTime.Now;
         c.IsDeleted = false;
         commentsRepo.AddComment(c);
-        //notificationsRepo.addNotification(c);
+
+        if (c.ParentPost != null && c.Owner != null)
+        {
+            var notification = new Notification
+            {
+                RelatedPost = c.ParentPost,
+                Receiver = c.ParentPost.Owner,
+                Actor = c.Owner,
+                ActionType = c.ParentComment == null ? NotificationType.CommentOnPost : NotificationType.ReplyToComment
+            };
+            if (notification.Receiver != null && notification.Receiver.UserID != notification.Actor.UserID)
+            {
+                notificationsRepo.AddNotification(notification);
+            }
+        }
     }
 
     public void SoftDeleteComment(Comment c, int userID)
@@ -91,14 +109,9 @@ internal class CommentsService : ICommentsService
         if (string.IsNullOrWhiteSpace(c.Description))
             throw new ArgumentException("Comment description cannot be empty.");
         if (c.Description.Length > MAX_DESCRIPTION_LENGTH)
-            throw new ArgumentException("Comment description cannot exceed 1000 characters.");
+            throw new ArgumentException("Comment description cannot exceed 618 characters.");
         if (c.Indentation> MAX_INDENTATION_LEVEL)
             throw new ArgumentException("Comment indentation cannot exceed 7 levels.");
-    }
-
-    public List<Comment> getCommentsByPost(int postID, int currentUserID)
-    {
-        return commentsRepo.GetCommentsByPostID(postID, currentUserID);
     }
 }
 

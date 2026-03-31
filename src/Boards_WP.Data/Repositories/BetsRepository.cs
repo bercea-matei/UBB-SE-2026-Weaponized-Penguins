@@ -200,6 +200,9 @@ public class BetsRepository : IBetsRepository
     {
         var bets = new List<Bet>();
 
+        if(Keywords == String.Empty)
+            return GetAllBetsSortedByDate(); //if the user doesn't input any keyword, we return all the bets.
+
         const string query = @"
     SELECT 
         b.betID, b.communityID, b.betType, b.startingTime, b.endingTime, b.expression, b.yesAmount, b.noAmount,

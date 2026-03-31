@@ -60,17 +60,60 @@ namespace Boards_WP.Views.Pages
         }
 
 
-        // put the _currentCommunity in CurrentCommunity (for display)
+        
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            CommunityPosts.Clear();
+
+            // 1) navigating from sidebar (parameter is a Community)
             if (e.Parameter is Community community)
             {
                 CurrentCommunity = community;
-                IsMember = false; // the user just landed on the community, so they are not a member yet
-                LoadCommunityPosts(community.CommunityID);  // grabbing the posts corresponding to the community
-                this.Bindings.Update(); // display correct buttons 
+                IsMember = false;
+                 
             }
+            // 2) returning from CreatePostView (parameter is the new Post)
+            else if (e.Parameter is Post newPost)
+            {
+                CurrentCommunity = newPost.ParentCommunity;
+                IsMember = true; // User must be a member to have created a post
+                CommunityPosts.Add(newPost);
+            }
+            LoadDefaultPosts();
+            this.Bindings.Update();
+        }
+
+        private void LoadDefaultPosts()
+        {
+            CommunityPosts.Add(new Post
+            {
+                PostID = 1,
+                Title = "Welcome!",
+                Owner = new User { Username = "@AlexBindiu" },
+                ParentCommunity = new Community { Name = "Computer Science", Admin = new User { Username = "System" } },
+                Score = 50,
+                CommentsNumber = 30,
+                CreationTime = new DateTime(2026, 3, 30),
+                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+            });
+            CommunityPosts.Add(new Post
+            {
+                PostID = 1,
+                Title = "Community Rules",
+                Owner = new User { Username = "@Alexandra" },
+                ParentCommunity = new Community { Name = "Computer Science", Admin = new User { Username = "System" } },
+                Score = 34,
+                CommentsNumber = 10,
+                CreationTime = new DateTime(2026, 3, 30),
+                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+            });
+        }
+
+        private void CreatePostButton_Click(object sender, RoutedEventArgs e)
+        {
+            // passing the CurrentCommunity so the form knows where it belongs
+            this.Frame.Navigate(typeof(CreatePostView), CurrentCommunity);
         }
 
         private void JoinButton_Click(object sender, RoutedEventArgs e)
@@ -93,11 +136,7 @@ namespace Boards_WP.Views.Pages
             }
         }
 
-        private void CreatePostButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Placeholder: Navigate to CreatePostPage
-            System.Diagnostics.Debug.WriteLine("Navigating to Create Post...");
-        }
+       
 
         // this function converts byte[] (from the images in the database) into BitmapImage, because XAML doesn't know byte[]
         private BitmapImage ConvertToBitmap(byte[] data)

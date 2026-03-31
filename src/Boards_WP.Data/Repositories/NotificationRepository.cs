@@ -80,8 +80,8 @@ namespace Boards_WP.Data.Repositories
                     p.postID,
                     p.title               AS postTitle
                 FROM Notifications n
-                JOIN Users receiver ON n.receiverID = receiver.userID
-                JOIN Users actor    ON n.actorID    = actor.userID
+                JOIN [Users mock] receiver ON n.receiverID = receiver.userID
+                JOIN [Users mock] actor    ON n.actorID    = actor.userID
                 LEFT JOIN Posts p          ON n.postID     = p.postID
                 WHERE n.receiverID = @UserID
                 ORDER BY n.creationTime DESC";

@@ -83,5 +83,19 @@ namespace Boards_WP.Views
                 }
             }
         }
+
+        private void StartCommunity_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if (this.XamlRoot.Content is UIElement shell)
+            {
+                var rootFrame = FindChildFrame(shell, "ContentFrame");
+                if (rootFrame != null)
+                {
+                    // We pass the ObservableCollection itself as a parameter 
+                    // so the Create page can add the new community to it directly.
+                    rootFrame.Navigate(typeof(CreateCommunityView), Communities);
+                }
+            }
+        }
     }
 }

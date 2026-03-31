@@ -11,7 +11,7 @@
             <TextBox x:Name="TitleInput" PlaceholderText="Title" FontSize="18" FontWeight="SemiBold" CornerRadius="8"/>
             
             <TextBox x:Name="DescriptionInput" PlaceholderText="Text (optional)" 
-                     AcceptsReturn="True" Height="200" TextWrapping="Wrap" CornerRadius="8"/>
+                     AcceptsReturn="True" Height="200" TextWrapping="Wrap" CornerRadius="8" HorizontalAlignment="Stretch"/>
 
             <TextBox x:Name="TagsInput" PlaceholderText="Add tags (e.g. tech, ubb, fun)" CornerRadius="8"/>
 

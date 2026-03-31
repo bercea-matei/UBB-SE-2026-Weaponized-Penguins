@@ -10,7 +10,7 @@ namespace Boards_WP.Data.Repositories;
 public class CommunitiesRepository : ICommunitiesRepository
 {
 
-    private readonly String _connectionString;
+    private readonly String _connectionString; 
 
     public CommunitiesRepository(String connectionString)
     {

@@ -13,16 +13,14 @@ namespace Boards_WP.Data.Services
         public List<Bet> SearchBetsByKeywords(String Keywords);
         public Bet GetBetByID(int BetID);
         public Boolean ValidateCreateBet(int UserID, Bet CreatedBet);
-        public void CreateBet(int UserID, Bet CreatedBet);
+        public void CreateBet(Bet CreatedBet, int CreatorID);
         public Boolean ValidatePlaceUserBet(int UserID, int BetID, int Amount, BetVote Vote);
         public void PlaceUserBet(int UserID, int BetID, int Amount, BetVote Vote);
-        public (float YesOdd, float NoOdd) CalculateBetOdds(int BetID);
+        public (decimal YesOdd, decimal NoOdd) CalculateBetOdds(int BetID);
         public float GetUserTokenFeeDiscount(int UserID);
-        public List<Bet> GetExpiredBets();
+        public List<Bet> GetExpiredBetsOfUser(int UserID);
         public BetVote CheckBetCondition(int BetID);
         public void ResolveBet(int BetID);
-        public void ExecuteActionsByBetResult(int UserID, int BetID, Boolean DidWin);
-        public Boolean VerifySecretWordForBetOpening(String Input, int BetID);
-
+        public void ExecuteActionsByBetResult(int UserID, int BetID);
     }
 }

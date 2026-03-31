@@ -4,7 +4,7 @@ namespace Boards_WP.Data.Models
 {
     public class Community
     {
-        public int CommunityID { get; init; }
+        public int CommunityID { get; set; }
         public String Name { get; set; } = String.Empty;
         public String Description { get; set; } = String.Empty;
         public byte[]? Picture { get; set; }

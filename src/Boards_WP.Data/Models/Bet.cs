@@ -5,7 +5,7 @@ namespace Boards_WP.Data.Models
 
     public class Bet
     {
-        public int BetID { get; init; }
+        public int BetID { get; set; }
         public required Community BetCommunity { get; init; }
         public BetType Type { get; set; }
         public DateTime StartingTime { get; set; }

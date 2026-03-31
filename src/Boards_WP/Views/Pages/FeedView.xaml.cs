@@ -19,31 +19,31 @@ namespace Boards_WP.Views.Pages
                     PostID = 1,
                     Title = "How to make your CV better",
                     Owner = new User { Username = "@AlexBindiu" },
-                    Community = new Community { Name = "Computer Science" },
+                    ParentCommunity = new Community { Name = "Computer Science", Admin = new User { Username = "@SomeAdminName" } },
                     Score = 50,
                     CommentsNumber = 30,
                     CreationTime = new DateTime(2026, 3, 11),
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                 },
                 new Post {
                     PostID = 2,
                     Title = ".NET Internship",
                     Owner = new User { Username = "@Matei" },
-                    Community = new Community { Name = "UBB" },
+                    ParentCommunity = new Community { Name = "UBB", Admin = new User { Username = "@SomeAdminName" } },
                     Score = 37,
                     CommentsNumber = 9,
                     CreationTime = new DateTime(2026, 3, 7),
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                 },
                 new Post {
                     PostID = 3,
                     Title = "My First Meme!",
                     Owner = new User { Username = "@AlexandraBochis" },
-                    Community = new Community { Name = "WeaponizedPenguins" },
+                    ParentCommunity = new Community { Name = "WeaponizedPenguins", Admin = new User { Username = "@SomeAdminName" } },
                     Score = 17,
                     CommentsNumber = 5,
                     CreationTime = new DateTime(2026, 2, 28),
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                    Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                 }
             };
 

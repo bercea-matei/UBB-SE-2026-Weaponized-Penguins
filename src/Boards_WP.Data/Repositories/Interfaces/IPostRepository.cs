@@ -17,4 +17,7 @@ public interface IPostsRepository
     public List<Post> GetPostsByCommunityIDs(int[] communityIDs);
     public List<Post> GetPostExceptCommunityIDs(int[] communityIDs);
 
+    public VoteType GetUserVoteForPost(int userId, int postId);
+    public void SetUserVoteForPost(int userId, int postId, VoteType vote);
+
 }

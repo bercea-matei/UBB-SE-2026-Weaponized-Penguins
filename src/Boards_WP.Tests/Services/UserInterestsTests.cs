@@ -40,4 +40,25 @@ public class UserInterestsTests
         Assert.Equal(10000, finalSum);
         Assert.True(result.Values.All(v => v >= 0), "Logic created a negative score!");
     }
+
+    [Fact]
+    public void Manhattan_ReturnsSmallerScore_ForBetterMatches()
+    {
+        var categories = new List<int> { 1, 2 }; //--e.g. 1-Gaming, 2-Cooking
+        var gamerProfile = new Dictionary<int, int> { { 1, 8000 }, { 2, 2000 } };
+
+        var gamingPost = new Post
+        {
+            Tags = new List<Tag> { new Tag { CategoryBelongingTo = new Category { CategoryID = 1 } } }
+        };
+        var cookingPost = new Post
+        {
+            Tags = new List<Tag> { new Tag { CategoryBelongingTo = new Category { CategoryID = 2 } } }
+        };
+
+        int distToGaming = _service.CalculateManhattanDistance(gamerProfile, gamingPost, categories);
+        int distToCooking = _service.CalculateManhattanDistance(gamerProfile, cookingPost, categories);
+
+        Assert.True(distToGaming < distToCooking);
+    }
 }

@@ -13,6 +13,7 @@ public class PostsService : IPostsService
     private readonly UserSession _userSession;
     private readonly IUsersMoodRepository _usersMoodRepository;
     private int _cachedCategoryCount = 0;
+    private readonly int _goldenPostsPercent = 25;
 
     private List<Post> _lastLikesOfCurrentUser= new List<Post>();  
 
@@ -118,9 +119,27 @@ public class PostsService : IPostsService
     {
         List<Community> communities = new List<Community>();//= _communitiesRepo.GetCommunitiesUserIsPartOf(userId);
 
+        if(_cachedCategoryCount == 0)
+            _cachedCategoryCount = _tagsRepo.GetCategoryCount();
+        var userScores = _usersMoodRepository.GetUsersMoodScores(userId, _cachedCategoryCount);
+        List<int> allCategoryIds = _tagsRepo.GetAllCategories().Select(c => c.CategoryID).ToList();
         int[] communityIds = communities.Select(c => c.CommunityID).ToArray();
+        //--TODO: should get 1k from here and keep only 25% of it
+        var candidates = _postsRepo.GetPostExceptCommunityIDs(communityIds);
+        var keptPostsCount = candidates.Count() * _goldenPostsPercent / 100;
 
-        return _postsRepo.GetPostExceptCommunityIDs(communityIds);
+        var scoredCandidates = candidates.Select(post => new
+        {
+            OriginalPost = post,
+            Score = CalculateManhattanDistance(userScores, post, allCategoryIds)
+        })
+        .OrderBy(temp => temp.Score)
+        .ThenByDescending(temp => temp.OriginalPost.CreationTime)
+        .Take(keptPostsCount)
+        .Select(temp => temp.OriginalPost)
+        .ToList();
+
+        return scoredCandidates;
     }
 
     public ThemeColor DetermineFeedThemeColorByLastLikes()
@@ -229,6 +248,32 @@ public class PostsService : IPostsService
         return userScores;
     }
 
+    internal int CalculateManhattanDistance(Dictionary<int, int> userScores, Post post, List<int> allCategoryIds)
+    {
+        int totalDistance = 0;
+
+        var postCategories = new Dictionary<int, int>();
+        for (int i = 0; i < post.Tags.Count; i++)
+        {
+            int catId = post.Tags[i].CategoryBelongingTo.CategoryID;
+
+            int baseWeight = (10 - i) * 10;
+            int weightedInfluence = baseWeight * 100;
+
+            if (postCategories.ContainsKey(catId)) postCategories[catId] += weightedInfluence;
+            else postCategories[catId] = weightedInfluence;
+        }
+
+        foreach (int catId in allCategoryIds)
+        {
+            int user_category = userScores.GetValueOrDefault(catId, 0);
+            int post_category = postCategories.GetValueOrDefault(catId, 0);
+
+            totalDistance += Math.Abs(user_category - post_category);
+        }
+
+        return totalDistance;
+    }
 
 
 }

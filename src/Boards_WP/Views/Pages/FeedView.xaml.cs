@@ -19,7 +19,7 @@ namespace Boards_WP.Views.Pages
         public FeedView()
         {
 
-            ViewModel = App.Current.Services?.GetService<FeedViewModel>();
+            ViewModel = App.Services?.GetService<FeedViewModel>();
             this.InitializeComponent();
         }
 

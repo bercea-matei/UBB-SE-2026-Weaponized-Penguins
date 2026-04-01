@@ -214,13 +214,13 @@ SELECT
         {
             var admin = new User
             {
-                UserID = (int)reader["adminUserID"],
-                Username = reader["adminUsername"].ToString(),
-                Email = reader["adminEmail"].ToString(),
-                PasswordHash = reader["adminPasswordHash"].ToString(),
-                AvatarUrl = reader["adminAvatarUrl"].ToString(),
-                Bio = reader["adminBio"].ToString(),
-                Status = reader["adminStatus"].ToString()
+                UserID = (int)reader["userID"],
+                Username = reader["username"].ToString(),
+                Email = reader["email"].ToString(),
+                PasswordHash = reader["passwordHash"].ToString(),
+                AvatarUrl = reader["avatarUrl"].ToString(),
+                Bio = reader["bio"].ToString(),
+                Status = reader["status"].ToString()
             };
 
             var community = new Community

@@ -18,7 +18,7 @@ namespace Boards_WP.Views.Pages
 
         public FullPostView()
         {
-            ViewModel = App.Current.Services?.GetService<FullPostViewModel>();
+            ViewModel = App.Services?.GetService<FullPostViewModel>();
             this.InitializeComponent();
         }
 

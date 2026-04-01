@@ -65,7 +65,7 @@ namespace Boards_WP.Views
 
                 if (rootFrame != null)
                 {
-                    var feedVm = App.Current.Services.GetRequiredService<ViewModels.FeedViewModel>();
+                    var feedVm = App.Services.GetRequiredService<ViewModels.FeedViewModel>();
 
                    
                     feedVm.IsHome = true;
@@ -84,7 +84,7 @@ namespace Boards_WP.Views
 
                 if (rootFrame != null)
                 {
-                    var feedVm = App.Current.Services.GetRequiredService<ViewModels.FeedViewModel>();
+                    var feedVm = App.Services.GetRequiredService<ViewModels.FeedViewModel>();
 
                     
                     feedVm.IsHome = false;

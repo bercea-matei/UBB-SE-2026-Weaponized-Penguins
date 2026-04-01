@@ -28,9 +28,9 @@ namespace Boards_WP.ViewModels
         public FullPostViewModel()
         {
 
-            _mainViewModel = App.Current.Services?.GetService<MainViewModel>();
+            _mainViewModel = App.Services?.GetService<MainViewModel>();
 
-            _postsService = App.Current.Services?.GetService<IPostsService>();
+            _postsService = App.Services?.GetService<IPostsService>();
         }
 
         public void LoadPost(Post post)

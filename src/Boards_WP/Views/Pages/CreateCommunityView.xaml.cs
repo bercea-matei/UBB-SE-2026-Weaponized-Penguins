@@ -38,11 +38,17 @@ namespace Boards_WP.Views.Pages
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
-            // Capture the sidebar list passed from the shell/main page
             if (e.Parameter is ObservableCollection<Community> list)
             {
                 _sidebarList = list;
+            }
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
             }
         }
 
@@ -52,14 +58,14 @@ namespace Boards_WP.Views.Pages
 
             var newCommunity = new Community
             {
-                CommunityID = 99, // Placeholder ID
+                CommunityID = 99,
                 Name = CommunityName,
                 Description = CommunityDescription,
                 Admin = new User { Username = "@Me" },
                 MembersNumber = 1
             };
 
-            _sidebarList?.Add(newCommunity);  // updating the sidebar so the user sees the new community
+            _sidebarList?.Add(newCommunity);
             this.Frame.Navigate(typeof(CommunityView), newCommunity);
         }
     }

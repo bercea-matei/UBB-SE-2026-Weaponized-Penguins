@@ -37,11 +37,18 @@ namespace Boards_WP.Views.Pages
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            // capturing which community we are posting to
             base.OnNavigatedTo(e);
             if (e.Parameter is Community com)
             {
                 _originCommunity = com;
+            }
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
             }
         }
 
@@ -51,7 +58,7 @@ namespace Boards_WP.Views.Pages
 
             var newPost = new Post
             {
-                PostID = new Random().Next(1000, 9999), 
+                PostID = new Random().Next(1000, 9999),
                 Title = PostTitle,
                 Description = PostDescription,
                 ParentCommunity = _originCommunity,
@@ -61,7 +68,6 @@ namespace Boards_WP.Views.Pages
                 CreationTime = DateTime.Now
             };
 
-            // going back to the CommunityView with the newPost to be displayed
             this.Frame.Navigate(typeof(CommunityView), newPost);
         }
     }

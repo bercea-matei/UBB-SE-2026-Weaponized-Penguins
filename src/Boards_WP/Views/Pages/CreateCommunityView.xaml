@@ -35,14 +35,22 @@
                      TextWrapping="Wrap" 
                      CornerRadius="8"/>
 
-            <Button Content="Create the community" 
-                    Click="CreateCommunity_Click" 
-                    Background="#6A67E1" 
-                    Foreground="White" 
-                    FontWeight="Bold"
-                    Padding="30,12" 
-                    CornerRadius="10" 
-                    HorizontalAlignment="Right"/>
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <Button Content="Cancel" 
+                        Click="Cancel_Click"
+                        Background="Transparent"
+                        Foreground="Gray"
+                        Padding="20,12"
+                        CornerRadius="10"/>
+
+                <Button Content="Create the community" 
+                        Click="CreateCommunity_Click" 
+                        Background="#6A67E1" 
+                        Foreground="White" 
+                        FontWeight="Bold"
+                        Padding="30,12" 
+                        CornerRadius="10"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

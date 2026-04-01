@@ -1,11 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+using Boards_WP.Data.Models;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System;
-
-using Boards_WP.Data.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Boards_WP.ViewModels
 {
@@ -23,11 +25,12 @@ namespace Boards_WP.ViewModels
         private readonly IPostsService _postsService;
         private readonly MainViewModel _mainViewModel;
 
-        public FullPostViewModel(Post post, IPostsService postsService, MainViewModel mainViewModel)
+        public FullPostViewModel()
         {
-            _currentPost = post;
-            _postsService = postsService;
-            _mainViewModel = mainViewModel;
+
+            _mainViewModel = App.Current.Services?.GetService<MainViewModel>();
+
+            _postsService = App.Current.Services?.GetService<IPostsService>();
         }
 
         public void LoadPost(Post post)

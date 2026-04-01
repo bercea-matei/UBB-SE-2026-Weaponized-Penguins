@@ -17,9 +17,9 @@
             <StackPanel>
                 <Grid ColumnDefinitions="Auto, *">
                     <StackPanel Grid.Column="0" Margin="0,0,15,0" Spacing="2">
-                        <Button Command="{x:Bind ViewModel.UpvoteCommand}" Content="▲" Background="Transparent" BorderThickness="0"/>
+                        <Button Command="{x:Bind ViewModel.UpvoteCommand}" Content="▲" Foreground="{x:Bind ViewModel.UpvoteColor, Mode=OneWay}" Background="Transparent" BorderThickness="0"/>
                         <TextBlock Text="{x:Bind ViewModel.CommentData.Score, Mode=OneWay}" FontWeight="Bold" HorizontalAlignment="Center"/>
-                        <Button Command="{x:Bind ViewModel.DownvoteCommand}" Content="▼" Background="Transparent" BorderThickness="0"/>
+                        <Button Command="{x:Bind ViewModel.DownvoteCommand}" Content="▼" Foreground="{x:Bind ViewModel.DownvoteColor, Mode=OneWay}" Background="Transparent" BorderThickness="0"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="5">

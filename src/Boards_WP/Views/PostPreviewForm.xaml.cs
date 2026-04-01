@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Input;
+
 using Boards_WP.Data.Models;
 using Boards_WP.ViewModels;
 
@@ -21,48 +22,26 @@ namespace Boards_WP.Views
             set => SetValue(PostDataProperty, value);
         }
 
-        public PostPreviewForm()
-        {
-            this.InitializeComponent();
-        }
+        public PostPreviewForm() => this.InitializeComponent();
 
-        // when PostData is received, the ViewModel is created (the bridge)
         private static void OnPostDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is PostPreviewForm control && e.NewValue is Post post)
             {
                 control.ViewModel = new PostPreviewViewModel(post);
-                control.Bindings.Update(); // UI displays the new ViewModel
+
+                control.ViewModel.OnDeleteRequested = (p) =>
+                {
+                    control.Visibility = Visibility.Collapsed;
+                };
+
+                // FIX: Check for null to avoid CS1061 or NullReference if XAML isn't ready
+                control.Bindings?.Update();
             }
         }
 
-        
-        private void OnPostClicked(object sender, PointerRoutedEventArgs e)
-        {
-            ViewModel?.OpenPostCommand.Execute(null);
-        }
-
-        private void Grid_PointerEntered(object sender, PointerRoutedEventArgs e)
-        {
-            this.ProtectedCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-        }
-
-        private void Grid_PointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            this.ProtectedCursor = InputSystemCursor.Create(InputSystemCursorShape.Arrow);
-        }
-
-        
-        private T FindChildElementByName<T>(DependencyObject parent, string name) where T : DependencyObject
-        {
-            for (int i = 0; i < Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent); i++)
-            {
-                var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(parent, i);
-                if (child is T element && (element as FrameworkElement)?.Name == name) return element;
-                var result = FindChildElementByName<T>(child, name);
-                if (result != null) return result;
-            }
-            return null;
-        }
+        private void OnPostClicked(object sender, PointerRoutedEventArgs e) => ViewModel?.OpenPostCommand.Execute(null);
+        private void Grid_PointerEntered(object sender, PointerRoutedEventArgs e) => this.ProtectedCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+        private void Grid_PointerExited(object sender, PointerRoutedEventArgs e) => this.ProtectedCursor = InputSystemCursor.Create(InputSystemCursorShape.Arrow);
     }
 }

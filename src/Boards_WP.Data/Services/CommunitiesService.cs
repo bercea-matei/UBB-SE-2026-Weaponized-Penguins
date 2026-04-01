@@ -67,6 +67,7 @@ public class CommunitiesService : ICommunitiesService
         }
     }
 
+
     public bool IsPartOfCommunity(int UserID, int CommunityID)
     {
         try

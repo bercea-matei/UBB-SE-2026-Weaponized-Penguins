@@ -7,7 +7,7 @@ namespace Boards_WP.Data.Repositories
 {
     public interface IBetsRepository
     {
-        public void AddBet(Bet b);
+        public int AddBet(Bet b);
         public void RemoveBet(int BetID);
         public Bet GetBetByID(int BetID);
         public List<Bet> GetAllBetsSortedByDate();

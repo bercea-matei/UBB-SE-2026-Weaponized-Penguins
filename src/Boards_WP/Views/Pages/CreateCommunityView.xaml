@@ -35,7 +35,7 @@
 
             <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
                        Foreground="Red"
-                       Visibility="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"/>
+                       Visibility="{x:Bind ViewModel.HasError, Mode=OneWay}"/>
 
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <Button Content="Cancel" 
@@ -44,19 +44,15 @@
                         Foreground="Gray"
                         Padding="20,12"
                         CornerRadius="10"/>
-
+                
                 <Button Content="Create the community" 
                         Command="{x:Bind ViewModel.CreateCommunityCommand}"
-                        IsEnabled="{x:Bind ViewModel.CreateCommunityCommand.CanExecute, Mode=OneWay}"
                         Background="#6A67E1" 
                         Foreground="White" 
                         FontWeight="Bold"
                         Padding="30,12" 
                         CornerRadius="10"/>
             </StackPanel>
-
-            <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
-                          HorizontalAlignment="Right"/>
         </StackPanel>
     </Grid>
 </Page>

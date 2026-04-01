@@ -1,17 +1,20 @@
+using Boards_WP.Data.Models;
+using Boards_WP.ViewModels;
+
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
-using Boards_WP.Data.Models;
+using Microsoft.UI.Xaml.Data;
+using System;
 
 namespace Boards_WP.Views
 {
     public sealed partial class CommentView : UserControl
-    {   
+    {
+        public CommentViewModel ViewModel { get; set; }
 
-        // just like we had a variable for posts in preview form, CommentData is an object of type Comment
         public static readonly DependencyProperty CommentDataProperty =
             DependencyProperty.Register("CommentData", typeof(Comment), typeof(CommentView),
-                new PropertyMetadata(null, OnDataChanged));
+                new PropertyMetadata(null, OnCommentDataChanged));
 
         public Comment CommentData
         {
@@ -19,79 +22,44 @@ namespace Boards_WP.Views
             set => SetValue(CommentDataProperty, value);
         }
 
-        public CommentView()
+        public CommentView() => this.InitializeComponent();
+
+        private static void OnCommentDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            this.InitializeComponent();
+            if (d is CommentView control && e.NewValue is Comment comment)
+            {
+                control.ViewModel = new CommentViewModel(comment);
+                control.ViewModel.ReplySubmitted = control.HandleReplySubmission;
+                control.Bindings.Update();
+            }
         }
 
-
-        // this function creates that nested look for the comments
-        // d is the comment which triggered the change (the comment that received a reply)
-        // e is a package which contains all the information about the change that just happened (it has e.NewValue and e.OldValue)
-        // e.OldValue is the data before change, e.NewValue is the data that was just assigned
-        private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private void HandleReplySubmission(Comment parent, string text)
         {
-            var control = (CommentView)d;
-            if (e.NewValue is Comment comment) // taking the new comment and reading its indentation
+            if (App.Current is App myApp && myApp.m_window.Content is FrameworkElement root)
             {
-                // adding the new line, so moving the comment a bit to the right based on its indendation
-                control.Margin = new Thickness(comment.Indentation * 35, 0, 0, 12);
+                var frame = root.FindName("ContentFrame") as Frame;
 
-                if (comment.Indentation > 0) // if it is a reply, display the line
+                if (frame?.Content is Pages.FullPostView postPage)
                 {
-                    control.ThreadLine.Visibility = Visibility.Visible;
+                    var newReply = new Comment
+                    {
+                        CommentID = new Random().Next(1000, 9999),
+                        Owner = new User { Username = "@Me" },
+                        Description = text,
+                        Score = 0,
+                        CreationTime = DateTime.Now,
+                        Indentation = parent.Indentation + 1
+                    };
+
+                    int index = postPage.ViewModel.PostComments.IndexOf(parent);
+                    postPage.ViewModel.PostComments.Insert(index + 1, newReply);
                 }
-                else
-                {
-                    control.ThreadLine.Visibility = Visibility.Collapsed;
-                }
             }
         }
 
-        private void Upvote_Click(object sender, RoutedEventArgs e)
-        {
-            if (CommentData == null) return;
-
-            if (CommentData.UserCurrentVote == VoteType.Like) // if the user already liked the comment, and they press the up-arrow again, we cancel their like
-            {
-                CommentData.Score--;
-                CommentData.UserCurrentVote = VoteType.None;
-            }
-            else if (CommentData.UserCurrentVote == VoteType.Dislike)  // if the user changed their mind, and went from dislike to like, we increment the post by 2
-            {
-                CommentData.Score += 2;
-                CommentData.UserCurrentVote = VoteType.Like;
-            }
-            else // if it is the first time they interact with the post, we simply increment the score by 1
-            {
-                CommentData.Score++;
-                CommentData.UserCurrentVote = VoteType.Like;
-            }
-
-            ScoreLabel.Text = CommentData.Score.ToString();
-        }
-
-        private void Downvote_Click(object sender, RoutedEventArgs e)
-        {
-            if (CommentData == null) return;
-
-            if (CommentData.UserCurrentVote == VoteType.Dislike)
-            {
-                CommentData.Score++;
-                CommentData.UserCurrentVote = VoteType.None;
-            }
-            else if (CommentData.UserCurrentVote == VoteType.Like)
-            {
-                CommentData.Score -= 2;
-                CommentData.UserCurrentVote = VoteType.Dislike;
-            }
-            else
-            {
-                CommentData.Score--;
-                CommentData.UserCurrentVote = VoteType.Dislike;
-            }
-
-            ScoreLabel.Text = CommentData.Score.ToString();
-        }
+        public string FormatCommentDate(DateTime date) => date.ToString("g");
+        public Thickness GetIndentMargin(int indentation) => new Thickness(indentation * 40, 0, 0, 10);
+        public Visibility GetLineVisibility(int indentation) => indentation > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 }

@@ -8,7 +8,6 @@
     mc:Ignorable="d">
 
     <Grid Margin="0,0,0,10">
-        <!-- this is the line purple line appearing left to a child comment -->
         <Rectangle x:Name="ThreadLine" 
                    Width="2" 
                    Fill="#6A67E1" 
@@ -16,37 +15,65 @@
                    Margin="-15,0,0,0"
                    Visibility="Collapsed"/>
 
-        <!-- the rounded rectangle for the comment -->
-        <Border BorderBrush="#D1D1D1" 
-                BorderThickness="1" 
-                CornerRadius="12" 
-                Background="Transparent"
-                Padding="12">
+        <StackPanel>
             
-            <!-- we split the commment into 2 columns: Column0 which is for the score, Column1 which is for the text -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <!-- this is the line that appears left to replies -->
+            <Border BorderBrush="#D1D1D1" BorderThickness="1" CornerRadius="12" Padding="12">
+                <Grid ColumnDefinitions="40, *, Auto">
+                    
+                    <StackPanel Grid.Column="0">
+                        <Button Content="▲" Click="Upvote_Click" Style="{StaticResource TextBlockButtonStyle}"/>
+                        
+                        <TextBlock x:Name="ScoreLabel" 
+                                   Text="{x:Bind CommentData.Score, Mode=OneWay}" 
+                                   HorizontalAlignment="Center" 
+                                   FontWeight="Bold"/>
+                        
+                        <Button Content="▼" Click="Downvote_Click" Style="{StaticResource TextBlockButtonStyle}"/>
+                    </StackPanel>
 
-                <StackPanel Grid.Column="0" VerticalAlignment="Top">
-                    <Button Content="▲" Click="Upvote_Click" Style="{StaticResource TextBlockButtonStyle}"/>
+                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                        <TextBlock Text="{x:Bind CommentData.Owner.Username}" 
+                                   FontSize="12" 
+                                   FontWeight="Bold" 
+                                   Foreground="#6A67E1"/>
+                        <TextBlock Text="{x:Bind CommentData.Description}" 
+                                   TextWrapping="Wrap" 
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
 
-                    <!-- Mode=OnWay is for displaying the new the score if it gets incremented/decremented -->
-                    <TextBlock x:Name="ScoreLabel" 
-                               Text="{x:Bind CommentData.Score, Mode=OneWay}" 
-                               HorizontalAlignment="Center" FontWeight="Bold"/>
-                    <Button Content="▼" Click="Downvote_Click" Style="{StaticResource TextBlockButtonStyle}"/>
-                </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="10">
+                        <StackPanel HorizontalAlignment="Center">
+                            <Button Background="Transparent" BorderThickness="0" Click="Reply_Click">
+                                <FontIcon Glyph="&#xE90A;" FontSize="18" Foreground="#6A67E1"/>
+                            </Button>
+                            <TextBlock Text="reply" HorizontalAlignment="Center" FontSize="10" Foreground="#6A67E1"/>
+                        </StackPanel>
+                        
+                        <Button Background="Transparent" BorderThickness="0">
+                            <FontIcon Glyph="&#xE72D;" FontSize="18" Foreground="#6A67E1"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
 
-                <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                    <TextBlock Text="{x:Bind CommentData.Owner.Username}" 
-                               FontSize="12" FontWeight="Bold" Foreground="#6A67E1"/>
-                    <TextBlock Text="{x:Bind CommentData.Description}" 
-                               TextWrapping="Wrap" Margin="0,5,0,0"/>
-                </StackPanel>
-            </Grid>
-        </Border>
+            <StackPanel x:Name="ReplyInputArea" 
+                        Visibility="Collapsed" 
+                        Margin="20,10,0,0" 
+                        Spacing="10">
+                
+                <TextBox x:Name="ReplyTextBox" 
+                         PlaceholderText="Write a reply..." 
+                         AcceptsReturn="True" 
+                         CornerRadius="8"/>
+                
+                <Button Content="Post Reply" 
+                        Click="PostReply_Click" 
+                        Background="#6A67E1" 
+                        Foreground="White" 
+                        HorizontalAlignment="Right" 
+                        CornerRadius="5"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </UserControl>

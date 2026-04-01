@@ -10,7 +10,7 @@ public class PostsService : IPostsService
     private readonly IPostsRepository _postsRepo;
     private readonly IUsersRepository _usersRepo;
     private readonly ITagsRepository _tagsRepo;
-    private readonly ICommunitiesService _communitiesService;
+    private readonly ICommunitiesRepository _communitiesRepo;
     private readonly UserSession _userSession;
     private readonly IUsersMoodRepository _usersMoodRepository;
     private int _cachedCategoryCount = 0;
@@ -19,14 +19,14 @@ public class PostsService : IPostsService
     private List<Post> _lastLikesOfCurrentUser= new List<Post>();  
 
     public PostsService(IPostsRepository postsRepo, IUsersRepository usersRepo, ITagsRepository _tagsRepo, 
-        UserSession userSession, IUsersMoodRepository usersMoodRepository, ICommunitiesService communitiesService)
+        UserSession userSession, IUsersMoodRepository usersMoodRepository, ICommunitiesRepository communitiesRepo)
     {
         _postsRepo = postsRepo;
         _usersRepo = usersRepo;
         _tagsRepo = _tagsRepo;
         _userSession = userSession;
         _usersMoodRepository = usersMoodRepository;
-        _communitiesService = communitiesService;
+        _communitiesRepo = communitiesRepo;
     }
 
 
@@ -162,15 +162,29 @@ public class PostsService : IPostsService
 
     public List<Post> GetPostsForHomePage(int userId)
     {
-        List<Community> communities = new List<Community>();//= _communitiesRepo.GetCommunitiesUserIsPartOf(userId);
+        
+
+
+        List<Community> communities = _communitiesRepo.GetCommunitiesUserIsPartOf(userId);
 
         int[] communityIds = communities.Select(c => c.CommunityID).ToArray();
 
-        return _postsRepo.GetPostsByCommunityIDs(communityIds);
+        return _postsRepo.GetPostsByCommunityIDs(communityIds);//sort? daca nu avem algoritm pt asta
     }
 
     public List<Post> GetPostsForDiscoveryPage(int userId)
     {
+        return new List<Post>
+        {
+            new Post
+            {
+                Title = "MVVM Connection Test",
+                Description = "If you see this, the Service is working - discover feed!",
+                CreationTime = DateTime.Now,
+                Score = 99
+            }
+        };
+
         List<Community> communities = new List<Community>();//= _communitiesRepo.GetCommunitiesUserIsPartOf(userId);
 
         if(_cachedCategoryCount == 0)

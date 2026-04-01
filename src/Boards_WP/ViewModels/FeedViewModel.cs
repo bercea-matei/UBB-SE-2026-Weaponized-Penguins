@@ -14,8 +14,7 @@ public partial class FeedViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isHome = true;
-    public ObservableCollection<Post> Posts { get; } = new();
-
+    public ObservableCollection<PostPreviewViewModel> PostsList { get; } = new();
     public FeedViewModel(IPostsService postsService, UserSession userSession)
     {
         _postsService = postsService;
@@ -31,33 +30,27 @@ public partial class FeedViewModel : ObservableObject
     }
     public void LoadHome()
     {
-        
-        Posts.Clear();
-
-        // Fetch data from service
         var userId = _userSession.CurrentUser?.UserID ?? 0;
-        var data = _postsService.GetPostsForHomePage(userId);
+        var data = _postsService.GetPostsForHomePage(userId); 
 
-        // IMPORTANT: Add each post to the ObservableCollection
+        PostsList.Clear();
         foreach (var post in data)
         {
-            Posts.Add(post);
+            var previewViewModel = new PostPreviewViewModel(post);
+            PostsList.Add(previewViewModel);
         }
     }
 
     public void LoadDiscovery()
     {
-
-        Posts.Clear();
-
-        // Fetch data from service
         var userId = _userSession.CurrentUser?.UserID ?? 0;
         var data = _postsService.GetPostsForDiscoveryPage(userId);
 
-        // IMPORTANT: Add each post to the ObservableCollection
+        PostsList.Clear();
         foreach (var post in data)
         {
-            Posts.Add(post);
+            var previewViewModel = new PostPreviewViewModel(post);
+            PostsList.Add(previewViewModel);
         }
     }
 }

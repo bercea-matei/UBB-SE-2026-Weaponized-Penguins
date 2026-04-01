@@ -188,13 +188,13 @@ SELECT
         c.banner,
         c.membersNumber,
 
-        u.userID AS adminUserID,
-        u.username AS adminUsername,
-        u.email AS adminEmail,
-        u.passwordHash AS adminPasswordHash,
-        u.avatarUrl AS adminAvatarUrl,
-        u.bio AS adminBio,
-        u.status AS adminStatus
+        u.userID ,
+        u.username, 
+        u.email ,
+        u.passwordHash ,
+        u.avatarUrl,
+        u.bio,
+        u.status
 
         FROM CommunitiesUsers cu
         INNER JOIN Communities c ON cu.communityID = c.communityID

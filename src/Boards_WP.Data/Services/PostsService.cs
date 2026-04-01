@@ -18,12 +18,12 @@ public class PostsService : IPostsService
 
     private List<Post> _lastLikesOfCurrentUser= new List<Post>();  
 
-    public PostsService(IPostsRepository postsRepo, IUsersRepository usersRepo, ITagsRepository _tagsRepo, 
+    public PostsService(IPostsRepository postsRepo, IUsersRepository usersRepo, ITagsRepository tagsRepo, 
         UserSession userSession, IUsersMoodRepository usersMoodRepository, ICommunitiesRepository communitiesRepo)
     {
         _postsRepo = postsRepo;
         _usersRepo = usersRepo;
-        _tagsRepo = _tagsRepo;
+        _tagsRepo = tagsRepo;
         _userSession = userSession;
         _usersMoodRepository = usersMoodRepository;
         _communitiesRepo = communitiesRepo;
@@ -174,18 +174,9 @@ public class PostsService : IPostsService
 
     public List<Post> GetPostsForDiscoveryPage(int userId)
     {
-        return new List<Post>
-        {
-            new Post
-            {
-                Title = "MVVM Connection Test",
-                Description = "If you see this, the Service is working - discover feed!",
-                CreationTime = DateTime.Now,
-                Score = 99
-            }
-        };
+        
 
-        List<Community> communities = new List<Community>();//= _communitiesRepo.GetCommunitiesUserIsPartOf(userId);
+        List<Community> communities = _communitiesRepo.GetCommunitiesUserIsPartOf(userId);
 
         if(_cachedCategoryCount == 0)
             _cachedCategoryCount = _tagsRepo.GetCategoryCount();

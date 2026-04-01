@@ -9,10 +9,11 @@ namespace Boards_WP.Views.Pages
 {
     public sealed partial class FullPostView : Page
     {
-        public FullPostViewModel ViewModel { get; } = new FullPostViewModel();
+        public FullPostViewModel ViewModel { get; set; }
 
-        public FullPostView()
+        public FullPostView(FullPostViewModel viewModel)
         {
+            ViewModel = viewModel;
             this.InitializeComponent();
         }
 

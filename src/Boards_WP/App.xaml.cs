@@ -46,7 +46,7 @@ public partial class App : Application
             .AddSingleton<IBetsService, BetsService>()
             .AddSingleton<IUsersService, UsersService>()
 
-            .AddSingleton<string>("Data Source=ALEX\\ALEXSQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True") 
+            .AddSingleton<string>("Data Source=DESKTOP\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True") 
             .AddSingleton<IPostsRepository, PostsRepository>()
             .AddSingleton<ICommunitiesRepository, CommunitiesRepository>()
             .AddSingleton<INotificationRepository, NotificationRepository>()

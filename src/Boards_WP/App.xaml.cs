@@ -11,6 +11,7 @@ using Boards_WP.Views.Pages;
 using Microsoft.Extensions.DependencyInjection;
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 using Boards_WP.Data.Services.Interfaces;
 using Boards_WP.Data.Services;

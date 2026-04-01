@@ -15,6 +15,7 @@ namespace Boards_WP.Views
 
         public CommunityBarView()
         {
+            //to do - load communities from service
             this.InitializeComponent();
             CommunityListView.ItemsSource = Communities;
 

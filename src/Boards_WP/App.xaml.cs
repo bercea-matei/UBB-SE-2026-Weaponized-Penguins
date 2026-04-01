@@ -31,7 +31,6 @@ public partial class App : Application
 
     public App()
     {
-        Services = ConfigureServices();
         InitializeComponent();
 
         Services = new ServiceCollection()
@@ -46,7 +45,7 @@ public partial class App : Application
             .AddSingleton<IBetsService, BetsService>()
             .AddSingleton<IUsersService, UsersService>()
 
-            .AddSingleton<string>("Data Source=DESKTOP\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True") 
+            .AddSingleton<string>("Data Source=IONUT\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True")
             .AddSingleton<IPostsRepository, PostsRepository>()
             .AddSingleton<ICommunitiesRepository, CommunitiesRepository>()
             .AddSingleton<INotificationRepository, NotificationRepository>()
@@ -58,18 +57,19 @@ public partial class App : Application
 
             .AddSingleton<FeedViewModel>()
             //VMs
-            //.AddTransient<CommunityViewModel>()
-            //.AddTransient<CreateCommunityViewModel>()
+            .AddTransient<CommunityViewModel>()
+            .AddTransient<CreateCommunityViewModel>()
             //.AddTransient<CreatePostViewModel>()
             .AddTransient<FullPostViewModel>()
-            //.AddTransient<NotificationsViewModel>()
+            .AddTransient<NotificationItemViewModel>()
+            .AddTransient<NotificationsListViewModel>()
             .AddTransient<MainViewModel>()
 
             // Components / UserControls
-            //.AddTransient<PostPreviewViewModel>();
-            //.AddTransient<CommentViewModel>();
+            .AddTransient<PostPreviewViewModel>()
+            .AddTransient<CommentViewModel>()
             .AddTransient<CommunityBarViewModel>()
-            //.AddTransient<HeaderViewModel>();
+            //.AddTransient<HeaderViewModel>()
 
             .BuildServiceProvider();
     }
@@ -93,30 +93,5 @@ public partial class App : Application
         m_window.Activate();
     }
 
-    private static IServiceProvider ConfigureServices()
-    {
-        var services = new ServiceCollection();
 
-        // Services
-        services.AddSingleton<INavigationService, NavigationService>();
-        services.AddSingleton<ICommunitiesService, CommunitiesService>();
-        services.AddSingleton<IPostsService, PostsService>();
-        services.AddSingleton<IUsersService, UsersService>();
-        services.AddSingleton<IBetsService, BetsService>();
-        services.AddSingleton<ICommentsService, CommentsService>();
-        services.AddSingleton<INotificationsService, NotificationsService>();
-
-        // ViewModels
-        services.AddTransient<CreateCommunityViewModel>();
-        services.AddTransient<UpdateCommunityViewModel>();
-        services.AddTransient<CommunityViewModel>();
-        services.AddTransient<CreateTagViewModel>();
-        services.AddTransient<CommentViewModel>();
-        services.AddTransient<FullPostViewModel>();
-        services.AddTransient<PostPreviewViewModel>();
-        services.AddTransient<NotificationItemViewModel>();
-        services.AddTransient<NotificationsListViewModel>();
-
-        return services.BuildServiceProvider();
-    }
 }

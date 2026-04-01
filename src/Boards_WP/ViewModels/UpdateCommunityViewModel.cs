@@ -9,13 +9,15 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace Boards_WP.ViewModels
 {
-    public partial class CreateCommunityViewModel : ObservableObject
+    public partial class UpdateCommunityViewModel : ObservableObject
     {
         private readonly ICommunitiesService _communitiesService;
         private readonly INavigationService _navigationService;
 
+        private Community _community = null!;
+
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(CreateCommunityCommand))]
+        [NotifyCanExecuteChangedFor(nameof(UpdateCommunityCommand))]
         private string _communityName = string.Empty;
 
         [ObservableProperty]
@@ -33,33 +35,37 @@ namespace Boards_WP.ViewModels
 
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-        public ObservableCollection<Community> SidebarList { get; set; } = [];
-
-        public CreateCommunityViewModel(ICommunitiesService communitiesService, INavigationService navigationService)
+        public UpdateCommunityViewModel(ICommunitiesService communitiesService, INavigationService navigationService)
         {
             _communitiesService = communitiesService;
             _navigationService = navigationService;
         }
 
-        [RelayCommand(CanExecute = nameof(CanCreateCommunity))]
-        private void CreateCommunity()
+        public void Initialize(Community community)
+        {
+            _community = community;
+
+            CommunityName = community.Name;
+            CommunityDescription = community.Description;
+            CommunityPicture = community.Picture;
+            CommunityBanner = community.Banner;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanUpdateCommunity))]
+        private void UpdateCommunity()
         {
             ErrorMessage = null;
 
             try
             {
-                Community createdCommunity = new Community
-                {
-                    Name = _communityName,
-                    Description = _communityDescription,
-                    Picture = _communityPicture,
-                    Banner = _communityBanner,
-                    Admin = new User { UserID = 1 }
-                };
-                _communitiesService.AddCommunity(createdCommunity);
+                _community.Name = CommunityName;
+                _community.Description = CommunityDescription;
+                _community.Picture = CommunityPicture;
+                _community.Banner = CommunityBanner;
 
-                SidebarList.Add(createdCommunity);
-                _navigationService.NavigateTo(typeof(CommunityView), createdCommunity);
+                _communitiesService.UpdateCommunityInfo(_community.CommunityID, CommunityDescription, CommunityPicture, CommunityBanner);
+
+                _navigationService.NavigateTo(typeof(CommunityView), _community);
             }
             catch (Exception ex)
             {
@@ -70,6 +76,6 @@ namespace Boards_WP.ViewModels
         [RelayCommand]
         private void Cancel() => _navigationService.GoBack();
 
-        private bool CanCreateCommunity() => !string.IsNullOrWhiteSpace(CommunityName);
+        private bool CanUpdateCommunity() => !string.IsNullOrWhiteSpace(CommunityName);
     }
 }

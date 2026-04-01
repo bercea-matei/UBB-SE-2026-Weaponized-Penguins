@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 
 using Boards_WP.Data.Models;
 
+using System;
+
 namespace Boards_WP.ViewModels
 {
     public partial class CommentViewModel : ObservableObject
@@ -14,33 +16,40 @@ namespace Boards_WP.ViewModels
         private bool _isReplyAreaVisible = false;
 
         [ObservableProperty]
-        private string _replyText;
+        private string _replyText = string.Empty;
+
+        public Action<Comment, string> ReplySubmitted { get; set; }
+
+        public IRelayCommand UpvoteCommand { get; }
+        public IRelayCommand DownvoteCommand { get; }
+        public IRelayCommand ToggleReplyCommand { get; }
+        public IRelayCommand SubmitReplyCommand { get; }
 
         public CommentViewModel(Comment comment)
         {
-            _commentData = comment;
-        }
+            CommentData = comment;
 
-        [RelayCommand]
-        private void Upvote()
-        {
-            if (CommentData == null) return;
-            CommentData.Score++;
-            OnPropertyChanged(nameof(CommentData));
-        }
+            UpvoteCommand = new RelayCommand(() => {
+                CommentData.Score++;
+                OnPropertyChanged(nameof(CommentData));
+            });
 
-        [RelayCommand]
-        private void Downvote()
-        {
-            if (CommentData == null) return;
-            CommentData.Score--;
-            OnPropertyChanged(nameof(CommentData));
-        }
+            DownvoteCommand = new RelayCommand(() => {
+                CommentData.Score--;
+                OnPropertyChanged(nameof(CommentData));
+            });
 
-        [RelayCommand]
-        private void ToggleReply()
-        {
-            IsReplyAreaVisible = !IsReplyAreaVisible;
+            ToggleReplyCommand = new RelayCommand(() => IsReplyAreaVisible = !IsReplyAreaVisible);
+
+            SubmitReplyCommand = new RelayCommand(() =>
+            {
+                if (!string.IsNullOrWhiteSpace(ReplyText))
+                {
+                    ReplySubmitted?.Invoke(CommentData, ReplyText);
+                    ReplyText = string.Empty;
+                    IsReplyAreaVisible = false;
+                }
+            });
         }
     }
 }

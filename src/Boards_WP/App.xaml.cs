@@ -38,6 +38,7 @@ public partial class App : Application
 
         // ViewModels
         services.AddTransient<CreateCommunityViewModel>();
+        services.AddTransient<UpdateCommunityViewModel>();
 
         return services.BuildServiceProvider();
     }

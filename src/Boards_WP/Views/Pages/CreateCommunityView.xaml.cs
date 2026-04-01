@@ -1,15 +1,33 @@
-using Boards_WP.Data.Models;
-
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
 using System.Collections.ObjectModel;
 
+using Boards_WP.Data.Models;
+
 namespace Boards_WP.Views.Pages
 {
     public sealed partial class CreateCommunityView : Page
     {
+        public static readonly DependencyProperty CommunityNameProperty =
+            DependencyProperty.Register("CommunityName", typeof(string), typeof(CreateCommunityView), new PropertyMetadata(string.Empty));
+
+        public string CommunityName
+        {
+            get => (string)GetValue(CommunityNameProperty);
+            set => SetValue(CommunityNameProperty, value);
+        }
+
+        public static readonly DependencyProperty CommunityDescriptionProperty =
+            DependencyProperty.Register("CommunityDescription", typeof(string), typeof(CreateCommunityView), new PropertyMetadata(string.Empty));
+
+        public string CommunityDescription
+        {
+            get => (string)GetValue(CommunityDescriptionProperty);
+            set => SetValue(CommunityDescriptionProperty, value);
+        }
+
         private ObservableCollection<Community> _sidebarList;
 
         public CreateCommunityView()
@@ -19,7 +37,9 @@ namespace Boards_WP.Views.Pages
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            
+            base.OnNavigatedTo(e);
+
+            // Capture the sidebar list passed from the shell/main page
             if (e.Parameter is ObservableCollection<Community> list)
             {
                 _sidebarList = list;
@@ -28,18 +48,18 @@ namespace Boards_WP.Views.Pages
 
         private void CreateCommunity_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(NameInput.Text)) return;
+            if (string.IsNullOrWhiteSpace(CommunityName)) return;
 
             var newCommunity = new Community
             {
-                CommunityID = 99,
-                Name = NameInput.Text,
-                Description = DescriptionInput.Text,
-                Admin = new User { Username = "@Me" }, 
+                CommunityID = 99, // Placeholder ID
+                Name = CommunityName,
+                Description = CommunityDescription,
+                Admin = new User { Username = "@Me" },
                 MembersNumber = 1
             };
 
-            _sidebarList?.Add(newCommunity);
+            _sidebarList?.Add(newCommunity);  // updating the sidebar so the user sees the new community
             this.Frame.Navigate(typeof(CommunityView), newCommunity);
         }
     }

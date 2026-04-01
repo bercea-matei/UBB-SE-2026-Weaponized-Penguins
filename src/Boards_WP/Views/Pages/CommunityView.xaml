@@ -27,13 +27,13 @@
                                 <TextBlock Text="{x:Bind MemberCountText, Mode=OneWay}" 
                                            FontSize="14" Foreground="Gray" VerticalAlignment="Center"/>
 
-                               <Button Content="Join Community" 
-                                    Click="JoinButton_Click"
-                                    Visibility="{x:Bind JoinButtonVisibility, Mode=OneWay}"
-                                    Background="#6A67E1" Foreground="White" CornerRadius="8"/>
+                                <Button Content="Join Community" 
+                                        Click="JoinButton_Click"
+                                        Background="#6A67E1" Foreground="White" CornerRadius="8"
+                                        Visibility="{x:Bind JoinButtonVisibility, Mode=OneWay}"/>
 
-                               <StackPanel Orientation="Horizontal" Spacing="8" 
-                                    Visibility="{x:Bind MemberActionsVisibility, Mode=OneWay}">
+                                <StackPanel Orientation="Horizontal" Spacing="8" 
+                                            Visibility="{x:Bind MemberActionsVisibility, Mode=OneWay}">
                                     <Button Content="Create Post" Click="CreatePostButton_Click"
                                             Background="White" BorderBrush="#6A67E1" BorderThickness="1" CornerRadius="8"/>
                                     <Button Content="Leave Community" Click="LeaveButton_Click"

@@ -18,9 +18,6 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
-using Boards_WP.Data.Services;
-using Boards_WP.Data.Services.Interfaces;
-
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -31,7 +28,6 @@ namespace Boards_WP;
 public partial class App : Application
 {
     public Window? m_window;
-    public static INavigationService NavigationService { get; } = new NavigationService();
 
     /// <summary>
     /// Initializes the singleton application object.  This is the first line of authored code

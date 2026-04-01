@@ -36,7 +36,7 @@ public partial class NotificationItemViewModel : ObservableObject
     {
         NotificationData = notification;
         _notificationsService = notificationsService;
-        _navigationService = navigationService ?? App.NavigationService;
+        _navigationService = navigationService;
 
         if (_notificationsService != null)
         {
@@ -83,7 +83,7 @@ public partial class NotificationItemViewModel : ObservableObject
             IsUnread = false; // This triggers MessageFontWeight update
         }
 
-        if (NotificationData.RelatedPost != null)
+        if (NotificationData.RelatedPost != null && NotificationData.ActionType != NotificationType.PostDeleted)
         {
             if (_navigationService != null)
             {

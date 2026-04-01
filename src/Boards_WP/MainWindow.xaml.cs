@@ -26,5 +26,10 @@ namespace Boards_WP
         {
             ContentFrame.Navigate(pageType, parameter);
         }
+
+        public void NavigateToCommunity(Type pageType, object parameter = null)
+        {
+            ContentFrame.Navigate(pageType, parameter);
+        }
     }
 }

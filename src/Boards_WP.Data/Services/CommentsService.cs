@@ -105,7 +105,6 @@ public class CommentsService : ICommentsService
     {
         var comments = commentsRepo.GetCommentsByPostID(postID, currentUserID);
 
-        // Group comments by their parent ID to build a thread structure
         var childrenMap = new Dictionary<int?, List<Comment>>();
         foreach (var c in comments)
         {
@@ -118,17 +117,14 @@ public class CommentsService : ICommentsService
 
         var sortedComments = new List<Comment>();
 
-        // Recursively sort and flatten threads starting from the root (null parent)
         void AddSortedChildren(int? parentId)
         {
             if (childrenMap.TryGetValue(parentId, out var children))
             {
-                // Sort this level using our custom "Best" algorithm
                 var sorted = children.OrderByDescending(c => CalculateBestScore(c)).ToList();
                 foreach (var child in sorted)
                 {
                     sortedComments.Add(child);
-                    // Add children of this comment recursively
                     AddSortedChildren(child.CommentID);
                 }
             }
@@ -141,18 +137,15 @@ public class CommentsService : ICommentsService
 
     private double CalculateBestScore(Comment comment)
     {
-        // Simple "Best/Hot" algorithm combining Score and Time.
-        // Logarithmic scale for score: the first 10 votes count as much as the next 100.
+
         double order = Math.Log10(Math.Max(Math.Abs(comment.Score), 1));
 
         int sign = 0;
         if (comment.Score > 0) sign = 1;
         else if (comment.Score < 0) sign = -1;
 
-        // Time factor: newer comments get a higher score. Measure seconds since an epoch.
         double seconds = (comment.CreationTime - new DateTime(2020, 1, 1)).TotalSeconds;
 
-        // 45000 seconds is about 12.5. A newer comment easily outranks older ones unless they have vastly higher scores.
         return (sign * order) + (seconds / 45000.0);
     }
     public static void ValidateComment(Comment c)

@@ -2,6 +2,7 @@
     x:Class="Boards_WP.Views.NotificationsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewmodels="using:Boards_WP.ViewModels"
     xmlns:local="using:Boards_WP.Views">
 
 
@@ -26,6 +27,8 @@
             <ListView x:Name="NotificationsList" 
                       Grid.Row="1"
                       SelectionMode="Single"
+                      IsItemClickEnabled="True"
+                      ItemClick="NotificationsList_ItemClick"
                       Padding="0">
 
                 <ListView.ItemContainerStyle>
@@ -38,7 +41,7 @@
                 </ListView.ItemContainerStyle>
 
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="local:NotificationItem">
+                    <DataTemplate x:DataType="viewmodels:NotificationItemViewModel">
                         <Grid x:Name="RootGrid">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
@@ -73,15 +76,16 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- x:Bind Message displays the actual message -->
-                                    <TextBlock Text="{x:Bind Message}" 
+                                    <TextBlock Text="{x:Bind Message, Mode=OneWay}" 
                                                FontSize="13" 
+                                               FontWeight="{x:Bind MessageFontWeight, Mode=OneWay}"
                                                Foreground="#333333" 
                                                TextWrapping="Wrap"
                                                VerticalAlignment="Center"/>
 
                                     <!-- x:Bind Time displays the actual time -->
                                     <TextBlock Grid.Column="1" 
-                                               Text="{x:Bind Time}" 
+                                               Text="{x:Bind Time, Mode=OneWay}" 
                                                FontSize="11" 
                                                Foreground="Gray" 
                                                Margin="10,0,0,0"

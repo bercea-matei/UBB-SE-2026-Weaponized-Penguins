@@ -16,15 +16,18 @@ namespace Boards_WP
                 myApp.m_window = this;
             }
 
+            // Initialize the navigation service with the main frame
+            App.NavigationService.Initialize(ContentFrame);
+
             // loading the Feed by default when the app opens
             ContentFrame.Navigate(typeof(Views.Pages.FeedView));
         }
-        
+
         // pageType: can be any page (FeedPage, FullViewPage) and represents the next page the frame needs to load
         // parameter: is the data that needs to be displayed on this new page (and can be optional, which why we use "null")
         public void NavigateToPage(Type pageType, object parameter = null)
         {
-            ContentFrame.Navigate(pageType, parameter);
+            App.NavigationService.NavigateTo(pageType, parameter);
         }
     }
 }

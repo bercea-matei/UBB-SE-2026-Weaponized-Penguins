@@ -10,6 +10,7 @@
     <!-- SelectionMode="None" disables the highlight effect when a post is clicked -->
     <Grid>
         <ListView x:Name="FeedList" 
+                    ItemsSource = "{x:Bind ViewModel.Posts, Mode=OneWay}"
                   SelectionMode="None" 
                   Padding="0,0,10,0">
 

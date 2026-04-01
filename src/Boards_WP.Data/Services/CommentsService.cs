@@ -105,32 +105,45 @@ public class CommentsService : ICommentsService
     {
         var comments = commentsRepo.GetCommentsByPostID(postID, currentUserID);
 
-        var childrenMap = new Dictionary<int?, List<Comment>>();
+        // Dictionary doesn't allow null keys natively without throwing, so we use a special value (like -1)
+        // or just avoid storing missing parents in the dictionary itself mapping.
+        var childrenMap = new Dictionary<int, List<Comment>>();
+        var rootComments = new List<Comment>();
+
         foreach (var c in comments)
         {
             int? parentId = c.ParentComment?.CommentID;
-            if (!childrenMap.ContainsKey(parentId))
-                childrenMap[parentId] = new List<Comment>();
 
-            childrenMap[parentId].Add(c);
+            if (parentId == null)
+            {
+                rootComments.Add(c);
+            }
+            else
+            {
+                if (!childrenMap.ContainsKey(parentId.Value))
+                    childrenMap[parentId.Value] = new List<Comment>();
+
+                childrenMap[parentId.Value].Add(c);
+            }
         }
 
         var sortedComments = new List<Comment>();
 
-        void AddSortedChildren(int? parentId)
+        void AddSortedChildren(int parentId, List<Comment> currentLevelList)
         {
-            if (childrenMap.TryGetValue(parentId, out var children))
+            var sorted = currentLevelList.OrderByDescending(c => CalculateBestScore(c)).ToList();
+            foreach (var child in sorted)
             {
-                var sorted = children.OrderByDescending(c => CalculateBestScore(c)).ToList();
-                foreach (var child in sorted)
+                sortedComments.Add(child);
+
+                if (childrenMap.TryGetValue(child.CommentID, out var nestedChildren))
                 {
-                    sortedComments.Add(child);
-                    AddSortedChildren(child.CommentID);
+                    AddSortedChildren(child.CommentID, nestedChildren);
                 }
             }
         }
 
-        AddSortedChildren(null);
+        AddSortedChildren(-1, rootComments); // Start with root comments
 
         return sortedComments;
     }

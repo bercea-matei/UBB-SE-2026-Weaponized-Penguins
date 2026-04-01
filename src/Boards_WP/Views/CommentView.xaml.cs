@@ -42,18 +42,31 @@ namespace Boards_WP.Views
 
                 if (frame?.Content is Pages.FullPostView postPage)
                 {
+                    var userSession = App.GetService<UserSession>();
+                    var commentsService = App.GetService<Boards_WP.Data.Services.Interfaces.ICommentsService>();
+
                     var newReply = new Comment
                     {
-                        CommentID = new Random().Next(1000, 9999),
-                        Owner = new User { Username = "@Me" },
+                        ParentPost = postPage.ViewModel.CurrentPost,
+                        ParentComment = parent,
+                        Owner = userSession.CurrentUser,
                         Description = text,
                         Score = 0,
-                        CreationTime = DateTime.Now,
                         Indentation = parent.Indentation + 1
                     };
 
-                    int index = postPage.ViewModel.PostComments.IndexOf(parent);
-                    postPage.ViewModel.PostComments.Insert(index + 1, newReply);
+                    try
+                    {
+                        commentsService.AddComment(newReply);
+
+                        // We ask the post page to reload the comments from DB so sorting stays consistent
+                        postPage.ViewModel.LoadPost(postPage.ViewModel.CurrentPost);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to reply: {ex.Message} \n {ex.StackTrace}");
+                        throw;
+                    }
                 }
             }
         }

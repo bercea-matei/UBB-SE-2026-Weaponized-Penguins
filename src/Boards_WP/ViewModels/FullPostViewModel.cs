@@ -23,34 +23,35 @@ namespace Boards_WP.ViewModels
         public ObservableCollection<Comment> PostComments { get; } = new ObservableCollection<Comment>();
 
         private readonly IPostsService _postsService;
+        private readonly ICommentsService _commentsService;
         private readonly MainViewModel _mainViewModel;
+        private readonly UserSession _userSession;
 
         public FullPostViewModel()
         {
-
             _mainViewModel = App.Services?.GetService<MainViewModel>();
-
             _postsService = App.Services?.GetService<IPostsService>();
+            _commentsService = App.Services?.GetService<ICommentsService>();
+            _userSession = App.Services?.GetService<UserSession>();
         }
 
         public void LoadPost(Post post)
         {
             _currentPost = post;
-            LoadMockComments();
+            LoadRealComments();
         }
 
-        private void LoadMockComments()
+        private void LoadRealComments()
         {
-            var hardcodedComments = new List<Comment>
-            {
-                new Comment { CommentID = 1, Owner = new User { Username = "@Alexandra" }, Description = "Lorem ipsum...", Score = 15, CreationTime = DateTime.Now.AddHours(-2), Indentation = 0 },
-                new Comment { CommentID = 2, Owner = new User { Username = "@BerceaMatei" }, Description = "Short comment.", Score = 8, CreationTime = DateTime.Now.AddHours(-1), Indentation = 1 },
-                new Comment { CommentID = 3, Owner = new User { Username = "@RazvanBerbecar" }, Description = "Longer comment text here...", Score = 12, CreationTime = DateTime.Now.AddMinutes(-30), Indentation = 2 },
-                new Comment { CommentID = 4, Owner = new User { Username = "@BeneIonut" }, Description = "Perspiciatis unde omnis...", Score = 2, CreationTime = DateTime.Now.AddMinutes(-10), Indentation = 0 }
-            };
+            if (_currentPost == null) return;
+
+            var comments = _commentsService.GetCommentsByPost(_currentPost.PostID, _userSession.CurrentUser.UserID);
 
             PostComments.Clear();
-            foreach (var c in hardcodedComments) PostComments.Add(c);
+            foreach (var c in comments) 
+            {
+                PostComments.Add(c);
+            }
         }
 
         [RelayCommand]
@@ -89,24 +90,34 @@ namespace Boards_WP.ViewModels
 
             var newComment = new Comment
             {
-                CommentID = new Random().Next(1000, 9999),
                 ParentPost = CurrentPost,
-                Owner = new User { Username = "@Me" },
+                Owner = _userSession.CurrentUser,
                 Description = NewCommentText,
                 Score = 0,
-                CreationTime = DateTime.Now,
                 Indentation = 0
             };
 
-            PostComments.Insert(0, newComment);
-
-            if (CurrentPost != null)
+            try
             {
-                CurrentPost.CommentsNumber++;
-                OnPropertyChanged(nameof(CurrentPost));
-            }
+                _commentsService.AddComment(newComment);
+                System.Diagnostics.Debug.WriteLine("Comment successfully added.");
 
-            NewCommentText = string.Empty;
+                // Reload comments fully sorted rather than just inserting at top
+                LoadRealComments();
+
+                if (CurrentPost != null)
+                {
+                    CurrentPost.CommentsNumber++;
+                    OnPropertyChanged(nameof(CurrentPost));
+                }
+
+                NewCommentText = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to add comment: {ex.Message} \n {ex.StackTrace}");
+                throw; // Rethrow to see the actual error in the UI
+            }
         }
     }
 }

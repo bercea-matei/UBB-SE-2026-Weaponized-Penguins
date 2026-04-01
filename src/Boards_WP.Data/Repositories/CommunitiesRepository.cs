@@ -188,13 +188,13 @@ SELECT
         c.banner,
         c.membersNumber,
 
-        u.userID AS adminUserID,
-        u.username AS adminUsername,
-        u.email AS adminEmail,
-        u.passwordHash AS adminPasswordHash,
-        u.avatarUrl AS adminAvatarUrl,
-        u.bio AS adminBio,
-        u.status AS adminStatus
+        u.userID ,
+        u.username, 
+        u.email ,
+        u.passwordHash ,
+        u.avatarUrl,
+        u.bio,
+        u.status
 
         FROM CommunitiesUsers cu
         INNER JOIN Communities c ON cu.communityID = c.communityID
@@ -214,13 +214,13 @@ SELECT
         {
             var admin = new User
             {
-                UserID = (int)reader["adminUserID"],
-                Username = reader["adminUsername"].ToString(),
-                Email = reader["adminEmail"].ToString(),
-                PasswordHash = reader["adminPasswordHash"].ToString(),
-                AvatarUrl = reader["adminAvatarUrl"].ToString(),
-                Bio = reader["adminBio"].ToString(),
-                Status = reader["adminStatus"].ToString()
+                UserID = (int)reader["userID"],
+                Username = reader["username"].ToString(),
+                Email = reader["email"].ToString(),
+                PasswordHash = reader["passwordHash"].ToString(),
+                AvatarUrl = reader["avatarUrl"].ToString(),
+                Bio = reader["bio"].ToString(),
+                Status = reader["status"].ToString()
             };
 
             var community = new Community

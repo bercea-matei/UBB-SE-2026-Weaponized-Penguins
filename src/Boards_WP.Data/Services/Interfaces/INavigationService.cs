@@ -9,7 +9,7 @@ namespace Boards_WP.Data.Services.Interfaces;
 
 public interface INavigationService
 {
-
+    
     void Initialize(object frame);
 
     void NavigateTo(Type pageType, object? parameter = null);

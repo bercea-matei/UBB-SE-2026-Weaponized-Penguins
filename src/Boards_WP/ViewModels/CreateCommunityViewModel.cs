@@ -13,6 +13,7 @@ namespace Boards_WP.ViewModels
     {
         private readonly ICommunitiesService _communitiesService;
         private readonly INavigationService _navigationService;
+        private readonly UserSession _userSession;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(CreateCommunityCommand))]
@@ -35,10 +36,11 @@ namespace Boards_WP.ViewModels
 
         public ObservableCollection<Community> SidebarList { get; set; } = [];
 
-        public CreateCommunityViewModel(ICommunitiesService communitiesService, INavigationService navigationService)
+        public CreateCommunityViewModel(ICommunitiesService communitiesService, INavigationService navigationService, UserSession userSession)
         {
             _communitiesService = communitiesService;
             _navigationService = navigationService;
+            _userSession = userSession;
         }
 
         [RelayCommand(CanExecute = nameof(CanCreateCommunity))]
@@ -54,7 +56,7 @@ namespace Boards_WP.ViewModels
                     Description = _communityDescription,
                     Picture = _communityPicture,
                     Banner = _communityBanner,
-                    Admin = new User { UserID = 1 }
+                    Admin = _userSession.CurrentUser
                 };
                 _communitiesService.AddCommunity(createdCommunity);
 

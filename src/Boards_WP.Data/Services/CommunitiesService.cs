@@ -20,9 +20,9 @@ public class CommunitiesService : ICommunitiesService
             validateCommunity(AddedCommunity);
             AddedCommunity.CommunityID = _communitiesRepo.AddCommunity(AddedCommunity);
         }
-        catch
+        catch (Exception ex)
         {
-            throw new Exception("Failed to add community.");
+            throw new Exception($"Failed to add community: {ex.Message}");
         }
     }
 

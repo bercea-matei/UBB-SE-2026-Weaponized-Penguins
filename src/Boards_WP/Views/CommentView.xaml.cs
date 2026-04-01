@@ -1,8 +1,9 @@
-using System;
-
 using Boards_WP.Data.Models;
 using Boards_WP.ViewModels;
 
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using System;
 
 namespace Boards_WP.Views

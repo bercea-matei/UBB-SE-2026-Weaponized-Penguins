@@ -22,8 +22,6 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         private bool _hasMorePosts = true;
 
-        private static ObservableCollection<Community> _sidebarList;
-
         [ObservableProperty]
         [NotifyPropertyChangedFor(
             nameof(BannerImage),

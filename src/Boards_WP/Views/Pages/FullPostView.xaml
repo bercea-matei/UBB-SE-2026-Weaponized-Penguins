@@ -47,25 +47,30 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <StackPanel>
-                                    <TextBlock Text="{x:Bind ViewModel.CurrentPost.ParentCommunity.Name, Mode=OneWay}"
-                                               FontWeight="Bold" FontSize="14"/>
-                                    <TextBlock Text="{x:Bind ViewModel.CurrentPost.Owner.Username, Mode=OneWay}"
-                                               FontSize="12" Foreground="Gray"/>
-                                    <ItemsControl ItemsSource="{x:Bind ViewModel.CurrentPost.Tags, Mode=OneWay}" Margin="0,5,0,0">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" Spacing="6"/>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate x:DataType="models:Tag">
-                                                <Border CornerRadius="8" Padding="6,2" Background="{x:Bind helpers:ColorHelper.GetBrushForCategory(CategoryBelongingTo.CategoryID), Mode=OneWay}">
-                                                    <TextBlock Text="{x:Bind TagName, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="White"/>
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <PersonPicture ProfilePicture="{x:Bind helpers:ImageHelper.ConvertToBitmap(ViewModel.CurrentPost.ParentCommunity.Picture), Mode=OneWay}"
+                                                   DisplayName="{x:Bind ViewModel.CurrentPost.ParentCommunity.Name, Mode=OneWay}"
+                                                   Height="36" Width="36"/>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentPost.ParentCommunity.Name, Mode=OneWay}"
+                                                   FontWeight="Bold" FontSize="14"/>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentPost.Owner.Username, Mode=OneWay}"
+                                                   FontSize="12" Foreground="Gray"/>
+                                        <ItemsControl ItemsSource="{x:Bind ViewModel.CurrentPost.Tags, Mode=OneWay}" Margin="0,5,0,0">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal" Spacing="6"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="models:Tag">
+                                                    <Border CornerRadius="8" Padding="6,2" Background="{x:Bind helpers:ColorHelper.GetBrushForCategory(CategoryBelongingTo.CategoryID), Mode=OneWay}">
+                                                        <TextBlock Text="{x:Bind TagName, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="White"/>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
                                 </StackPanel>
                                 <TextBlock Grid.Column="1"
                                            Text="{x:Bind ViewModel.CurrentPost.CreationTime, Mode=OneWay}"

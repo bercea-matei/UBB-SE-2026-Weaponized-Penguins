@@ -30,7 +30,6 @@ public partial class App : Application
 
     public App()
     {
-        Services = ConfigureServices();
         InitializeComponent();
     }
 

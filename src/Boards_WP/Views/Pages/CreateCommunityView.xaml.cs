@@ -14,8 +14,8 @@ namespace Boards_WP.Views.Pages
 
         public CreateCommunityView()
         {
-            this.InitializeComponent();
             ViewModel = App.GetService<CreateCommunityViewModel>();
+            this.InitializeComponent();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

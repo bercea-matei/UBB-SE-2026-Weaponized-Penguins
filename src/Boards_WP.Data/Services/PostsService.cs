@@ -62,7 +62,8 @@ public class PostsService : IPostsService
 
         if (post.CommentsNumber < 0)
             throw new ArgumentException("Comments number cannot be negative.", nameof(post));
-        if (post.Image!= null && post.Image.Length > 10485760)
+
+        if (post.Image != null && post.Image.Length > 10485760)
             throw new ArgumentException("Image cannot exceed 10 MB.", nameof(post));
     }
 

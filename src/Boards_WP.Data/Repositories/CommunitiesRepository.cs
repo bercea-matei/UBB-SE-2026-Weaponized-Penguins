@@ -28,8 +28,8 @@ public class CommunitiesRepository : ICommunitiesRepository
 
         command.Parameters.Add("@name", SqlDbType.NVarChar).Value = NewCommunity.Name;
         command.Parameters.Add("@description", SqlDbType.NVarChar).Value = NewCommunity.Description;
-        command.Parameters.Add("@picture", SqlDbType.VarBinary).Value = NewCommunity.Picture;
-        command.Parameters.Add("@banner", SqlDbType.VarBinary).Value = NewCommunity.Banner;
+        command.Parameters.Add("@picture", SqlDbType.VarBinary).Value = NewCommunity.Picture ?? (object)DBNull.Value;
+        command.Parameters.Add("@banner", SqlDbType.VarBinary).Value = NewCommunity.Banner ?? (object)DBNull.Value;
         command.Parameters.Add("@membersNumber", SqlDbType.Int).Value = NewCommunity.MembersNumber;
         command.Parameters.Add("@adminID", SqlDbType.Int).Value = NewCommunity.Admin.UserID;
 

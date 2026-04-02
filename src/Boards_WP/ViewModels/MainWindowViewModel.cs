@@ -11,7 +11,7 @@ namespace Boards_WP.ViewModels
         private readonly INavigationService _navigationService;
 
         [ObservableProperty]
-        private Windows.UI.Color _appThemeColor;
+        private Windows.UI.Color _vividThemeColor;
 
         [ObservableProperty]
         private Brush _appThemeBrush;
@@ -30,7 +30,7 @@ namespace Boards_WP.ViewModels
         {
             _navigationService = navigationService;
 
-            AppThemeColor = _defaultColor;
+            VividThemeColor = _defaultColor;
             AppThemeBrush = new SolidColorBrush(_defaultColor);
             VividThemeBrush = new SolidColorBrush(_defaultVividColor);
             MidThemeBrush = new SolidColorBrush(_defaultMidColor);
@@ -46,16 +46,16 @@ namespace Boards_WP.ViewModels
         {
             if (newTheme == ThemeColor.Default)
             {
-                AppThemeColor = _defaultColor;
+                VividThemeColor = _defaultColor;
                 AppThemeBrush = new SolidColorBrush(_defaultColor);
                 VividThemeBrush = new SolidColorBrush(_defaultVividColor);
                 MidThemeBrush = new SolidColorBrush(_defaultMidColor);
                 return;
             }
 
-            Windows.UI.Color actualColor = MapEnumToUiColor(newTheme);
-            AppThemeColor = actualColor;
+            // MAIN
 
+            Windows.UI.Color actualColor = MapEnumToUiColor(newTheme);
             var gradientBrush = new LinearGradientBrush
             {
                 StartPoint = new Windows.Foundation.Point(0, 0),
@@ -63,16 +63,41 @@ namespace Boards_WP.ViewModels
             };
 
             gradientBrush.GradientStops.Add(new GradientStop { Color = actualColor, Offset = 0.0 });
-            gradientBrush.GradientStops.Add(new GradientStop { Color = actualColor, Offset = 0.7 });
+            gradientBrush.GradientStops.Add(new GradientStop { Color = actualColor, Offset = 0.3 });
             gradientBrush.GradientStops.Add(new GradientStop { Color = _defaultColor, Offset = 1.0 });
 
             AppThemeBrush = gradientBrush;
 
-            Windows.UI.Color vividColor = MapEnumToVividColor(newTheme);
-            VividThemeBrush = new SolidColorBrush(vividColor);
+            // VIVID
 
-            Windows.UI.Color midColor = MapEnumToMidColor(newTheme);
-            MidThemeBrush = new SolidColorBrush(midColor);
+            Windows.UI.Color actualVividColor = MapEnumToVividColor(newTheme);
+            VividThemeColor = actualVividColor;
+            var gradientBrushVivid = new LinearGradientBrush
+            {
+                StartPoint = new Windows.Foundation.Point(0, 0),
+                EndPoint = new Windows.Foundation.Point(1, 1)
+            };
+
+            gradientBrushVivid.GradientStops.Add(new GradientStop { Color = actualVividColor, Offset = 0.0 });
+            gradientBrushVivid.GradientStops.Add(new GradientStop { Color = actualVividColor, Offset = 0.7 });
+            gradientBrushVivid.GradientStops.Add(new GradientStop { Color = _defaultVividColor, Offset = 1.0 });
+
+            VividThemeBrush = gradientBrushVivid;
+
+            // MID
+
+            Windows.UI.Color actualMidColor = MapEnumToMidColor(newTheme);
+            var gradientBrushMid = new LinearGradientBrush
+            {
+                StartPoint = new Windows.Foundation.Point(0, 0),
+                EndPoint = new Windows.Foundation.Point(1, 1)
+            };
+
+            gradientBrushMid.GradientStops.Add(new GradientStop { Color = actualMidColor, Offset = 0.0 });
+            gradientBrushMid.GradientStops.Add(new GradientStop { Color = actualMidColor, Offset = 0.7 });
+            gradientBrushMid.GradientStops.Add(new GradientStop { Color = _defaultMidColor, Offset = 1.0 });
+
+            MidThemeBrush = gradientBrushMid;
         }
 
         private Windows.UI.Color MapEnumToUiColor(ThemeColor colorEnum)

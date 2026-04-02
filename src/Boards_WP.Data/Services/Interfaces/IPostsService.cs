@@ -10,6 +10,7 @@ public interface IPostsService
     public List<Post> GetPostsForDiscoveryPage(int userId);
     public void AddPost(Post post);
     public void DeletePost(int postId);
+    public void IncreaseCommentsNumber(int postId);
     public void IncreaseScore(int postId);
     public void DecreaseScore(int postId);
     public Post GetPostByPostID(int postId);

@@ -67,8 +67,6 @@ public class PostsRepository : IPostsRepository
         }
     }
 
-
-    //works with postview - useful for service like/disklike logic
     public VoteType GetUserVoteForPost(int userId, int postId)
     {
         using var connection = new SqlConnection(_connectionString);
@@ -203,40 +201,45 @@ public class PostsRepository : IPostsRepository
         return post;
     }
 
-    public List<Post> GetPostsByCommunityIDs(int[] communityIDs)
+    public List<Post> GetPostsByCommunityIDs(int[] communityIDs, int offset, int limit)
     {
         if (communityIDs.Length == 0) return new List<Post>();
 
         string idList = string.Join(",", communityIDs);
+
         string query = $@"
-            SELECT p.*, 
-                   u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
-                   c.name AS community_name, c.description AS community_description,
-                   adm.userID AS admin_userID, adm.username AS admin_username
-            FROM Posts p
-            JOIN Users u ON p.ownerID = u.userID
-            JOIN Communities c ON p.communityID = c.communityID
-            JOIN Users adm ON c.adminID = adm.userID
-            WHERE p.communityID IN ({idList})";
+        SELECT p.*, 
+               u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
+               c.name AS community_name, c.description AS community_description,
+               adm.userID AS admin_userID, adm.username AS admin_username
+        FROM Posts p
+        JOIN Users u ON p.ownerID = u.userID
+        JOIN Communities c ON p.communityID = c.communityID
+        JOIN Users adm ON c.adminID = adm.userID
+        WHERE p.communityID IN ({idList})
+        ORDER BY p.creationTime DESC
+        OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
 
         return FetchList(query);
     }
 
-    public List<Post> GetPostExceptCommunityIDs(int[] communityIDs)
+    public List<Post> GetPostExceptCommunityIDs(int[] communityIDs, int offset, int limit)
     {
         if (communityIDs.Length == 0) return new List<Post>();
 
         string idList = string.Join(",", communityIDs);
         string query = $@"
-            SELECT p.*, 
-                   u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
-                   c.name AS community_name, c.description AS community_description,
-                   adm.userID AS admin_userID, adm.username AS admin_username
-            FROM Posts p
-            JOIN Users u ON p.ownerID = u.userID
-            JOIN Communities c ON p.communityID = c.communityID
-            JOIN Users adm ON c.adminID = adm.userID
-            WHERE p.communityID NOT IN ({idList})";
+        SELECT p.*, 
+               u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
+               c.name AS community_name, c.description AS community_description,
+               adm.userID AS admin_userID, adm.username AS admin_username
+        FROM Posts p
+        JOIN Users u ON p.ownerID = u.userID
+        JOIN Communities c ON p.communityID = c.communityID
+        JOIN Users adm ON c.adminID = adm.userID
+        WHERE p.communityID NOT IN ({idList})
+        ORDER BY p.creationTime DESC
+        OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
 
         return FetchList(query);
     }

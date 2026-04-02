@@ -1,15 +1,15 @@
 using System.Collections.ObjectModel;
-
 using Boards_WP.Data.Models;
-using Boards_WP.Data.Services; 
-
+using Boards_WP.Data.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 
 namespace Boards_WP.ViewModels
 {
     public partial class FullPostViewModel : ObservableObject
     {
+
         private readonly IPostsService _postsService;
         private readonly ICommentsService _commentsService;
         private readonly MainViewModel _mainViewModel;
@@ -20,6 +20,9 @@ namespace Boards_WP.ViewModels
 
         [ObservableProperty]
         private string _newCommentText;
+
+        [ObservableProperty]
+        private bool _isCommentAreaVisible;
 
         public ObservableCollection<Comment> PostComments { get; } = new();
 
@@ -37,9 +40,7 @@ namespace Boards_WP.ViewModels
 
         public void Initialize(Post post)
         {
-
             var fullPost = _postsService.GetPostByPostID(post.PostID);
-
             CurrentPost = fullPost ?? post;
             LoadComments();
         }
@@ -50,7 +51,6 @@ namespace Boards_WP.ViewModels
             if (CurrentPost == null) return;
 
             var userId = _userSession.CurrentUser?.UserID ?? 0;
-
             var comments = _commentsService.GetCommentsByPost(CurrentPost.PostID, userId);
 
             foreach (var c in comments)
@@ -73,7 +73,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 CurrentPost.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(CurrentPost)); 
+                OnPropertyChanged(nameof(CurrentPost));
             }
 
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
@@ -94,7 +94,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 CurrentPost.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(CurrentPost)); 
+                OnPropertyChanged(nameof(CurrentPost));
             }
 
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
@@ -102,28 +102,49 @@ namespace Boards_WP.ViewModels
         }
 
         [RelayCommand]
+        private void ShowCommentArea()
+        {
+            IsCommentAreaVisible = true;
+        }
+
+        [RelayCommand]
+        private void CancelComment()
+        {
+            IsCommentAreaVisible = false;
+            NewCommentText = string.Empty;
+        }
+
+        
+        [RelayCommand]
         private void PostComment()
         {
             if (string.IsNullOrWhiteSpace(NewCommentText) || CurrentPost == null) return;
 
-            var currentUser = _userSession.CurrentUser;
-            if (currentUser == null) return;
+var currentUser = _userSession.CurrentUser;
+if (currentUser == null) return;
 
-            var newComment = new Comment
-            {
-                ParentPost = CurrentPost, 
-                Owner = currentUser, 
-                Description = NewCommentText
-            };
+var newComment = new Comment
+{
+    ParentPost = CurrentPost,
+    Owner = currentUser,
+    Description = NewCommentText,
+    CreationTime = DateTime.Now
+};
 
-            _commentsService.AddComment(newComment);
+try
+{
+    _commentsService.AddComment(newComment);
+    PostComments.Insert(0, newComment);
+    CurrentPost.CommentsNumber++;
+    NewCommentText = string.Empty;
+    IsCommentAreaVisible = false;
 
-            PostComments.Insert(0, newComment);
-
-            CurrentPost.CommentsNumber++;
-            OnPropertyChanged(nameof(CurrentPost));
-
-            NewCommentText = string.Empty;
+    OnPropertyChanged(nameof(CurrentPost));
+}
+catch (Exception ex)
+{
+    System.Diagnostics.Debug.WriteLine(ex.Message);
+}
         }
     }
 }

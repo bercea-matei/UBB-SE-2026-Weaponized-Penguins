@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.IO;
-
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Services;
-using Boards_WP.Data.Services.Interfaces;
-
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -63,15 +55,13 @@ namespace Boards_WP.ViewModels
         private void Join()
         {
             var userId = _userSession.CurrentUser.UserID;
-
             _communitiesService.AddUser(CurrentCommunity.CommunityID, userId);
 
             IsMember = true;
             CurrentCommunity.MembersNumber++;
             OnPropertyChanged(nameof(MemberCountText));
 
-            if (_sidebarList != null && !_sidebarList.Contains(CurrentCommunity))
-                _sidebarList.Add(CurrentCommunity);
+            App.GetService<CommunityBarViewModel>().LoadCommunities();
         }
         private bool CanJoin() => !IsMember;
 
@@ -80,13 +70,18 @@ namespace Boards_WP.ViewModels
         {
             var userId = _userSession.CurrentUser.UserID;
 
+            if (_communitiesService.CheckOwner(CurrentCommunity.CommunityID, userId))
+            {
+                return;
+            }
+
             _communitiesService.RemoveUser(CurrentCommunity.CommunityID, userId);
 
             IsMember = false;
             CurrentCommunity.MembersNumber--;
             OnPropertyChanged(nameof(MemberCountText));
 
-            _sidebarList?.Remove(CurrentCommunity);
+            App.GetService<CommunityBarViewModel>().LoadCommunities();
         }
         private bool CanLeave() => IsMember;
 
@@ -99,17 +94,17 @@ namespace Boards_WP.ViewModels
             if (parameter is Community community)
             {
                 CurrentCommunity = community;
+                var userId = _userSession.CurrentUser?.UserID ?? 0;
 
-                var userId = _userSession.CurrentUser.UserID;
-                IsMember = _communitiesService.IsPartOfCommunity(userId, community.CommunityID)
-                           || _communitiesService.CheckOwner(community.CommunityID, userId);
+                bool isActualMember = _communitiesService.IsPartOfCommunity(userId, community.CommunityID);
+                bool isOwner = _communitiesService.CheckOwner(community.CommunityID, userId);
 
+                IsMember = isActualMember || isOwner;
+
+                CommunityPosts.Clear();
                 LoadPosts(community.CommunityID);
             }
-            else if (parameter is ObservableCollection<Community> list)
-            {
-                _sidebarList = list;
-            }
+            
         }
 
         private void LoadPosts(int communityId)

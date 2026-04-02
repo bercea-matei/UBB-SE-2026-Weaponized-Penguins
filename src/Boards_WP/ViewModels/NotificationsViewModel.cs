@@ -83,7 +83,7 @@ public partial class NotificationItemViewModel : ObservableObject
                 _notificationsService.ReadNotification(NotificationData);
             }
             NotificationData.IsRead = true;
-            IsUnread = false; //  triggers MessageFontWeight update
+            IsUnread = false; 
         }
 
         if (NotificationData.RelatedPost != null && NotificationData.ActionType != NotificationType.PostDeleted)
@@ -94,7 +94,6 @@ public partial class NotificationItemViewModel : ObservableObject
             }
             else if (Microsoft.UI.Xaml.Application.Current is App myApp && myApp.m_window is MainWindow mainWindow)
             {
-                // Fallback just in case
                 mainWindow.NavigateToPage(typeof(Views.Pages.FullPostView), NotificationData.RelatedPost);
             }
         }
@@ -118,7 +117,7 @@ public partial class NotificationsListViewModel : ObservableObject
         _notificationsService = notificationsService;
         _userSession = userSession;
         _mainViewModel = mainViewModel;
-        LoadNotifications(1); // Assuming current user ID is 1 for now
+        LoadNotifications(1); 
     }
 
     public void LoadNotifications(int userId)

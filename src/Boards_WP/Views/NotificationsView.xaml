@@ -15,7 +15,7 @@
             <TextBlock Text="Notifications" 
                        FontSize="18" 
                        FontWeight="SemiBold" 
-                       Foreground="#6A67E1" 
+                       Foreground="#FFFFFF" 
                        Margin="0,0,0,15"/>
 
             <ListView x:Name="NotificationsList" 
@@ -31,7 +31,6 @@
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                         <Setter Property="Padding" Value="0"/>
                         <Setter Property="Margin" Value="0,0,0,10"/>
-                        <Setter Property="Background" Value="Transparent"/>
                     </Style>
                 </ListView.ItemContainerStyle>
 

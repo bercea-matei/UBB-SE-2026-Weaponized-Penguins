@@ -1,7 +1,11 @@
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
+using Boards_WP.Data.Services.Interfaces;
+
 
 using Boards_WP.ViewModels;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace Boards_WP.Views.Pages
 {
@@ -9,14 +13,12 @@ namespace Boards_WP.Views.Pages
     {
         public CommunityViewModel ViewModel { get; }
 
-        public CommunityView()
+        public CommunityView() 
         {
             this.InitializeComponent();
-
-            var postsService = App.GetService<IPostsService>();
-
             ViewModel = new CommunityViewModel(
-                navigateToCreatePost: community => Frame.Navigate(typeof(CreatePostView), community));
+                navigateToCreatePost: community => Frame.Navigate(typeof(CreatePostView), community),
+                navigateToEditCommunity: community => Frame.Navigate(typeof(UpdateCommunityView), community));
 
             this.DataContext = ViewModel;
         }

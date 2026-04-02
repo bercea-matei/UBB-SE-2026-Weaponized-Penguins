@@ -11,20 +11,29 @@ namespace Boards_WP.ViewModels
         private readonly INavigationService _navigationService;
 
         [ObservableProperty]
+        private Windows.UI.Color _vividThemeColor;
+
+        [ObservableProperty]
         private Brush _appThemeBrush;
 
         [ObservableProperty]
         private Brush _vividThemeBrush;
 
+        [ObservableProperty]
+        private Brush _midThemeBrush;
+
         private readonly Windows.UI.Color _defaultColor = Windows.UI.Color.FromArgb(255, 230, 226, 255);
         private readonly Windows.UI.Color _defaultVividColor = Windows.UI.Color.FromArgb(255, 120, 90, 200);
+        private readonly Windows.UI.Color _defaultMidColor = Windows.UI.Color.FromArgb(255, 175, 150, 230);
 
         public MainViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
 
+            VividThemeColor = _defaultColor;
             AppThemeBrush = new SolidColorBrush(_defaultColor);
             VividThemeBrush = new SolidColorBrush(_defaultVividColor);
+            MidThemeBrush = new SolidColorBrush(_defaultMidColor);
         }
 
         public void InitializeNavigation(object frame)
@@ -37,13 +46,16 @@ namespace Boards_WP.ViewModels
         {
             if (newTheme == ThemeColor.Default)
             {
+                VividThemeColor = _defaultColor;
                 AppThemeBrush = new SolidColorBrush(_defaultColor);
                 VividThemeBrush = new SolidColorBrush(_defaultVividColor);
+                MidThemeBrush = new SolidColorBrush(_defaultMidColor);
                 return;
             }
 
-            Windows.UI.Color actualColor = MapEnumToUiColor(newTheme);
+            // MAIN
 
+            Windows.UI.Color actualColor = MapEnumToUiColor(newTheme);
             var gradientBrush = new LinearGradientBrush
             {
                 StartPoint = new Windows.Foundation.Point(0, 0),
@@ -51,13 +63,41 @@ namespace Boards_WP.ViewModels
             };
 
             gradientBrush.GradientStops.Add(new GradientStop { Color = actualColor, Offset = 0.0 });
-            gradientBrush.GradientStops.Add(new GradientStop { Color = actualColor, Offset = 0.7 });
+            gradientBrush.GradientStops.Add(new GradientStop { Color = actualColor, Offset = 0.3 });
             gradientBrush.GradientStops.Add(new GradientStop { Color = _defaultColor, Offset = 1.0 });
 
             AppThemeBrush = gradientBrush;
 
-            Windows.UI.Color vividColor = MapEnumToVividColor(newTheme);
-            VividThemeBrush = new SolidColorBrush(vividColor);
+            // VIVID
+
+            Windows.UI.Color actualVividColor = MapEnumToVividColor(newTheme);
+            VividThemeColor = actualVividColor;
+            var gradientBrushVivid = new LinearGradientBrush
+            {
+                StartPoint = new Windows.Foundation.Point(0, 0),
+                EndPoint = new Windows.Foundation.Point(1, 1)
+            };
+
+            gradientBrushVivid.GradientStops.Add(new GradientStop { Color = actualVividColor, Offset = 0.0 });
+            gradientBrushVivid.GradientStops.Add(new GradientStop { Color = actualVividColor, Offset = 0.7 });
+            gradientBrushVivid.GradientStops.Add(new GradientStop { Color = _defaultVividColor, Offset = 1.0 });
+
+            VividThemeBrush = gradientBrushVivid;
+
+            // MID
+
+            Windows.UI.Color actualMidColor = MapEnumToMidColor(newTheme);
+            var gradientBrushMid = new LinearGradientBrush
+            {
+                StartPoint = new Windows.Foundation.Point(0, 0),
+                EndPoint = new Windows.Foundation.Point(1, 1)
+            };
+
+            gradientBrushMid.GradientStops.Add(new GradientStop { Color = actualMidColor, Offset = 0.0 });
+            gradientBrushMid.GradientStops.Add(new GradientStop { Color = actualMidColor, Offset = 0.7 });
+            gradientBrushMid.GradientStops.Add(new GradientStop { Color = _defaultMidColor, Offset = 1.0 });
+
+            MidThemeBrush = gradientBrushMid;
         }
 
         private Windows.UI.Color MapEnumToUiColor(ThemeColor colorEnum)
@@ -89,6 +129,22 @@ namespace Boards_WP.ViewModels
                 ThemeColor.Red => Windows.UI.Color.FromArgb(255, 220, 20, 60),
                 ThemeColor.Purple => Windows.UI.Color.FromArgb(255, 128, 0, 128),
                 _ => _defaultVividColor
+            };
+        }
+
+        private Windows.UI.Color MapEnumToMidColor(ThemeColor colorEnum)
+        {
+            return colorEnum switch
+            {
+                ThemeColor.Pink => Windows.UI.Color.FromArgb(255, 255, 105, 180),
+                ThemeColor.Orange => Windows.UI.Color.FromArgb(255, 255, 127, 80),
+                ThemeColor.Turquoise => Windows.UI.Color.FromArgb(255, 72, 209, 204),
+                ThemeColor.Yellow => Windows.UI.Color.FromArgb(255, 244, 208, 63),
+                ThemeColor.Blue => Windows.UI.Color.FromArgb(255, 100, 149, 237),
+                ThemeColor.Green => Windows.UI.Color.FromArgb(255, 60, 179, 113),
+                ThemeColor.Red => Windows.UI.Color.FromArgb(255, 205, 92, 92),
+                ThemeColor.Purple => Windows.UI.Color.FromArgb(255, 186, 85, 211),
+                _ => _defaultMidColor
             };
         }
     }

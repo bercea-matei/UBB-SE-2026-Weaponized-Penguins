@@ -6,10 +6,13 @@ namespace Boards_WP.Views
 {
     public sealed partial class CommunityBarView : UserControl
     {
+        public ObservableCollection<Community> Communities { get; set; } = new();
         public CommunityBarViewModel ViewModel { get; private set; }
 
         public CommunityBarView()
         {
+            this.ViewModel = App.GetService<CommunityBarViewModel>();
+            //to do - load communities from service
             this.InitializeComponent();
             this.Loaded += CommunityBarView_Loaded;
         }
@@ -27,21 +30,19 @@ namespace Boards_WP.Views
                 ViewModel.NavigateToCommunityCommand.Execute(selected);
             }
         }
-
-
-        private void HomeNavigation_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void HomeNavigation_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            ViewModel?.NavigateHomeCommand.Execute(null);
+            ViewModel.NavigateHomeCommand.Execute(null);
         }
 
-        private void DiscoverNavigation_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void DiscoverNavigation_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            ViewModel?.NavigateDiscoveryCommand.Execute(null);
+            ViewModel.NavigateDiscoveryCommand.Execute(null);
         }
 
-        private void StartCommunity_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void StartCommunity_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            ViewModel?.NavigateCreateCommunityCommand.Execute(null);
+            ViewModel.NavigateCreateCommunityCommand.Execute(null);
         }
     }
 }

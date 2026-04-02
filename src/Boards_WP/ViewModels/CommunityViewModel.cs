@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+
 using CommunityToolkit.Mvvm.Input;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +14,10 @@ namespace Boards_WP.ViewModels
         private readonly ICommunitiesService _communitiesService;
         private readonly UserSession _userSession;
         private readonly Action<Community> _navigateToCreatePost;
+        private readonly Action<Community> _navigateToEditCommunity;
 
         private static ObservableCollection<Community> _sidebarList;
 
-   
         [ObservableProperty]
         [NotifyPropertyChangedFor(
             nameof(BannerImage),
@@ -34,7 +35,12 @@ namespace Boards_WP.ViewModels
             nameof(CreatePostCommand))]
         private bool _isMember;
 
-        public ObservableCollection<Post> CommunityPosts { get; } = new();
+[ObservableProperty]
+[NotifyPropertyChangedFor(nameof(EditButtonVisibility))]
+[NotifyCanExecuteChangedFor(nameof(EditCommunityCommand))]
+private bool _isOwner;
+
+public ObservableCollection<PostPreviewViewModel> CommunityPosts { get; } = new();
 
         public BitmapImage BannerImage => ConvertToBitmap(CurrentCommunity?.Banner);
         public BitmapImage ProfileImage => ConvertToBitmap(CurrentCommunity?.Picture);
@@ -42,20 +48,21 @@ namespace Boards_WP.ViewModels
 
         public Visibility JoinButtonVisibility => IsMember ? Visibility.Collapsed : Visibility.Visible;
         public Visibility MemberActionsVisibility => IsMember ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility EditButtonVisibility => IsOwner ? Visibility.Visible : Visibility.Collapsed;
 
-        public CommunityViewModel(Action<Community> navigateToCreatePost)
+        public CommunityViewModel(Action<Community> navigateToCreatePost, Action<Community> navigateToEditCommunity)
         {
             _postsService = App.Services?.GetService<IPostsService>();
             _communitiesService = App.Services?.GetService<ICommunitiesService>();
             _userSession = App.Services?.GetService<UserSession>();
             _navigateToCreatePost = navigateToCreatePost;
+            _navigateToEditCommunity = navigateToEditCommunity;
         }
 
         [RelayCommand(CanExecute = nameof(CanJoin))]
         private void Join()
         {
-            var userId = _userSession.CurrentUser.UserID;
-            _communitiesService.AddUser(CurrentCommunity.CommunityID, userId);
+            _communitiesService.AddUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
 
             IsMember = true;
             CurrentCommunity.MembersNumber++;
@@ -68,40 +75,53 @@ namespace Boards_WP.ViewModels
         [RelayCommand(CanExecute = nameof(CanLeave))]
         private void Leave()
         {
-            var userId = _userSession.CurrentUser.UserID;
+          _communitiesService.RemoveUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
 
-            if (_communitiesService.CheckOwner(CurrentCommunity.CommunityID, userId))
+            if (_communitiesService.CheckOwner(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID))
             {
                 return;
             }
 
-            _communitiesService.RemoveUser(CurrentCommunity.CommunityID, userId);
+            _communitiesService.RemoveUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
 
             IsMember = false;
             CurrentCommunity.MembersNumber--;
             OnPropertyChanged(nameof(MemberCountText));
 
-            App.GetService<CommunityBarViewModel>().LoadCommunities();
+            //App.GetService<CommunityBarViewModel>().LoadCommunities();
+            _sidebarList?.Remove(CurrentCommunity); 
         }
-        private bool CanLeave() => IsMember;
+        private bool CanLeave() => IsMember && !IsOwner;
 
         [RelayCommand(CanExecute = nameof(CanCreatePost))]
         private void CreatePost() => _navigateToCreatePost?.Invoke(CurrentCommunity);
         private bool CanCreatePost() => IsMember && CurrentCommunity != null;
 
+        [RelayCommand(CanExecute = nameof(CanEditCommunity))]
+        private void EditCommunity() => _navigateToEditCommunity?.Invoke(CurrentCommunity);
+        private bool CanEditCommunity() => IsOwner && CurrentCommunity != null;
+
         public void ApplyNavigationParameter(object parameter)
         {
             if (parameter is Community community)
             {
-                CurrentCommunity = community;
-                var userId = _userSession.CurrentUser?.UserID ?? 0;
+                var refreshedCommunity = _communitiesService.GetCommunityByID(community.CommunityID);
 
-                bool isActualMember = _communitiesService.IsPartOfCommunity(userId, community.CommunityID);
-                bool isOwner = _communitiesService.CheckOwner(community.CommunityID, userId);
+                if (refreshedCommunity != null)
+                {
+                    CurrentCommunity = refreshedCommunity;
+                }
+                else
+                {
+                    CurrentCommunity = community;
+                }
 
-                IsMember = isActualMember || isOwner;
-
-                CommunityPosts.Clear();
+                var userId = _userSession.CurrentUser.UserID;
+                IsOwner = _communitiesService.CheckOwner(community.CommunityID, userId);
+                IsMember = IsOwner || _communitiesService.IsPartOfCommunity(userId, community.CommunityID);
+                OnPropertyChanged(nameof(MemberCountText));
+                OnPropertyChanged(nameof(BannerImage));
+                OnPropertyChanged(nameof(ProfileImage));
                 LoadPosts(community.CommunityID);
             }
             
@@ -112,8 +132,12 @@ namespace Boards_WP.ViewModels
             CommunityPosts.Clear();
             var posts = _postsService.GetPostsByCommunityID(communityId);
             if (posts == null) return;
+            var mainViewModel = App.Services?.GetService<MainViewModel>();
             foreach (var post in posts)
-                CommunityPosts.Add(post);
+            {
+                var previewVm = new PostPreviewViewModel(post, _postsService, _userSession, mainViewModel);
+                CommunityPosts.Add(previewVm);
+            }
         }
 
         private static BitmapImage ConvertToBitmap(byte[] data)

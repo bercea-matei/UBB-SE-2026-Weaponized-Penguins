@@ -1,8 +1,3 @@
-using System.Collections.ObjectModel;
-
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Services; // Ensure this matches your namespace
-
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -24,7 +19,6 @@ namespace Boards_WP.ViewModels
 
         public ObservableCollection<Comment> PostComments { get; } = new();
 
-        // 1. Constructor Injection (Strict MVVM)
         public FullPostViewModel(
             IPostsService postsService,
             ICommentsService commentsService,
@@ -37,10 +31,11 @@ namespace Boards_WP.ViewModels
             _userSession = userSession;
         }
 
-        // 2. Initialization Method (Called by the View when navigated to)
         public void Initialize(Post post)
         {
-            CurrentPost = post;
+            var fullPost = _postsService.GetPostByPostID(post.PostID);
+
+            CurrentPost = fullPost ?? post;
             LoadComments();
         }
 
@@ -51,7 +46,6 @@ namespace Boards_WP.ViewModels
 
             var userId = _userSession.CurrentUser?.UserID ?? 0;
 
-            // Fetch real data from the database
             var comments = _commentsService.GetCommentsByPost(CurrentPost.PostID, userId);
 
             foreach (var c in comments)
@@ -67,20 +61,17 @@ namespace Boards_WP.ViewModels
             var userId = _userSession.CurrentUser?.UserID ?? 0;
             if (userId == 0) return;
 
-            // 1. Tell the service to execute its logic
             _postsService.IncreaseScore(CurrentPost.PostID);
             _postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Like, false);
 
-            // 2. Fetch the true, calculated score back from the database
             var updatedPost = _postsService.GetPostByPostID(CurrentPost.PostID);
             if (updatedPost != null)
             {
                 CurrentPost.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(CurrentPost)); // Instantly update UI
+                OnPropertyChanged(nameof(CurrentPost));
             }
 
-            // 3. Update the theme
-            var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
+            var newThemeColor = _postsService.DetermineThemeForASinglePost(updatedPost);
             _mainViewModel.ApplyNewTheme(newThemeColor);
         }
 
@@ -91,19 +82,16 @@ namespace Boards_WP.ViewModels
             var userId = _userSession.CurrentUser?.UserID ?? 0;
             if (userId == 0) return;
 
-            // 1. Tell the service to execute its logic
             _postsService.DecreaseScore(CurrentPost.PostID);
             _postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Dislike, false);
 
-            // 2. Fetch the true, calculated score back from the database
             var updatedPost = _postsService.GetPostByPostID(CurrentPost.PostID);
             if (updatedPost != null)
             {
                 CurrentPost.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(CurrentPost)); // Instantly update UI
+                OnPropertyChanged(nameof(CurrentPost));
             }
 
-            // 3. Update the theme
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
         }
@@ -116,26 +104,21 @@ namespace Boards_WP.ViewModels
             var currentUser = _userSession.CurrentUser;
             if (currentUser == null) return;
 
-            // 1. Create the Comment object here in the ViewModel
             var newComment = new Comment
             {
-                ParentPost = CurrentPost,    // Required for Notifications
-                Owner = currentUser,         // Required for Notifications
+                ParentPost = CurrentPost, 
+                Owner = currentUser,         
                 Description = NewCommentText
-                // Note: Do NOT set the Indentation or CreationTime here. 
-                // Your Service is already handling that perfectly!
             };
 
-            // 2. Pass the object to the service 
             _commentsService.AddComment(newComment);
 
-            // 3. Update the UI
             PostComments.Insert(0, newComment);
 
             CurrentPost.CommentsNumber++;
+            _postsService.IncreaseCommentsNumber(CurrentPost.PostID);
             OnPropertyChanged(nameof(CurrentPost));
 
-            // 4. Clear the textbox
             NewCommentText = string.Empty;
         }
     }

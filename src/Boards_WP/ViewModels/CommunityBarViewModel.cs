@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Boards_WP.ViewModels;
+﻿using Boards_WP.ViewModels;
 using Boards_WP.Views.Pages;
 using Boards_WP;
 
@@ -13,18 +9,23 @@ public partial class CommunityBarViewModel
     private readonly INavigationService _navigationService;
     private readonly ICommunitiesService _communitiesService;
     private readonly FeedViewModel _feedViewModel;
-    private readonly UserSession _userSession = App.GetService<UserSession>();
+    private readonly MainViewModel _mainViewModel;
+    private readonly UserSession _userSession;
+
+    public MainViewModel MainViewModel => _mainViewModel;
+
 
     public ObservableCollection<Community> Communities { get; } = new();
 
     public CommunityBarViewModel(
-        INavigationService navigationService,
-        ICommunitiesService communitiesService,
-        FeedViewModel feedViewModel)
+        INavigationService navigationService, ICommunitiesService communitiesService,
+        FeedViewModel feedViewModel, UserSession userSession, MainViewModel mainViewModel)
     {
         _navigationService = navigationService;
         _communitiesService = communitiesService;
         _feedViewModel = feedViewModel;
+        _userSession = userSession;
+        _mainViewModel = mainViewModel;
 
         LoadCommunities();
     }
@@ -41,6 +42,7 @@ public partial class CommunityBarViewModel
     [RelayCommand]
     private void NavigateHome()
     {
+        _feedViewModel.IsHome = true;
         _feedViewModel.LoadHome(); 
         _navigationService.NavigateTo(typeof(FeedView));
     }
@@ -48,6 +50,7 @@ public partial class CommunityBarViewModel
     [RelayCommand]
     private void NavigateDiscovery()
     {
+        _feedViewModel.IsHome = false;
         _feedViewModel.LoadDiscovery();
         _navigationService.NavigateTo(typeof(FeedView));
     }

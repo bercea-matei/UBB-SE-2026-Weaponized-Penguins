@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
+
+using Boards_WP.Data.Models;
+using Boards_WP.Data.Services.Interfaces;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -29,12 +33,14 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         private bool _noResultsToggle;
 
-        public HeaderViewModel(ICommunitiesService communitiesService, INavigationService navigationService)
+        public HeaderViewModel(ICommunitiesService communitiesService, INavigationService navigationService, UserSession userSession, MainViewModel mainViewModel)
         {
             _communitiesService = communitiesService;
             _navigationService = navigationService;
+            _userSession = userSession;
+            _mainViewModel = mainViewModel;
 
-            
+
             UserTokens = 1250;
         }
 

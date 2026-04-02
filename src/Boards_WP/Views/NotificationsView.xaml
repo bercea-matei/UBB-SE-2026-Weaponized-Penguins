@@ -5,7 +5,10 @@
     xmlns:viewmodels="using:Boards_WP.ViewModels"
     xmlns:local="using:Boards_WP.Views">
 
-    <Border Background="#F0F0FF" CornerRadius="15" Margin="4">
+
+
+    <!-- we define how the Notifications sidebar should look like  -->
+    <Border Background="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}" CornerRadius="15" Margin="4">
         <Grid Padding="15">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -15,7 +18,7 @@
             <TextBlock Text="Notifications" 
                        FontSize="18" 
                        FontWeight="SemiBold" 
-                       Foreground="#6A67E1" 
+                       Foreground="#FFFFFF" 
                        Margin="0,0,0,15"/>
 
             <ListView x:Name="NotificationsList" 

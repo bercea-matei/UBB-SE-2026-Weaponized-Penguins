@@ -1,16 +1,19 @@
+using System;
+using System.Collections.ObjectModel;
+
+using Boards_WP.Data;
+using Boards_WP.Data.Models;
+using Boards_WP.Data.Repositories;
+using Boards_WP.Data.Services;
+using Boards_WP.Data.Services.Interfaces;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using System.Collections.ObjectModel;
-using System;
-
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Services.Interfaces;
-using Boards_WP.Data;
-using Boards_WP.Data.Repositories;
-using Boards_WP.Data.Services;
-using Windows.UI.Text;
 using Microsoft.UI.Text;
+
+using Windows.Networking.NetworkOperators;
+using Windows.UI.Text;
 
 namespace Boards_WP.ViewModels;
 
@@ -44,7 +47,7 @@ public partial class NotificationItemViewModel : ObservableObject
         }
         else
         {
-            // Mock get message
+            
             string actorName = notification.Actor?.Username ?? "Someone";
             string postTitle = notification.RelatedPost?.Title ?? "a post";
             _message = notification.ActionType switch
@@ -80,7 +83,7 @@ public partial class NotificationItemViewModel : ObservableObject
                 _notificationsService.ReadNotification(NotificationData);
             }
             NotificationData.IsRead = true;
-            IsUnread = false; // This triggers MessageFontWeight update
+            IsUnread = false; //  triggers MessageFontWeight update
         }
 
         if (NotificationData.RelatedPost != null && NotificationData.ActionType != NotificationType.PostDeleted)
@@ -104,32 +107,29 @@ public partial class NotificationsListViewModel : ObservableObject
 
     public ObservableCollection<NotificationItemViewModel> Notifications { get; } = new();
 
-    public NotificationsListViewModel(INotificationsService notificationsService = null)
+    private readonly MainViewModel _mainViewModel;
+    private readonly UserSession _userSession;
+
+
+    public MainViewModel MainViewModel => _mainViewModel;
+
+    public NotificationsListViewModel(UserSession userSession, MainViewModel mainViewModel, INotificationsService notificationsService = null)
     {
         _notificationsService = notificationsService;
+        _userSession = userSession;
+        _mainViewModel = mainViewModel;
         LoadNotifications(1); // Assuming current user ID is 1 for now
     }
 
     public void LoadNotifications(int userId)
     {
         Notifications.Clear();
-        if (_notificationsService != null)
+        
+        var notifs = _notificationsService.GetNotificationsByUserID(userId);
+        foreach (var n in notifs)
         {
-            var notifs = _notificationsService.GetNotificationsByUserID(userId);
-            foreach (var n in notifs)
-            {
-                Notifications.Add(new NotificationItemViewModel(n, _notificationsService));
-            }
+            Notifications.Add(new NotificationItemViewModel(n, _notificationsService));
         }
-        else
-        {
-            // Adding mock data here if no service is provided
-            var mockUser = new User { UserID = 1, Username = "TestUser" };
-            var mockPost = new Post { PostID = 1, Title = "My Mock Post" };
-
-            Notifications.Add(new NotificationItemViewModel(new Notification { NotificationID = 1, ActionType = NotificationType.CommentOnPost, Actor = new User { Username = "Alice" }, Receiver = mockUser, RelatedPost = mockPost, IsRead = false, CreationTime = DateTime.Now.AddMinutes(-5) }, null));
-            Notifications.Add(new NotificationItemViewModel(new Notification { NotificationID = 2, ActionType = NotificationType.ReplyToComment, Actor = new User { Username = "Bob" }, Receiver = mockUser, RelatedPost = mockPost, IsRead = true, CreationTime = DateTime.Now.AddHours(-1) }, null));
-            Notifications.Add(new NotificationItemViewModel(new Notification { NotificationID = 3, ActionType = NotificationType.PostDeleted, Actor = new User { Username = "Moderator" }, Receiver = mockUser, RelatedPost = mockPost, IsRead = false, CreationTime = DateTime.Now.AddDays(-1) }, null));
-        }
+        
     }
 }

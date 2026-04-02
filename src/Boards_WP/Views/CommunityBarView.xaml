@@ -10,8 +10,8 @@
     <UserControl.Resources>
         <CornerRadius x:Key="ControlCornerRadius">10</CornerRadius>
         <CornerRadius x:Key="ListViewItemSelectedCornerRadius">10</CornerRadius>
-        <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="#5552D9" />
-        <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="#4A47C1" />
+        <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="{x:Bind ViewModel.MainViewModel.AppThemeColor, Mode=OneWay}" />
+        <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="{x:Bind ViewModel.MainViewModel.AppThemeColor, Mode=OneWay}" />
         <SolidColorBrush x:Key="ListViewItemForegroundPointerOver" Color="White" />
         <SolidColorBrush x:Key="ListViewItemForegroundSelected" Color="White" />
 
@@ -24,7 +24,9 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="#6A67E1" CornerRadius="15" Margin="4">
+
+
+    <Border Background="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}" CornerRadius="15" Margin="4">
         <StackPanel Padding="10,20">
             
             <ListView SelectionMode="Single" ItemContainerStyle="{StaticResource NavigationListViewStyle}">
@@ -51,7 +53,7 @@
 
             <ListView 
                 x:Name="CommunityListView"
-                ItemsSource="{x:Bind ViewModel.Communities, Mode=OneWay}"
+                ItemsSource="{x:Bind ViewModel.Communities}"
                 IsItemClickEnabled="True" 
                 ItemClick="CommunityListView_ItemClick">
     

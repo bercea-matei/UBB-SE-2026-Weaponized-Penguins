@@ -59,8 +59,6 @@ namespace Boards_WP.Views
                     try
                     {
                         commentsService.AddComment(newReply);
-
-                        // We ask the post page to reload the comments from DB so sorting stays consistent
                         postPage.ViewModel.Initialize(postPage.ViewModel.CurrentPost);
                     }
                     catch (Exception ex)

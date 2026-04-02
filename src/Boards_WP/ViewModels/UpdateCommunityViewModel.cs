@@ -39,6 +39,8 @@ namespace Boards_WP.ViewModels
 
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
+        public ObservableCollection<Community> SidebarList { get; set; } = [];
+
         public UpdateCommunityViewModel()
         {
             _mainViewModel = App.Services?.GetService<MainViewModel>();

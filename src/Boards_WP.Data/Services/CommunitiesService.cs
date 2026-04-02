@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace Boards_WP.Data.Services;
@@ -17,6 +18,8 @@ public class CommunitiesService : ICommunitiesService
         {
             validateCommunity(AddedCommunity);
             AddedCommunity.CommunityID = _communitiesRepo.AddCommunity(AddedCommunity);
+            _communitiesRepo.AddUserToCommunity(AddedCommunity.CommunityID, AddedCommunity.Admin.UserID);
+            _communitiesRepo.IncreaseMembersNumber(AddedCommunity.CommunityID);
         }
         catch (Exception ex)
         {
@@ -29,7 +32,7 @@ public class CommunitiesService : ICommunitiesService
         try
         {
             _communitiesRepo.AddUserToCommunity(CommunityID, UserID);
-
+            _communitiesRepo.IncreaseMembersNumber(CommunityID);
         }
         catch
         {
@@ -85,7 +88,11 @@ public class CommunitiesService : ICommunitiesService
     {
         try
         {
-            _communitiesRepo.RemoveUserFromCommunity(CommunityID, UserID);
+            if (_communitiesRepo.CheckOwner(CommunityID, UserID) == false)
+            {
+                _communitiesRepo.RemoveUserFromCommunity(CommunityID, UserID);
+                _communitiesRepo.DecreaseMembersNumber(CommunityID);
+            }
 
         }
         catch
@@ -133,5 +140,17 @@ public class CommunitiesService : ICommunitiesService
             throw new Exception("Community description cannot be empty.");
         if (c.Description.Length > 500)
             throw new Exception("Community description cannot exceed 500 characters.");
+    }
+
+    public Community GetCommunityByID(int CommunityID)
+    {
+        try
+        {
+            return _communitiesRepo.GetCommunityByID(CommunityID);
+        }
+        catch
+        {
+            throw new Exception("Failed to get community by ID.");
+        }
     }
 }

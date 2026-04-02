@@ -9,10 +9,12 @@ namespace Boards_WP.Tests
 {
     public class CommentsServiceTests
     {
+        private const string ConnectionString = "Server=DESKTOP-1JCJMN6\\SQLEXPRESS;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
+
         private CommentsService CreateService()
         {
-            var repo = new CommentsRepository(DatabaseConfig.ConnectionString);
-            var notifRepo = new NotificationRepository(DatabaseConfig.ConnectionString);
+            var repo = new CommentsRepository(ConnectionString);
+            var notifRepo = new NotificationRepository(ConnectionString);
             return new CommentsService(repo, notifRepo);
         }
 
@@ -64,7 +66,7 @@ namespace Boards_WP.Tests
         {
             var service = CreateService();
 
-            var repo = new CommentsRepository(DatabaseConfig.ConnectionString);
+            var repo = new CommentsRepository(ConnectionString);
             var existingComments = repo.GetCommentsByPostID(1, 1);
             var rootComment = existingComments[0];
 
@@ -90,11 +92,11 @@ namespace Boards_WP.Tests
         public void AddComment_GivenDifferentUsers_CreatesNotification()
         {
             var service = CreateService();
-            var repo = new CommentsRepository(DatabaseConfig.ConnectionString);
-            var notifRepo = new NotificationRepository(DatabaseConfig.ConnectionString);
+            var repo = new CommentsRepository(ConnectionString);
+            var notifRepo = new NotificationRepository(ConnectionString);
 
             // Create a fake second user to test the notification logic safely
-            using (var connection = new Microsoft.Data.SqlClient.SqlConnection(DatabaseConfig.ConnectionString))
+            using (var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString))
             {
                 // Ensure UserID 2 exists!
                 var insertUserCmd = new Microsoft.Data.SqlClient.SqlCommand(@"

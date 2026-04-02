@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Boards_WP.Views.Pages"
     xmlns:views="using:Boards_WP.Views"
-    xmlns:viewmodels="using:Boards_WP.ViewModels"
     xmlns:models="using:Boards_WP.Data.Models"
     Background="Transparent">
 

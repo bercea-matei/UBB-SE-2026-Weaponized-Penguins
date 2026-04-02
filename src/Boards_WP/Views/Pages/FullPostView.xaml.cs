@@ -4,12 +4,13 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
 using Boards_WP.Data.Models;
+using Boards_WP.ViewModels;
 
 namespace Boards_WP.Views.Pages
 {
     public sealed partial class FullPostView : Page
     {
-        public ViewModels.FullPostViewModel ViewModel { get; }
+        public FullPostViewModel ViewModel { get; }
 
         public FullPostView()
         {

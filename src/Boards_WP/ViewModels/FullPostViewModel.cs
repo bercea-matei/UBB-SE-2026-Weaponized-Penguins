@@ -3,6 +3,7 @@ using System.IO;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -114,6 +115,20 @@ namespace Boards_WP.ViewModels
             _mainViewModel.ApplyNewTheme(newThemeColor);
         }
 
+        [RelayCommand]
+        private void ShowCommentArea()
+        {
+            IsCommentAreaVisible = true;
+        }
+
+        [RelayCommand]
+        private void CancelComment()
+        {
+            IsCommentAreaVisible = false;
+            NewCommentText = string.Empty;
+        }
+
+        
         [RelayCommand]
         private void PostComment()
         {

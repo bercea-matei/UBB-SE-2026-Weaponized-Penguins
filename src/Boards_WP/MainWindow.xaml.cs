@@ -1,6 +1,7 @@
-using Microsoft.UI.Xaml;
-
 using System;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 
 namespace Boards_WP
 {
@@ -10,15 +11,16 @@ namespace Boards_WP
         {
             this.InitializeComponent();
 
-            // tell the App class about this window so we can find it later (in case we need the main window)
             if (App.Current is App myApp)
             {
                 myApp.m_window = this;
             }
 
-            // loading the Feed by default when the app opens
-            ContentFrame.Navigate(typeof(Views.Pages.FeedView));
+            var navigationService = App.Services.GetRequiredService<INavigationService>();
+            navigationService.Initialize(ContentFrame);
+            navigationService.NavigateTo(typeof(Views.Pages.FeedView));
         }
+
 
         // pageType: can be any page (FeedPage, FullViewPage) and represents the next page the frame needs to load
         // parameter: is the data that needs to be displayed on this new page (and can be optional, which why we use "null")

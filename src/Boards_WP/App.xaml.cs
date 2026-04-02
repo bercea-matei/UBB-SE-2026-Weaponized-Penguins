@@ -33,45 +33,6 @@ public partial class App : Application
     {
         Services = ConfigureServices();
         InitializeComponent();
-
-        Services = new ServiceCollection()
-
-            .AddSingleton<INavigationService, NavigationService>()
-            .AddSingleton<UserSession>()
-
-            .AddSingleton<IPostsService, PostsService>()
-            .AddSingleton<ICommunitiesService, CommunitiesService>()
-            .AddSingleton<INotificationsService, NotificationsService>()
-            .AddSingleton<ICommentsService, CommentsService>()
-            .AddSingleton<IBetsService, BetsService>()
-            .AddSingleton<IUsersService, UsersService>()
-
-            .AddSingleton<string>("Data Source=DESKTOP\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True") 
-            .AddSingleton<IPostsRepository, PostsRepository>()
-            .AddSingleton<ICommunitiesRepository, CommunitiesRepository>()
-            .AddSingleton<INotificationRepository, NotificationRepository>()
-            .AddSingleton<ICommentsRepository, CommentsRepository>()
-            .AddSingleton<IBetsRepository, BetsRepository>()
-            .AddSingleton<IUsersRepository, UsersRepository>()
-            .AddSingleton<ITagsRepository, TagsRepository>()
-            .AddSingleton<IUsersMoodRepository, UsersMoodRepository>()
-
-            .AddSingleton<FeedViewModel>()
-            //VMs
-            //.AddTransient<CommunityViewModel>()
-            //.AddTransient<CreateCommunityViewModel>()
-            //.AddTransient<CreatePostViewModel>()
-            .AddTransient<FullPostViewModel>()
-            //.AddTransient<NotificationsViewModel>()
-            .AddTransient<MainViewModel>()
-
-            // Components / UserControls
-            //.AddTransient<PostPreviewViewModel>();
-            //.AddTransient<CommentViewModel>();
-            .AddTransient<CommunityBarViewModel>()
-            //.AddTransient<HeaderViewModel>();
-
-            .BuildServiceProvider();
     }
 
     
@@ -95,9 +56,21 @@ public partial class App : Application
 
     private static IServiceProvider ConfigureServices()
     {
+
+
         var services = new ServiceCollection();
 
-        // Services
+        services.AddSingleton<string>("Data Source=DESKTOP\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True");
+
+        services.AddSingleton<IPostsRepository, PostsRepository>();
+        services.AddSingleton<ICommunitiesRepository, CommunitiesRepository>();
+        services.AddSingleton<INotificationRepository, NotificationRepository>();
+        services.AddSingleton<ICommentsRepository, CommentsRepository>();
+        services.AddSingleton<IBetsRepository, BetsRepository>();
+        services.AddSingleton<IUsersRepository, UsersRepository>();
+        services.AddSingleton<ITagsRepository, TagsRepository>();
+        services.AddSingleton<IUsersMoodRepository, UsersMoodRepository>();
+
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<ICommunitiesService, CommunitiesService>();
         services.AddSingleton<IPostsService, PostsService>();
@@ -105,18 +78,22 @@ public partial class App : Application
         services.AddSingleton<IBetsService, BetsService>();
         services.AddSingleton<ICommentsService, CommentsService>();
         services.AddSingleton<INotificationsService, NotificationsService>();
+        services.AddSingleton<UserSession>();
 
-        // ViewModels
-        services.AddTransient<CreateCommunityViewModel>();
+        services.AddTransient<FeedViewModel>();
+        services.AddTransient<MainViewModel>();
+        services.AddTransient<CommunityBarViewModel>();
+        services.AddTransient<CreateCommunityViewModel>(); 
         services.AddTransient<UpdateCommunityViewModel>();
         services.AddTransient<CommunityViewModel>();
-        services.AddTransient<CreateTagViewModel>();
-        services.AddTransient<CommentViewModel>();
+        //services.AddTransient<CreatePostViewModel>();
         services.AddTransient<FullPostViewModel>();
         services.AddTransient<PostPreviewViewModel>();
+        services.AddTransient<CommentViewModel>();
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
 
         return services.BuildServiceProvider();
+
     }
 }

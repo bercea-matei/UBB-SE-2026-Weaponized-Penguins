@@ -53,7 +53,6 @@ namespace Boards_WP.ViewModels
                 return;
             }
 
-            // MAIN
 
             Windows.UI.Color actualColor = MapEnumToUiColor(newTheme);
             var gradientBrush = new LinearGradientBrush
@@ -68,7 +67,6 @@ namespace Boards_WP.ViewModels
 
             AppThemeBrush = gradientBrush;
 
-            // VIVID
 
             Windows.UI.Color actualVividColor = MapEnumToVividColor(newTheme);
             VividThemeColor = actualVividColor;
@@ -84,7 +82,6 @@ namespace Boards_WP.ViewModels
 
             VividThemeBrush = gradientBrushVivid;
 
-            // MID
 
             Windows.UI.Color actualMidColor = MapEnumToMidColor(newTheme);
             var gradientBrushMid = new LinearGradientBrush

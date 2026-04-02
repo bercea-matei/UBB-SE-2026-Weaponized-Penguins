@@ -7,15 +7,12 @@ using Boards_WP.Views.Pages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Boards_WP.ViewModels
 {
     public partial class CreateCommunityViewModel : ObservableObject
     {
         private readonly ICommunitiesService _communitiesService;
         private readonly INavigationService _navigationService;
-        private readonly MainViewModel _mainViewModel;
         private readonly UserSession _userSession;
 
         [ObservableProperty]
@@ -39,7 +36,10 @@ namespace Boards_WP.ViewModels
 
         public ObservableCollection<Community> SidebarList { get; set; } = [];
 
-        public CreateCommunityViewModel(ICommunitiesService communitiesService, INavigationService navigationService, UserSession userSession)
+        public CreateCommunityViewModel(
+            ICommunitiesService communitiesService,
+            INavigationService navigationService,
+            UserSession userSession)
         {
             _communitiesService = communitiesService;
             _navigationService = navigationService;
@@ -50,19 +50,18 @@ namespace Boards_WP.ViewModels
         private void CreateCommunity()
         {
             ErrorMessage = null;
-
             try
             {
-                Community createdCommunity = new Community
+                Community createdCommunity = new()
                 {
-                    Name = _communityName,
-                    Description = _communityDescription,
-                    Picture = _communityPicture,
-                    Banner = _communityBanner,
+                    Name = CommunityName,
+                    Description = CommunityDescription,
+                    Picture = CommunityPicture, 
+                    Banner = CommunityBanner,     
                     Admin = _userSession.CurrentUser
                 };
-                _communitiesService.AddCommunity(createdCommunity);
 
+                _communitiesService.AddCommunity(createdCommunity);
                 SidebarList.Add(createdCommunity);
                 _navigationService.NavigateTo(typeof(CommunityView), createdCommunity);
             }

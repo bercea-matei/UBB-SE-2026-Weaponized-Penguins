@@ -18,4 +18,6 @@ public interface ICommunitiesRepository
     public void AddUserToCommunity(int CommunityID, int UserID);
     public void RemoveUserFromCommunity(int CommunityID, int UserID);
 
+    public Community? GetCommunityByID(int CommunityID);
+
 }

@@ -1,10 +1,18 @@
- using System.Collections.ObjectModel;
 
+using System.Collections.ObjectModel;
 using Boards_WP.Data.Models;
-using Boards_WP.Data.Services; 
+using Boards_WP.Data.Services;
+using System.IO;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
+
+using Boards_WP.Data.Models;
+using Boards_WP.Data.Services;
 
 namespace Boards_WP.ViewModels
 {
@@ -19,10 +27,46 @@ namespace Boards_WP.ViewModels
         public MainViewModel MainViewModel => _mainViewModel;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(PostImageSource))]
+        [NotifyPropertyChangedFor(nameof(PostImageVisibility))]
         private Post _currentPost;
 
         [ObservableProperty]
         private string _newCommentText;
+
+        [ObservableProperty]
+        private bool _isCommentAreaVisible;
+
+        [ObservableProperty]
+        private bool _isShareAreaVisible;
+
+        [ObservableProperty]
+        private string _selectedChatName;
+
+        public ObservableCollection<string> HardcodedChats { get; } = new()
+        {
+            "General Chat", "Sports Fans", "Tech Talk", "Weaponized Penguins Team"
+        };
+
+        [RelayCommand]
+        private void ToggleShareArea()
+        {
+            IsShareAreaVisible = !IsShareAreaVisible;
+            if (IsShareAreaVisible)
+            {
+                IsCommentAreaVisible = false; 
+            }
+        }
+
+        [RelayCommand]
+        private void SendShare()
+        {
+            IsShareAreaVisible = false;
+            SelectedChatName = string.Empty;
+        }
+
+        public BitmapImage PostImageSource => ConvertToBitmap(CurrentPost?.Image);
+        public Visibility PostImageVisibility => CurrentPost?.Image?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
         public ObservableCollection<Comment> PostComments { get; } = new();
 
@@ -44,7 +88,6 @@ namespace Boards_WP.ViewModels
         {
             
             var fullPost = _postsService.GetPostByPostID(post.PostID);
-
             CurrentPost = fullPost ?? post;
             LoadComments();
         }
@@ -60,9 +103,16 @@ namespace Boards_WP.ViewModels
             var comments = _commentsService.GetCommentsByPost(CurrentPost.PostID, userId);
 
             foreach (var c in comments)
-            {
                 PostComments.Add(c);
-            }
+        }
+
+        private static BitmapImage ConvertToBitmap(byte[] data)
+        {
+            if (data == null || data.Length == 0) return null;
+            var bitmap = new BitmapImage();
+            using var ms = new MemoryStream(data);
+            bitmap.SetSource(ms.AsRandomAccessStream());
+            return bitmap;
         }
 
         [RelayCommand]
@@ -114,34 +164,47 @@ namespace Boards_WP.ViewModels
         }
 
         [RelayCommand]
+        private void ShowCommentArea()
+        {
+            IsCommentAreaVisible = true;
+        }
+
+        [RelayCommand]
+        private void CancelComment()
+        {
+            IsCommentAreaVisible = false;
+            NewCommentText = string.Empty;
+        }
+
+        
+        [RelayCommand]
         private void PostComment()
         {
             if (string.IsNullOrWhiteSpace(NewCommentText) || CurrentPost == null) return;
 
-            var currentUser = _userSession.CurrentUser;
-            if (currentUser == null) return;
-
-            
             var newComment = new Comment
             {
-                ParentPost = CurrentPost,    
-                Owner = currentUser,         // Required for Notifications
-                Description = NewCommentText
-                
+                ParentPost = CurrentPost,
+                Owner = _userSession.CurrentUser,
+                Description = NewCommentText,
+                CreationTime = DateTime.Now
             };
 
-            
-            _commentsService.AddComment(newComment);
+            try
+            {
+                _commentsService.AddComment(newComment);
+                PostComments.Insert(0, newComment);
+                CurrentPost.CommentsNumber++;
+                NewCommentText = string.Empty;
+                IsCommentAreaVisible = false;
 
-            
-            PostComments.Insert(0, newComment);
-
-            CurrentPost.CommentsNumber++;
-            _postsService.IncreaseCommentsNumber(CurrentPost.PostID);
-            OnPropertyChanged(nameof(CurrentPost));
-
-            
-            NewCommentText = string.Empty;
+                _postsService.IncreaseCommentsNumber(CurrentPost.PostID);
+                OnPropertyChanged(nameof(CurrentPost));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
         }
     }
 }

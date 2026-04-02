@@ -21,6 +21,7 @@ public partial class CommunityBarViewModel
 
     public MainViewModel MainViewModel => _mainViewModel;
 
+
     public ObservableCollection<Community> Communities { get; } = new();
 
     public CommunityBarViewModel(

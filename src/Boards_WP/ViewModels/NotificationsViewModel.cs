@@ -1,26 +1,14 @@
-using System;
-using System.Collections.ObjectModel;
-
-using Boards_WP.Data;
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Repositories;
-using Boards_WP.Data.Services;
-using Boards_WP.Data.Services.Interfaces;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-
 using Microsoft.UI.Text;
-
-using Windows.Networking.NetworkOperators;
 using Windows.UI.Text;
 
 namespace Boards_WP.ViewModels;
 
 public partial class NotificationItemViewModel : ObservableObject
 {
-    private readonly INotificationsService _notificationsService;
-    private readonly INavigationService _navigationService;
+    private readonly INotificationsService _notificationsService = App.GetService<INotificationsService>();
+    private readonly INavigationService _navigationService = App.GetService<INavigationService>();
 
     public Notification NotificationData { get; }
 
@@ -35,22 +23,20 @@ public partial class NotificationItemViewModel : ObservableObject
 
     public FontWeight MessageFontWeight => IsUnread ? FontWeights.Bold : FontWeights.Normal;
 
-    public NotificationItemViewModel(Notification notification, INotificationsService notificationsService, INavigationService navigationService = null)
+    public NotificationItemViewModel(Notification notification)
     {
         NotificationData = notification;
-        _notificationsService = notificationsService;
-        _navigationService = navigationService;
+
 
         if (_notificationsService != null)
         {
-            _message = _notificationsService.GetNotificationMessage(notification);
+            Message = _notificationsService.GetNotificationMessage(notification);
         }
         else
         {
-            
             string actorName = notification.Actor?.Username ?? "Someone";
             string postTitle = notification.RelatedPost?.Title ?? "a post";
-            _message = notification.ActionType switch
+            Message = notification.ActionType switch
             {
                 NotificationType.CommentOnPost => $"{actorName} commented on your post '{postTitle}'",
                 NotificationType.ReplyToComment => $"{actorName} replied to your comment",
@@ -83,7 +69,7 @@ public partial class NotificationItemViewModel : ObservableObject
                 _notificationsService.ReadNotification(NotificationData);
             }
             NotificationData.IsRead = true;
-            IsUnread = false; //  triggers MessageFontWeight update
+            IsUnread = false; 
         }
 
         if (NotificationData.RelatedPost != null && NotificationData.ActionType != NotificationType.PostDeleted)
@@ -103,33 +89,49 @@ public partial class NotificationItemViewModel : ObservableObject
 
 public partial class NotificationsListViewModel : ObservableObject
 {
-    private readonly INotificationsService _notificationsService;
+    private readonly INotificationsService _notificationsService = App.GetService<INotificationsService>();
+    private readonly MainViewModel _mainViewModel;
+    private readonly UserSession _userSession = App.GetService<UserSession>();
+
+    private int _currentOffset = 0;
+    private const int PageSize = 100; //--PAGINATION
+
+    [ObservableProperty]
+    private bool _hasMore = true;
 
     public ObservableCollection<NotificationItemViewModel> Notifications { get; } = new();
 
-    private readonly MainViewModel _mainViewModel;
-    private readonly UserSession _userSession;
-
-
     public MainViewModel MainViewModel => _mainViewModel;
 
-    public NotificationsListViewModel(UserSession userSession, MainViewModel mainViewModel, INotificationsService notificationsService = null)
+    public NotificationsListViewModel(MainViewModel mainViewModel)
     {
-        _notificationsService = notificationsService;
-        _userSession = userSession;
         _mainViewModel = mainViewModel;
-        LoadNotifications(1); // Assuming current user ID is 1 for now
+        LoadInitial(_userSession.CurrentUser.UserID);
     }
 
-    public void LoadNotifications(int userId)
+    public void LoadInitial(int userId)
     {
+        _currentOffset = 0;
         Notifications.Clear();
-        
-        var notifs = _notificationsService.GetNotificationsByUserID(userId);
-        foreach (var n in notifs)
+        LoadBatch();
+    }
+
+
+    [RelayCommand]
+    public void LoadBatch()
+    {
+        var userId = _userSession.CurrentUser.UserID;
+        var data = _notificationsService.GetNotificationsByUserId(userId, _currentOffset, PageSize);
+
+        if (data != null && data.Count > 0)
         {
-            Notifications.Add(new NotificationItemViewModel(n, _notificationsService));
+            foreach (var n in data)
+            {
+                Notifications.Add(new NotificationItemViewModel(n));
+            }
+            _currentOffset += data.Count;
         }
-        
+
+        HasMore = (data?.Count == PageSize);
     }
 }

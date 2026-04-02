@@ -40,7 +40,7 @@ namespace Boards_WP.ViewModels
         
         public void Initialize(Post post)
         {
-            /
+            
             var fullPost = _postsService.GetPostByPostID(post.PostID);
 
             CurrentPost = fullPost ?? post;

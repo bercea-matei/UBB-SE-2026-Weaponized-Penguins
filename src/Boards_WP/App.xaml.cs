@@ -92,7 +92,7 @@ public partial class App : Application
         services.AddTransient<FullPostViewModel>();
         services.AddTransient<PostPreviewViewModel>();
         services.AddTransient<HeaderViewModel>();
-        services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
+        services.AddSingleton<CommunityBarViewModel>(); 
 
         return services.BuildServiceProvider();
     }

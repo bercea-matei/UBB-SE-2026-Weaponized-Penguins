@@ -144,6 +144,7 @@ public class CommentsService : ICommentsService
         if (comment.Score > 0) sign = 1;
         else if (comment.Score < 0) sign = -1;
 
+
         double seconds = (comment.CreationTime - new DateTime(2020, 1, 1)).TotalSeconds;
 
         return (sign * order) + (seconds / 45000.0);

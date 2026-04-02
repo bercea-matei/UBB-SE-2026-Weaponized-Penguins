@@ -151,10 +151,12 @@ public class PostsRepository : IPostsRepository
         const string query = @"
         SELECT p.*, 
                u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
-               c.name AS community_name, c.description AS community_description
+               c.name AS community_name, c.description AS community_description,
+               adm.userID AS admin_userID, adm.username AS admin_username
         FROM Posts p
         JOIN Users u ON p.ownerID = u.userID
         JOIN Communities c ON p.communityID = c.communityID
+        JOIN Users adm ON c.adminID = adm.userID
         WHERE p.postID = @ID;
 
         SELECT t.tagID, t.tagName, cat.categoryID, cat.categoryName, cat.categoryColor, pt.position
@@ -209,10 +211,12 @@ public class PostsRepository : IPostsRepository
         string query = $@"
             SELECT p.*, 
                    u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
-                   c.name AS community_name, c.description AS community_description
+                   c.name AS community_name, c.description AS community_description,
+                   adm.userID AS admin_userID, adm.username AS admin_username
             FROM Posts p
             JOIN Users u ON p.ownerID = u.userID
             JOIN Communities c ON p.communityID = c.communityID
+            JOIN Users adm ON c.adminID = adm.userID
             WHERE p.communityID IN ({idList})";
 
         return FetchList(query);
@@ -226,7 +230,7 @@ public class PostsRepository : IPostsRepository
         string query = $@"
             SELECT p.*, 
                    u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
-                   c.name AS community_name, c.description AS community_description
+                   c.name AS community_name, c.description AS community_description,
                    adm.userID AS admin_userID, adm.username AS admin_username
             FROM Posts p
             JOIN Users u ON p.ownerID = u.userID
@@ -252,7 +256,7 @@ public class PostsRepository : IPostsRepository
 
     private static Post MapReaderToPost(SqlDataReader reader)
     {
-        var imageOrdinal = reader.GetOrdinal("image");
+        //var imageOrdinal = reader.GetOrdinal("Picture");
 
         var owner = new User
         {
@@ -263,7 +267,7 @@ public class PostsRepository : IPostsRepository
             AvatarUrl = reader.IsDBNull(reader.GetOrdinal("owner_avatarUrl")) ? null : reader.GetString(reader.GetOrdinal("owner_avatarUrl")),
             Bio = reader.IsDBNull(reader.GetOrdinal("owner_bio")) ? null : reader.GetString(reader.GetOrdinal("owner_bio")),
             Status = reader.IsDBNull(reader.GetOrdinal("owner_status")) ? null : reader.GetString(reader.GetOrdinal("owner_status"))
-        };
+        }; 
 
         var communityAdmin = new User
         {
@@ -285,7 +289,7 @@ public class PostsRepository : IPostsRepository
             PostID = reader.GetInt32(reader.GetOrdinal("postID")),
             Title = reader.GetString(reader.GetOrdinal("title")),
             Description = reader.GetString(reader.GetOrdinal("description")),
-            Image = reader.IsDBNull(imageOrdinal) ? null : (byte[])reader["image"],
+            //Image = reader.IsDBNull(imageOrdinal) ? null : (byte[])reader["image"],
             Score = reader.GetInt32(reader.GetOrdinal("score")),
             CommentsNumber = reader.GetInt32(reader.GetOrdinal("commentsNumber")),
             CreationTime = reader.GetDateTime(reader.GetOrdinal("creationTime")),

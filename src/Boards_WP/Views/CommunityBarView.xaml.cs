@@ -1,8 +1,6 @@
-using System.Collections.ObjectModel;
+using Boards_WP.ViewModels; // Adjust to your actual VM namespace
 
-using Boards_WP.Data.Models; 
-using Boards_WP.Views.Pages;
-
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -10,92 +8,45 @@ namespace Boards_WP.Views
 {
     public sealed partial class CommunityBarView : UserControl
     {
-        public ObservableCollection<Community> Communities { get; set; } = new();
+        // Reference to our ViewModel
+        public CommunityBarViewModel ViewModel { get; }
 
         public CommunityBarView()
         {
             this.InitializeComponent();
-            CommunityListView.ItemsSource = Communities;
 
-            Communities.Add(new Community { Name = "ComputerScience", Description = "Tech and coding.", Admin = new User { Username = "System" } });
-            Communities.Add(new Community { Name = "UBB", Description = "Universitatea Babeș-Bolyai.", Admin = new User { Username = "System" } });
-            Communities.Add(new Community { Name = "Weaponized_Penguins", Description = "Project team HQ.", Admin = new User { Username = "System" } });
+            // Get the ViewModel from the DI container
+            ViewModel = App.Services.GetRequiredService<CommunityBarViewModel>();
+
+            // Set the DataContext so XAML can bind to it
+            this.DataContext = ViewModel;
         }
 
         private void CommunityListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            if (e.ClickedItem is Community selected)
+            // Simply call the command in the ViewModel
+            if (e.ClickedItem is Data.Models.Community selected)
             {
-                // Try to get the frame from the XamlRoot (the actual window the control is in)
-                if (this.XamlRoot.Content is Frame rootFrame)
-                {
-                    rootFrame.Navigate(typeof(CommunityView), selected);
-                }
-                // If the Window.Content is a ShellPage (UserControl), we need to find the Frame inside it
-                else if (this.XamlRoot.Content is UIElement shell)
-                {
-                    // This looks specifically for a Frame named 'ContentFrame' in your ShellPage
-                    // Replace 'ContentFrame' with the x:Name you gave your Frame in ShellPage.xaml
-                    var frame = FindChildFrame(shell, "ContentFrame");
-                    frame?.Navigate(typeof(CommunityView), selected);
-                }
+                ViewModel.NavigateToCommunityCommand.Execute(selected);
             }
         }
 
-        // A more powerful helper to find the frame by name
-        private Frame FindChildFrame(DependencyObject parent, string frameName)
-        {
-            int count = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < count; i++)
-            {
-                var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(parent, i);
-                if (child is Frame f && f.Name == frameName) return f;
+        // We can now remove the complex FindChildFrame and manual navigation logic 
+        // for Home and Discover because the ViewModel handles them via RelayCommands!
 
-                var result = FindChildFrame(child, frameName);
-                if (result != null) return result;
-            }
-            return null;
+        private void HomeNavigation_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            ViewModel.NavigateHomeCommand.Execute(null);
         }
 
-        private void HomeNavigation_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void DiscoverNavigation_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            if (this.XamlRoot.Content is UIElement shell)
-            {
-                var rootFrame = FindChildFrame(shell, "ContentFrame");
-
-                if (rootFrame != null)
-                {
-                    rootFrame.Navigate(typeof(FeedView));
-                }
-            }
+            ViewModel.NavigateDiscoveryCommand.Execute(null);
         }
 
-        // function for the Discover button
-        private void DiscoverNavigation_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void StartCommunity_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            if (this.XamlRoot.Content is UIElement shell)
-            {
-                var rootFrame = FindChildFrame(shell, "ContentFrame");
-
-                if (rootFrame != null)
-                {
-                    rootFrame.Navigate(typeof(FeedView));
-                }
-            }
-        }
-
-        private void StartCommunity_ItemClick(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
-        {
-            if (this.XamlRoot.Content is UIElement shell)
-            {
-                var rootFrame = FindChildFrame(shell, "ContentFrame");
-                if (rootFrame != null)
-                {
-                    // We pass the ObservableCollection itself as a parameter 
-                    // so the Create page can add the new community to it directly.
-                    rootFrame.Navigate(typeof(CreateCommunityView), Communities);
-                }
-            }
+            ViewModel.NavigateCreateCommunityCommand.Execute(null);
         }
     }
 }

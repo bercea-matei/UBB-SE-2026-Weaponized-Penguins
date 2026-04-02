@@ -22,13 +22,14 @@ public class CommentsRepository : ICommentsRepository
     {
         const string query = @"
             INSERT INTO Comments (postID, parentID, ownerID, description, score, creationTime, indentation, isDeleted)
-            VALUES (@postID, @parentID, @ownerID, @description, @score, @creationTime, @indentation, @isDeleted)";
+            VALUES (@postID, @parentID, @ownerID, @description, @score, @creationTime, @indentation, @isDeleted);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
         using var connection = new SqlConnection(_connectionString);
         using var command = new SqlCommand(query, connection);
 
         command.Parameters.Add("@postID", SqlDbType.Int).Value = c.ParentPost.PostID;
-        command.Parameters.Add("@parentID", SqlDbType.Int).Value = (object?)c.ParentComment?.CommentID ?? DBNull.Value;
+        command.Parameters.Add("@parentID", SqlDbType.Int).Value = c.ParentComment != null && c.ParentComment.CommentID != 0 ? (object)c.ParentComment.CommentID : DBNull.Value;
         command.Parameters.Add("@ownerID", SqlDbType.Int).Value = c.Owner.UserID;
         command.Parameters.Add("@description", SqlDbType.NVarChar, 618).Value = c.Description;
         command.Parameters.Add("@score", SqlDbType.Int).Value = c.Score;
@@ -37,7 +38,7 @@ public class CommentsRepository : ICommentsRepository
         command.Parameters.Add("@isDeleted", SqlDbType.Bit).Value = c.IsDeleted;
 
         connection.Open();
-        command.ExecuteNonQuery();
+        c.CommentID = (int)command.ExecuteScalar();
     }
 
     public void SoftDeleteComment(int commentID)

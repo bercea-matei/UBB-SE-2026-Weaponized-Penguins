@@ -58,8 +58,8 @@ public partial class App : Application
         var services = new ServiceCollection();
 
 
-        //string connectionString = @"Data Source=DESKTOP\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
-        string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
+        //string connectionString = @"Data Source=DESKTOP\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
+        string connectionString = @"Server=DESKTOP-1JCJMN6\SQLEXPRESS;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
         services.AddSingleton(connectionString);
 
         //--repos

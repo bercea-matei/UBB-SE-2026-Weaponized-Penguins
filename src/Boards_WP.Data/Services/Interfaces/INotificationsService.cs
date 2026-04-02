@@ -12,7 +12,7 @@ namespace Boards_WP.Data.Services.Interfaces
     {
         void AddNotification(Notification notification);
         void ReadNotification(Notification notification);
-        List<Notification> GetNotificationsByUserID(int userID);
+        List<Notification> GetNotificationsByUserId(int userID, int offset, int limit);
         string GetNotificationMessage(Notification notification);
     }
 }

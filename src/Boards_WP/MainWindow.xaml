@@ -17,7 +17,7 @@
     </Window.SystemBackdrop>
 
     <!-- the window is divided into 2 rows (Row 0 is the header, Row 1 is the rest of the page: navigation and notifications sidebars and middle section) -->
-    <Grid Background="{Bind MainViewModel.AppThemeBrush, Mode=OneWay}">
+    <Grid Background="{x:Bind MainViewModel.AppThemeBrush, Mode=OneWay}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>

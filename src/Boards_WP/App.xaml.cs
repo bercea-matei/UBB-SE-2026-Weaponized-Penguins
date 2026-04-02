@@ -88,7 +88,7 @@ public partial class App : Application
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
         services.AddTransient<CreatePostViewModel>();
-
+        services.AddTransient<CommunityBarViewModel>();
         services.AddTransient<CreateCommunityViewModel>();
         services.AddTransient<UpdateCommunityViewModel>();
         services.AddTransient<CommunityViewModel>();

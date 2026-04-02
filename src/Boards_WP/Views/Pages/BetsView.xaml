@@ -12,19 +12,56 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Padding="20" Background="#1A1A2E">
-            <TextBlock Text="Weaponized Betting" FontSize="24" FontWeight="Bold" Foreground="White"/>
-        </StackPanel>
+        <Grid Grid.Row="0" Background="#1A1A2E" CornerRadius="8,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Weaponized Betting" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="White" 
+                       Padding="20"/>
+
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal" 
+                        VerticalAlignment="Center" 
+                        Spacing="25" 
+                        Margin="0,0,25,0"> <HyperlinkButton Content="Home" 
+                                 Foreground="White" 
+                                 FontSize="16" 
+                                 Command="{x:Bind ViewModel.ShowHomeCommand, Mode=OneWay}"
+                                 Opacity="{x:Bind ViewModel.HomeTabOpacity, Mode=OneWay}"
+                                 Padding="0"/>
+
+                <HyperlinkButton Content="Your bets" 
+                                 Foreground="White" 
+                                 FontSize="16" 
+                                 Command="{x:Bind ViewModel.ShowUserBetsCommand, Mode=OneWay}"
+                                 Opacity="{x:Bind ViewModel.UserBetsTabOpacity, Mode=OneWay}"
+                                 Padding="0"/>
+            </StackPanel>
+
+            <Button Grid.Column="2" 
+                    Content="Create New Bet" 
+                    Margin="0,0,20,0"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Background="#6A67E1"
+                    Command="{x:Bind ViewModel.CreateBetCommand, Mode=OneWay}"/>
+        </Grid>
 
         <ListView Grid.Row="1" 
-              ItemsSource="{Binding TestBets}" 
-              Padding="20" 
-              SelectionMode="None">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Bet">
-                        <local:BetItemControl BetData="{Binding}"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
+                  ItemsSource="{x:Bind ViewModel.FilteredBets, Mode=OneWay}" 
+                  Padding="20" 
+                  SelectionMode="None">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:Bet">
+                    <local:BetItemControl BetData="{Binding}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
     </Grid>
 </Page>

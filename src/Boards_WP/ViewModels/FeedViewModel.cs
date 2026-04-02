@@ -36,11 +36,11 @@ public partial class FeedViewModel : ObservableObject
         
         Posts.Clear();
 
-        // Fetch data from service
+        
         var userId = _userSession.CurrentUser?.UserID ?? 0;
         var data = _postsService.GetPostsForHomePage(userId);
 
-        // IMPORTANT: Add each post to the ObservableCollection
+        
         foreach (var post in data)
         {
             var previewVm = new PostPreviewViewModel(post, _postsService, _userSession, _mainViewModel);
@@ -54,10 +54,10 @@ public partial class FeedViewModel : ObservableObject
         Posts.Clear();
         var userId = _userSession.CurrentUser?.UserID ?? 0;
 
-        // Fetch raw database models
+        
         var rawPosts = _postsService.GetPostsForDiscoveryPage(userId);
 
-        // Wrap them in ViewModels before passing them to the UI!
+        
         foreach (var post in rawPosts)
         {
             var previewVm = new PostPreviewViewModel(post, _postsService, _userSession, _mainViewModel);

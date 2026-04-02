@@ -24,7 +24,7 @@ public partial class CreateTagViewModel : ObservableObject
 
     public ObservableCollection<Category> AvailableCategories { get; } = new();
 
-    // Fired when a tag is created so CreatePostViewModel can add it
+    
     public event Action<Tag>? TagCreated;
     public event Action? Cancelled;
 

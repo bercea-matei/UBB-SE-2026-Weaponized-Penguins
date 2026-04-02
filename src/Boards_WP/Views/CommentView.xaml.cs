@@ -45,6 +45,7 @@ namespace Boards_WP.Views
                 {
                     var userSession = App.GetService<UserSession>();
                     var commentsService = App.GetService<Boards_WP.Data.Services.Interfaces.ICommentsService>();
+                    var postsService = App.GetService<Boards_WP.Data.Services.Interfaces.IPostsService>();
 
                     var newReply = new Comment
                     {

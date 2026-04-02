@@ -71,26 +71,26 @@ namespace Boards_WP.ViewModels
         private void Join()
         {
             _communitiesService.AddUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
+            var userId = _userSession.CurrentUser.UserID;
 
             IsMember = true;
             CurrentCommunity.MembersNumber++;
             OnPropertyChanged(nameof(MemberCountText));
 
-            if (_sidebarList != null && !_sidebarList.Contains(CurrentCommunity))
-                _sidebarList.Add(CurrentCommunity);
+            App.GetService<CommunityBarViewModel>().LoadCommunities();
         }
         private bool CanJoin() => !IsMember;
 
         [RelayCommand(CanExecute = nameof(CanLeave))]
         private void Leave()
         {
-            _communitiesService.RemoveUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
+          _communitiesService.RemoveUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
 
-            IsMember = false;
-            CurrentCommunity.MembersNumber--;
-            OnPropertyChanged(nameof(MemberCountText));
+          IsMember = false;
+          CurrentCommunity.MembersNumber--;
+          OnPropertyChanged(nameof(MemberCountText));
 
-            _sidebarList?.Remove(CurrentCommunity);
+          _sidebarList?.Remove(CurrentCommunity); 
         }
         private bool CanLeave() => IsMember && !IsOwner;
 
@@ -125,10 +125,7 @@ namespace Boards_WP.ViewModels
                 OnPropertyChanged(nameof(ProfileImage));
                 LoadPosts(community.CommunityID);
             }
-            else if (parameter is ObservableCollection<Community> list)
-            {
-                _sidebarList = list;
-            }
+            
         }
 
         private void LoadPosts(int communityId)

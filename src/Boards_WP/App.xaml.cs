@@ -62,6 +62,8 @@ public partial class App : Application
         //string connectionString = @"Server=IONUT\SQLEXPRESS;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
         services.AddSingleton(connectionString);
 
+        services.AddSingleton<MainViewModel>();
+
         //--repos
         services.AddSingleton<IBetsRepository, BetsRepository>();
         services.AddSingleton<ICommentsRepository, CommentsRepository>();
@@ -85,11 +87,10 @@ public partial class App : Application
 
         // ViewModels
         services.AddSingleton<FeedViewModel>();
-        services.AddTransient<MainViewModel>();
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
         services.AddTransient<CreatePostViewModel>();
-
+        services.AddTransient<CommunityBarViewModel>();
         services.AddTransient<CreateCommunityViewModel>();
         services.AddTransient<UpdateCommunityViewModel>();
         services.AddTransient<CommunityViewModel>();
@@ -100,6 +101,7 @@ public partial class App : Application
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
         services.AddTransient<HeaderViewModel>();
+        services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
 
         return services.BuildServiceProvider();
     }

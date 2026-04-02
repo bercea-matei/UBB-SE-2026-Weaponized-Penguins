@@ -1,12 +1,3 @@
-using System;
-using System.Data;
-using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
-
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Repositories.Interfaces;
-using Boards_WP.Data.Services.Interfaces;
-
 namespace Boards_WP.Data.Services
 {
     public class NotificationsService : INotificationsService
@@ -42,9 +33,9 @@ namespace Boards_WP.Data.Services
             }
         }
 
-        public List<Notification> GetNotificationsByUserID(int userID)
+        public List<Notification> GetNotificationsByUserId(int userID, int offset, int limit)
         {
-            return _notificationsRepo.GetNotificationsByUserId(userID);
+            return _notificationsRepo.GetNotificationsByUserId(userID, offset, limit);
         }
 
         public string GetNotificationMessage(Notification notification)

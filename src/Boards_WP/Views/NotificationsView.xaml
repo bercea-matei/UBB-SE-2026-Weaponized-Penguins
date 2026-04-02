@@ -5,9 +5,6 @@
     xmlns:viewmodels="using:Boards_WP.ViewModels"
     xmlns:local="using:Boards_WP.Views">
 
-
-
-    <!-- we define how the Notifications sidebar should look like  -->
     <Border Background="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}" CornerRadius="15" Margin="4">
         <Grid Padding="15">
             <Grid.RowDefinitions>
@@ -15,21 +12,19 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- the header of the notifications sidebar (its layout) -->
             <TextBlock Text="Notifications" 
                        FontSize="18" 
                        FontWeight="SemiBold" 
                        Foreground="#6A67E1" 
                        Margin="0,0,0,15"/>
 
-
-            <!-- the actual list of notifications (its layout) -->
             <ListView x:Name="NotificationsList" 
-                      Grid.Row="1"
-                      SelectionMode="Single"
-                      IsItemClickEnabled="True"
-                      ItemClick="NotificationsList_ItemClick"
-                      Padding="0">
+                  Grid.Row="1"
+                  ItemsSource="{x:Bind ViewModel.Notifications, Mode=OneWay}" 
+                  SelectionMode="Single"
+                  IsItemClickEnabled="True"
+                  ItemClick="NotificationsList_ItemClick"
+                  Padding="0">
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
@@ -46,10 +41,8 @@
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     
-                                    <!-- this is for the moment when the mouse doesn't hover on notification, so nothing should happen -->
                                     <VisualState x:Name="Normal" />
 
-                                    <!-- this describes how the notification should change when on hover (maybe doesn't work properly right now :) -->
                                     <VisualState x:Name="PointerOver">
                                         <VisualState.Setters>
                                             <Setter Target="NotificationCard.BorderBrush" Value="#6A67E1"/>
@@ -60,9 +53,6 @@
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
 
-
-                            <!-- how one single notification looks like -->
-                            <!-- it splits the notification in 2 rows: Row 0 is for the message, Row 1 is for the time -->
                             <Border x:Name="NotificationCard"
                                     Background="White" 
                                     BorderBrush="#E0E0FF" 
@@ -75,7 +65,6 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- x:Bind Message displays the actual message -->
                                     <TextBlock Text="{x:Bind Message, Mode=OneWay}" 
                                                FontSize="13" 
                                                FontWeight="{x:Bind MessageFontWeight, Mode=OneWay}"
@@ -83,7 +72,6 @@
                                                TextWrapping="Wrap"
                                                VerticalAlignment="Center"/>
 
-                                    <!-- x:Bind Time displays the actual time -->
                                     <TextBlock Grid.Column="1" 
                                                Text="{x:Bind Time, Mode=OneWay}" 
                                                FontSize="11" 
@@ -95,6 +83,16 @@
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+                <ListView.Footer>
+                    <Button Content="Load More" 
+                    Command="{x:Bind ViewModel.LoadBatchCommand}"
+                    Visibility="{x:Bind GetVisibility(ViewModel.HasMore), Mode=OneWay}"
+                    HorizontalAlignment="Center" 
+                    Margin="10"
+                    Background="#6A67E1" 
+                    Foreground="White" 
+                    CornerRadius="8"/>
+                </ListView.Footer>
             </ListView>
         </Grid>
     </Border>

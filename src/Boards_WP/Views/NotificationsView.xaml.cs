@@ -1,22 +1,26 @@
-using System.Collections.ObjectModel;
-
 using Boards_WP.ViewModels;
 
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace Boards_WP.Views
 {
     public sealed partial class NotificationsView : UserControl
     {
-        public NotificationsListViewModel ViewModel { get; }
+        public NotificationsListViewModel ViewModel { get; private set; }
 
         public NotificationsView()
         {
             this.InitializeComponent();
-            ViewModel = App.Services.GetRequiredService<ViewModels.NotificationsListViewModel>();
-            NotificationsList.ItemsSource = ViewModel.Notifications;
+            this.Loaded += (s, e) => {
+                this.ViewModel = App.GetService<NotificationsListViewModel>();
+                this.DataContext = this.ViewModel;
+                this.Bindings.Update(); //--if you see an error here ignore it and just build, the app *should run ok
+            };
         }
+
+        public Visibility GetVisibility(bool isVisible)
+            => isVisible ? Visibility.Visible : Visibility.Collapsed;
 
         private void NotificationsList_ItemClick(object sender, ItemClickEventArgs e)
         {

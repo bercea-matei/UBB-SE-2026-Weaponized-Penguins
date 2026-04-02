@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-
-using Boards_WP.Data.Services;
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Boards_WP.ViewModels;
 using Boards_WP.Views.Pages;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
-using Boards_WP.Data.Services.Interfaces;
-using Boards_WP.Data.Services;
 
 namespace Boards_WP;
 
@@ -32,7 +21,6 @@ public partial class App : Application
     {
         Services = ConfigureServices();
         InitializeComponent();
-
     }
 
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
@@ -57,7 +45,8 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
-        string connectionString = @"Server=ALEX\ALEXSQLEXPRESS;Database=Communities;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+        //string connectionString = @"Server=ALEX\ALEXSQLEXPRESS;Database=Communities;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+        string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
         services.AddSingleton(connectionString);
 
         services.AddSingleton<MainViewModel>();
@@ -96,8 +85,6 @@ public partial class App : Application
         services.AddTransient<CommentViewModel>();
         services.AddTransient<FullPostViewModel>();
         services.AddTransient<PostPreviewViewModel>();
-        services.AddTransient<NotificationItemViewModel>();
-        services.AddTransient<NotificationsListViewModel>();
         services.AddTransient<HeaderViewModel>();
         services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
 

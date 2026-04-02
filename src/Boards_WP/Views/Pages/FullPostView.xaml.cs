@@ -15,13 +15,8 @@ namespace Boards_WP.Views.Pages
         {
             this.InitializeComponent();
 
-            // Resolve ViewModel from the DI container (keeps the constructor parameterless for XAML)
+            
             ViewModel = App.Services.GetRequiredService<ViewModels.FullPostViewModel>();
-        }
-
-        public static Microsoft.UI.Xaml.Visibility NullToVisibility(byte[] value)
-        {
-            return value != null ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -30,18 +25,15 @@ namespace Boards_WP.Views.Pages
             if (e.Parameter is Post clickedPost)
             {
                 ViewModel.Initialize(clickedPost);
-                this.Bindings.Update(); // This ensures the UI renders the data immediately
+                this.Bindings.Update();
             }
         }
 
-        // Note: Frame manipulation is purely UI-level logic, so it is acceptable 
-        // to leave this in the code-behind unless you are using a dedicated INavigationService.
+        
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             if (this.Frame.CanGoBack)
-            {
                 this.Frame.GoBack();
-            }
         }
     }
 }

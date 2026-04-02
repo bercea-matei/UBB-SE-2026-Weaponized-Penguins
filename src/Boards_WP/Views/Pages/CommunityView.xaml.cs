@@ -1,6 +1,7 @@
 using Boards_WP.Data.Services.Interfaces;
+
+
 using Boards_WP.ViewModels;
-using Boards_WP.Views.Pages;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
@@ -21,6 +22,10 @@ namespace Boards_WP.Views.Pages
                 postsService: postsService,
                 navigateToCreatePost: community => Frame.Navigate(typeof(CreatePostView), community)
             );
+
+           
+
+            this.DataContext = ViewModel;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

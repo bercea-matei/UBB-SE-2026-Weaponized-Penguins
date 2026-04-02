@@ -1,34 +1,39 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Extensions.DependencyInjection;
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-
+using Boards_WP.ViewModels;
 using Boards_WP.Data.Models;
 
 namespace Boards_WP.Views
 {
     public sealed partial class HeaderView : UserControl
     {
-        private List<string> _allCommunities = new List<string>
-        {
-            "Gaming", "Programming", "Art", "Music", "Computer Science", "UBB", "Weaponized Penguins"
-        };
-
-        public ObservableCollection<string> FilteredResults { get; set; } = new();
+        public HeaderViewModel ViewModel { get; private set; }
 
         public HeaderView()
         {
             this.InitializeComponent();
-            ResultsList.ItemsSource = FilteredResults;
+
+            this.Loaded += HeaderView_Loaded;
+        }
+
+        private void HeaderView_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (Application.Current is App myApp)
+            {
+                this.ViewModel = App.GetService<HeaderViewModel>();
+                this.DataContext = this.ViewModel;
+
+                this.Bindings.Update();
+            }
         }
 
         private void CommunitySearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
+                HandleSecretTrigger(sender);
                 string query = sender.Text.ToLower();
                 if (string.IsNullOrWhiteSpace(query))
                 {
@@ -46,32 +51,30 @@ namespace Boards_WP.Views
 
         private void ResultsList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var selectedName = e.ClickedItem as string;
-            if (selectedName != null)
+            if (e.ClickedItem is Community selectedCommunity && ViewModel != null)
             {
-                ResultsPopup.IsOpen = false;
-                CommunitySearchBox.Text = string.Empty;
-
-                var selectedCommunity = new Community
-                {
-                    Name = selectedName,
-                    Description = $"This is the official {selectedName} community.",
-                    MembersNumber = 123,
-                    Admin = new User { Username = "@System" }
-                };
+                ViewModel.SelectCommunityCommand.Execute(selectedCommunity);
 
                 NavigateToPage(typeof(Pages.CommunityView), selectedCommunity);
+                ResultsPopup.IsOpen = false;
             }
         }
 
-        private void CommunitySearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        public Visibility GetVisibility(bool showText)
+        {
+            // Restore the logic from 'main' - This is a UI converter
+            return showText ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        // Filip's logic belongs in a separate handler called by the SearchBox
+        private void HandleSecretTrigger(AutoSuggestBox sender)
         {
             string query = sender.Text.ToLower().Trim();
-            ResultsPopup.IsOpen = false;
-
+            
             // SECRET TRIGGER: /weaponizedpenguins
             if (query == "/weaponizedpenguins")
             {
+                ResultsPopup.IsOpen = false;
                 TokenDisplay.Visibility = Visibility.Visible;
                 sender.Text = string.Empty;
                 NavigateToPage(typeof(Pages.BetsView), null);

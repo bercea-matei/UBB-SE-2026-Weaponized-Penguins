@@ -1,3 +1,6 @@
+using System.Collections.ObjectModel;
+using Boards_WP.Data.Models;
+using Boards_WP.Data.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -20,6 +23,34 @@ namespace Boards_WP.ViewModels
 
         [ObservableProperty]
         private bool _isCommentAreaVisible;
+
+        [ObservableProperty]
+        private bool _isShareAreaVisible;
+
+        [ObservableProperty]
+        private string _selectedChatName;
+
+        public ObservableCollection<string> HardcodedChats { get; } = new()
+        {
+            "General Chat", "Sports Fans", "Tech Talk", "Weaponized Penguins Team"
+        };
+
+        [RelayCommand]
+        private void ToggleShareArea()
+        {
+            IsShareAreaVisible = !IsShareAreaVisible;
+            if (IsShareAreaVisible)
+            {
+                IsCommentAreaVisible = false; 
+            }
+        }
+
+        [RelayCommand]
+        private void SendShare()
+        {
+            IsShareAreaVisible = false;
+            SelectedChatName = string.Empty;
+        }
 
         public ObservableCollection<Comment> PostComments { get; } = new();
 
@@ -72,7 +103,6 @@ namespace Boards_WP.ViewModels
                 CurrentPost.Score = updatedPost.Score;
                 OnPropertyChanged(nameof(CurrentPost));
             }
-
 
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
@@ -141,5 +171,7 @@ namespace Boards_WP.ViewModels
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
+
+
     }
 }

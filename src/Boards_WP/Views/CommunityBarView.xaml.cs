@@ -6,10 +6,13 @@ namespace Boards_WP.Views
 {
     public sealed partial class CommunityBarView : UserControl
     {
+        public ObservableCollection<Community> Communities { get; set; } = new();
         public CommunityBarViewModel ViewModel { get; private set; }
 
         public CommunityBarView()
         {
+            this.ViewModel = App.GetService<CommunityBarViewModel>();
+            //to do - load communities from service
             this.InitializeComponent();
             this.Loaded += CommunityBarView_Loaded;
         }

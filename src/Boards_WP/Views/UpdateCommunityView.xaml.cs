@@ -15,24 +15,49 @@ using Boards_WP.ViewModels;
 
 namespace Boards_WP.Views.Pages
 {
-    public sealed partial class CreateCommunityView : Page
+    public sealed partial class UpdateCommunityView : Page
     {
-        public CreateCommunityViewModel ViewModel { get; }
+        public UpdateCommunityViewModel ViewModel { get; }
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetActiveWindow();
 
-        public CreateCommunityView()
+        public UpdateCommunityView()
         {
-            ViewModel = App.GetService<CreateCommunityViewModel>();
+            ViewModel = App.GetService<UpdateCommunityViewModel>();
             this.InitializeComponent();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
             if (e.Parameter is ObservableCollection<Community> list)
+            {
                 ViewModel.SidebarList = list;
+            }
+            else if (e.Parameter is Community community)
+            {
+                ViewModel.Initialize(community);
+
+                if (community.Banner != null)
+                {
+                    using var ms = new MemoryStream(community.Banner);
+                    var bmp = new BitmapImage();
+                    bmp.SetSource(ms.AsRandomAccessStream());
+                    BannerPreview.Source = bmp;
+                }
+
+                if (community.Picture != null)
+                {
+                    using var ms = new MemoryStream(community.Picture);
+                    var bmp = new BitmapImage();
+                    bmp.SetSource(ms.AsRandomAccessStream());
+                    PicturePreviewBrush.ImageSource = bmp;
+                    PicturePreviewMask.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                    PictureIcon.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                }
+            }
         }
 
         private async void PicturePicker_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

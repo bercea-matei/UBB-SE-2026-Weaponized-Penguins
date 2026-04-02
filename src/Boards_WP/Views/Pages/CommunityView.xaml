@@ -38,6 +38,10 @@
                                     <Button Content="Create Post"
                                             Command="{x:Bind ViewModel.CreatePostCommand}"
                                             Background="White" BorderBrush="#6A67E1" BorderThickness="1" CornerRadius="8"/>
+                                    <Button Content="Edit Community"
+                                            Command="{x:Bind ViewModel.EditCommunityCommand}"
+                                            Background="#EEF0FF" Foreground="#6A67E1" BorderBrush="#6A67E1" BorderThickness="1" CornerRadius="8"
+                                            Visibility="{x:Bind ViewModel.EditButtonVisibility, Mode=OneWay}"/>
                                     <Button Content="Leave Community"
                                             Command="{x:Bind ViewModel.LeaveCommand}"
                                             Background="#FFE0E0" Foreground="Red" BorderBrush="Red" BorderThickness="1" CornerRadius="8"/>

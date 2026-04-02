@@ -40,7 +40,11 @@ namespace Boards_WP.ViewModels
         // 2. Initialization Method (Called by the View when navigated to)
         public void Initialize(Post post)
         {
-            CurrentPost = post;
+            // Don't just trust the passed object; fetch the full data including 
+            // Community and Owner details from the service.
+            var fullPost = _postsService.GetPostByPostID(post.PostID);
+
+            CurrentPost = fullPost ?? post;
             LoadComments();
         }
 

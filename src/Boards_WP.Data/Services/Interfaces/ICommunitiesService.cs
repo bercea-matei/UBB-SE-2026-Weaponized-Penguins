@@ -16,5 +16,7 @@ namespace Boards_WP.Data.Services
         public List<Community> GetCommunitiesUserIsPartOf(int UserID);
         public Boolean IsPartOfCommunity(int UserID, int CommunityID);
         public ThemeColor DetermineCommunityThemeColor(int CommunityID);
+
+        public Community GetCommunityByID(int CommunityID);
     }
 }

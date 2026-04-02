@@ -6,6 +6,11 @@
     xmlns:models="using:Boards_WP.Data.Models"
     x:DataType="local:BetItemControl">
 
+    <UserControl.Resources>
+        <local:OddsConverter x:Key="OddsConverter"/>
+        <local:TimeRemainingConverter x:Key="TimeConverter"/>
+    </UserControl.Resources>
+
     <Border Background="White" CornerRadius="12" Margin="0,0,0,16" Padding="20" 
             BorderBrush="#E0E0FF" BorderThickness="1">
         <StackPanel Spacing="15">
@@ -32,21 +37,55 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal" Spacing="25">
-                    <StackPanel>
+                    <StackPanel Spacing="8">
                         <TextBlock Text="Yes Odds" FontSize="11" Foreground="Gray"/>
-                        <TextBlock Text="1.85x" FontSize="16" FontWeight="SemiBold" Foreground="Green"/>
+                        <TextBlock Text="{x:Bind BetData.YesAmount, Mode=OneWay, Converter={StaticResource OddsConverter}}" 
+                                   FontSize="16" FontWeight="SemiBold" Foreground="Green"/>
+                        <Button Content="Bet Yes" Click="ShowBetPanel_Click" Tag="Yes" 
+                                Background="#E8F5E9" Foreground="Green" Padding="12,2"/>
                     </StackPanel>
-                    <StackPanel>
+                    
+                    <StackPanel Spacing="8">
                         <TextBlock Text="No Odds" FontSize="11" Foreground="Gray"/>
-                        <TextBlock Text="2.10x" FontSize="16" FontWeight="SemiBold" Foreground="Red"/>
+                        <TextBlock Text="{x:Bind BetData.NoAmount, Mode=OneWay, Converter={StaticResource OddsConverter}}" 
+                                   FontSize="16" FontWeight="SemiBold" Foreground="Red"/>
+                        <Button Content="Bet No" Click="ShowBetPanel_Click" Tag="No" 
+                                Background="#FFEBEE" Foreground="Red" Padding="12,2"/>
                     </StackPanel>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="Time left to bet" FontSize="11" Foreground="Gray" HorizontalAlignment="Right"/>
-                    <TextBlock Text="02h 45m" FontSize="16" FontWeight="Bold" Foreground="#6A67E1"/>
+                    <TextBlock Text="{x:Bind BetData.EndingTime, Mode=OneWay, Converter={StaticResource TimeConverter}}" 
+                               FontSize="16" FontWeight="Bold" Foreground="#6A67E1"/>
                 </StackPanel>
             </Grid>
+
+              <StackPanel x:Name="BetInputPanel" 
+                            Visibility="Collapsed" 
+                            Orientation="Horizontal" 
+                            Spacing="10" 
+                            Background="#F0F0FF" 
+                            Padding="10" 
+                            CornerRadius="8">
+    
+                    <NumberBox x:Name="TokenInput" 
+                               PlaceholderText="Amount" 
+                               Minimum="1" 
+                               Maximum="999" 
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="10"
+                               Width="150" />
+
+                    <Button Content="Confirm" 
+                            Style="{StaticResource AccentButtonStyle}"
+                            Command="{x:Bind BetCommand, Mode=OneWay}" 
+                            CommandParameter="{x:Bind TokenInput.Value, Mode=OneWay}"
+                            Click="HideBetPanel_Click" />
+    
+                    <Button Content="Cancel" 
+                            Click="HideBetPanel_Click"/>
+                </StackPanel>
         </StackPanel>
     </Border>
 </UserControl>

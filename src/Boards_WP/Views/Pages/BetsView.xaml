@@ -16,15 +16,15 @@
             <TextBlock Text="Weaponized Betting" FontSize="24" FontWeight="Bold" Foreground="White"/>
         </StackPanel>
 
-        <ListView Grid.Row="1" 
-              ItemsSource="{Binding TestBets}" 
-              Padding="20" 
-              SelectionMode="None">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Bet">
-                        <local:BetItemControl BetData="{Binding}"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
+       <ListView Grid.Row="1" 
+                  ItemsSource="{x:Bind TestBets}" 
+                  Padding="20" 
+                  SelectionMode="None">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:Bet">
+                    <local:BetItemControl BetData="{Binding}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
     </Grid>
 </Page>

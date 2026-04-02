@@ -1,11 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using Boards_WP.Data.Models;
-using System;
 
-namespace Boards_WP.Views.Pages
+namespace Boards_WP.Views.Pages // Matches the x:Class above
 {
     public sealed partial class BetsView : Page
     {
@@ -13,30 +9,15 @@ namespace Boards_WP.Views.Pages
 
         public BetsView()
         {
-            this.InitializeComponent();
+            this.InitializeComponent(); // This should now turn blue/work
 
-            // Example 1: Post
+            // Add your sample data here for testing
             TestBets.Add(new Bet
             {
                 Expression = "Weaponized Penguins",
                 BetCommunity = new Community { Name = "UBB" },
-                Type = BetType.Post,
                 StartingTime = DateTime.Now,
-                EndingTime = DateTime.Now.AddDays(2),
-                YesAmount = 450,
-                NoAmount = 120
-            });
-
-            // Example 2: Comment
-            TestBets.Add(new Bet
-            {
-                Expression = "Compiler Error",
-                BetCommunity = new Community { Name = "Programming" },
-                Type = BetType.Comment,
-                StartingTime = DateTime.Now.AddHours(-1),
-                EndingTime = DateTime.Now.AddHours(5),
-                YesAmount = 20,
-                NoAmount = 1000
+                EndingTime = DateTime.Now.AddDays(1)
             });
         }
 

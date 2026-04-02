@@ -5,13 +5,26 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 using Boards_WP.Data.Models;
 
 namespace Boards_WP.Views
 {
-    public sealed partial class HeaderView : UserControl
+    public sealed partial class HeaderView : UserControl, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private int _userTokens = 1250;
+        public int UserTokens
+        {
+            get => _userTokens;
+            set { if (_userTokens != value) { _userTokens = value; OnPropertyChanged(); } }
+        }
+
         private List<string> _allCommunities = new List<string>
         {
             "Gaming", "Programming", "Art", "Music", "Computer Science", "UBB", "Weaponized Penguins"
@@ -22,7 +35,7 @@ namespace Boards_WP.Views
         public HeaderView()
         {
             this.InitializeComponent();
-            ResultsList.ItemsSource = FilteredResults;
+            this.DataContext = this;
         }
 
         private void CommunitySearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -46,8 +59,7 @@ namespace Boards_WP.Views
 
         private void ResultsList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var selectedName = e.ClickedItem as string;
-            if (selectedName != null)
+            if (e.ClickedItem is string selectedName)
             {
                 ResultsPopup.IsOpen = false;
                 CommunitySearchBox.Text = string.Empty;
@@ -69,16 +81,17 @@ namespace Boards_WP.Views
             string query = sender.Text.ToLower().Trim();
             ResultsPopup.IsOpen = false;
 
-            // SECRET TRIGGER: /weaponizedpenguins
             if (query == "/weaponizedpenguins")
             {
                 TokenDisplay.Visibility = Visibility.Visible;
                 sender.Text = string.Empty;
+
+                UserTokens += 5;
+
                 NavigateToPage(typeof(Pages.BetsView), null);
             }
         }
 
-        // Helper method to handle navigation logic safely
         private void NavigateToPage(Type pageType, object parameter)
         {
             if (App.Current is App myApp && myApp.m_window != null)

@@ -30,6 +30,7 @@ public partial class App : Application
 
     public App()
     {
+        Services = ConfigureServices();
         InitializeComponent();
     }
 
@@ -83,8 +84,9 @@ public partial class App : Application
         // ViewModels
         services.AddSingleton<FeedViewModel>();
         services.AddTransient<MainViewModel>();
-        //.AddTransient<NotificationsViewModel>()
-        //services.AddTransient<CreatePostViewModel>()
+        services.AddTransient<NotificationItemViewModel>();
+        services.AddTransient<NotificationsListViewModel>();
+        services.AddTransient<CreatePostViewModel>();
 
         services.AddTransient<CreateCommunityViewModel>();
         services.AddTransient<UpdateCommunityViewModel>();

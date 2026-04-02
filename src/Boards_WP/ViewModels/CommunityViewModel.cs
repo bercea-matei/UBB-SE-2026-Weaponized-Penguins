@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
-
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Services;
-using Boards_WP.Data.Services.Interfaces;
-
 using CommunityToolkit.Mvvm.ComponentModel;
+
 using CommunityToolkit.Mvvm.Input;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -71,7 +63,6 @@ public ObservableCollection<PostPreviewViewModel> CommunityPosts { get; } = new(
         private void Join()
         {
             _communitiesService.AddUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
-            var userId = _userSession.CurrentUser.UserID;
 
             IsMember = true;
             CurrentCommunity.MembersNumber++;
@@ -86,11 +77,19 @@ public ObservableCollection<PostPreviewViewModel> CommunityPosts { get; } = new(
         {
           _communitiesService.RemoveUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
 
-          IsMember = false;
-          CurrentCommunity.MembersNumber--;
-          OnPropertyChanged(nameof(MemberCountText));
+            if (_communitiesService.CheckOwner(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID))
+            {
+                return;
+            }
 
-          _sidebarList?.Remove(CurrentCommunity); 
+            _communitiesService.RemoveUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
+
+            IsMember = false;
+            CurrentCommunity.MembersNumber--;
+            OnPropertyChanged(nameof(MemberCountText));
+
+            //App.GetService<CommunityBarViewModel>().LoadCommunities();
+            _sidebarList?.Remove(CurrentCommunity); 
         }
         private bool CanLeave() => IsMember && !IsOwner;
 

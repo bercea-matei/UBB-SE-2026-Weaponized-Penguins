@@ -52,12 +52,11 @@
                 </Grid>
             </Border>
 
-                <StackPanel Visibility="{x:Bind ViewModel.IsReplyAreaVisible, Mode=OneWay}" Margin="40,10,0,0" Spacing="8">
-                    <TextBox Text="{x:Bind ViewModel.ReplyText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                             PlaceholderText="Write a reply..." AcceptsReturn="True"/>
-                    <Button Content="Post Reply" Command="{x:Bind ViewModel.SubmitReplyCommand}" 
-                            HorizontalAlignment="Right" Background="white" Foreground="White" CornerRadius="8"/>
-                </StackPanel>
+            <StackPanel Visibility="{x:Bind ViewModel.IsReplyAreaVisible, Mode=OneWay}" Margin="40,10,0,0" Spacing="8">
+                <TextBox Text="{x:Bind ViewModel.ReplyText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                         PlaceholderText="Write a reply..." AcceptsReturn="True"/>
+                <Button Content="Post Reply" Command="{x:Bind ViewModel.SubmitReplyCommand}" 
+                        HorizontalAlignment="Right" Background="white" Foreground="White" CornerRadius="8"/>
             </StackPanel>
         </StackPanel>
     </Grid>

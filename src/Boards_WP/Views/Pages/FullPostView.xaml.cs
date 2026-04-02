@@ -14,8 +14,6 @@ namespace Boards_WP.Views.Pages
         public FullPostView()
         {
             this.InitializeComponent();
-
-            // Resolve ViewModel from the DI container (keeps the constructor parameterless for XAML)
             ViewModel = App.Services.GetRequiredService<ViewModels.FullPostViewModel>();
         }
 
@@ -30,12 +28,11 @@ namespace Boards_WP.Views.Pages
             if (e.Parameter is Post clickedPost)
             {
                 ViewModel.Initialize(clickedPost);
-                this.Bindings.Update(); // This ensures the UI renders the data immediately
+                this.Bindings.Update(); 
             }
         }
 
-        // Note: Frame manipulation is purely UI-level logic, so it is acceptable 
-        // to leave this in the code-behind unless you are using a dedicated INavigationService.
+
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             if (this.Frame.CanGoBack)

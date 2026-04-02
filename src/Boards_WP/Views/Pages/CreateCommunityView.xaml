@@ -9,7 +9,7 @@
             <TextBlock Text="Start a Community" 
                        FontSize="32" 
                        FontWeight="Bold" 
-                       Foreground="white"/>
+                       Foreground="{x:"/>
 
         
             <Grid Height="160" CornerRadius="12" Background="#E0E0E0">

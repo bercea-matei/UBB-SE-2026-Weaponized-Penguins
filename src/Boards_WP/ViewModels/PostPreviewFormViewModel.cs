@@ -11,6 +11,8 @@ namespace Boards_WP.ViewModels
         private readonly UserSession _userSession;
         private readonly MainViewModel _mainViewModel;
 
+        public MainViewModel MainViewModel => _mainViewModel;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(FormattedDate))]
         [NotifyPropertyChangedFor(nameof(DescriptionSnippet))] 
@@ -57,19 +59,19 @@ namespace Boards_WP.ViewModels
             var userId = _userSession.CurrentUser?.UserID ?? 0;
             if (userId == 0) return;
 
-            // 1. Tell the service to execute its logic
+            
             _postsService.IncreaseScore(PostData.PostID);
             _postsService.UpdateUserInterests(userId, PostData, VoteType.Like, false);
 
-            // 2. Fetch the true, calculated score back from the database
+           
             var updatedPost = _postsService.GetPostByPostID(PostData.PostID);
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(PostData)); // Instantly update UI
+                OnPropertyChanged(nameof(PostData)); 
             }
 
-            // 3. Update the theme
+            
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
 
@@ -82,19 +84,19 @@ namespace Boards_WP.ViewModels
             var userId = _userSession.CurrentUser?.UserID ?? 0;
             if (userId == 0) return;
 
-            // 1. Tell the service to execute its logic
+            
             _postsService.DecreaseScore(PostData.PostID);
             _postsService.UpdateUserInterests(userId, PostData, VoteType.Dislike, false);
 
-            // 2. Fetch the true, calculated score back from the database
+            
             var updatedPost = _postsService.GetPostByPostID(PostData.PostID);
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(PostData)); // Instantly update UI
+                OnPropertyChanged(nameof(PostData)); 
             }
 
-            // 3. Update the theme
+            
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
         }

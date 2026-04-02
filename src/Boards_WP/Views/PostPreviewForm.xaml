@@ -36,7 +36,7 @@
                         Background="Transparent" BorderThickness="0" HorizontalAlignment="Center"/>
 
                 <TextBlock Text="{x:Bind ViewModel.PostData.Score, Mode=OneWay}" 
-                           HorizontalAlignment="Center" FontWeight="Bold" Foreground="white"/>
+                           HorizontalAlignment="Center" FontWeight="Bold" Foreground="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}"/>
                 
                 <Button Content="▼" Command="{x:Bind ViewModel.DownvoteCommand, Mode=OneWay}" 
                         Background="Transparent" BorderThickness="0" HorizontalAlignment="Center"/>
@@ -67,7 +67,7 @@
             <StackPanel Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Center">
                 <Border BorderBrush="#E0E0FF" BorderThickness="1" CornerRadius="5" Padding="5">
                     <StackPanel>
-                        <FontIcon Glyph="&#xE8BD;" FontSize="18" Foreground="white"/>
+                        <FontIcon Glyph="&#xE8BD;" FontSize="18" Foreground="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}"/>
                         <TextBlock Text="{x:Bind ViewModel.PostData.CommentsNumber, Mode=OneWay}" HorizontalAlignment="Center" FontSize="10"/>
                     </StackPanel>
                 </Border>

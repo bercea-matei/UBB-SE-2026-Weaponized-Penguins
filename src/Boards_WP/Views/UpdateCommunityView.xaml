@@ -9,7 +9,7 @@
             <TextBlock Text="Start a Community" 
                        FontSize="32" 
                        FontWeight="Bold" 
-                       Foreground="white"/>
+                       Foreground="black"/>
 
 
             <Grid Height="160" CornerRadius="12" Background="#E0E0E0">
@@ -77,7 +77,7 @@
 
                 <Button Content="Update the community" 
                         Command="{x:Bind ViewModel.UpdateCommunityCommand}"
-                        Background="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}" 
+                        Background="{x:Bind ViewModel.MainViewModel.MidThemeBrush, Mode=OneWay}" 
                         Foreground="White" 
                         FontWeight="Bold"
                         Padding="30,12" 

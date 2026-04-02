@@ -22,6 +22,9 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         private Brush _midThemeBrush;
 
+        [ObservableProperty]
+        private bool _isLoggedIn = false;
+
         private readonly Windows.UI.Color _defaultColor = Windows.UI.Color.FromArgb(255, 230, 226, 255);
         private readonly Windows.UI.Color _defaultVividColor = Windows.UI.Color.FromArgb(255, 120, 90, 200);
         private readonly Windows.UI.Color _defaultMidColor = Windows.UI.Color.FromArgb(255, 175, 150, 230);

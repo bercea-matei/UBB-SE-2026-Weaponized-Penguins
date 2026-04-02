@@ -144,6 +144,8 @@ public class PostsService : IPostsService
 
             _postsRepo.DecreaseScore(postId);
             _postsRepo.DecreaseScore(postId);
+
+            _lastLikesOfCurrentUser.RemoveAll(p => p.PostID == postId);
         }
         else
         {

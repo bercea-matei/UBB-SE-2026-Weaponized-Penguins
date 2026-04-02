@@ -28,6 +28,14 @@
                      CornerRadius="8" 
                      HorizontalAlignment="Stretch"/>
 
+            <ComboBox x:Name="CategorySelector" 
+                      ItemsSource="{x:Bind ViewModel.AvailableCategories, Mode=OneWay}"
+                      SelectedItem="{x:Bind ViewModel.SelectedCategory, Mode=TwoWay}"
+                      DisplayMemberPath="CategoryName"
+                      PlaceholderText="Select Category" 
+                      Width="300" 
+                      CornerRadius="8"/>
+
             <TextBox x:Name="TagsInput" 
                      Text="{x:Bind ViewModel.TagsInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      PlaceholderText="Add tags (e.g. tech, ubb, fun)" 

@@ -22,6 +22,36 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         private string _replyText = string.Empty;
 
+        [ObservableProperty]
+        private bool _isShareVisible;
+
+        [ObservableProperty]
+        private string _selectedChatName;
+
+        public ObservableCollection<string> HardcodedChats { get; } = new()
+        {
+            "General Chat", "Sports Fans", "Tech Talk", "Weaponized Penguins Team"
+        };
+
+        [RelayCommand]
+        private void ToggleShare()
+        {
+            IsShareVisible = !IsShareVisible;
+            if (IsShareVisible)
+            {
+                IsReplyAreaVisible = false;
+            }
+        }
+
+        [RelayCommand]
+        private void SendShare()
+        {
+            System.Diagnostics.Debug.WriteLine($"Sharing comment to: {SelectedChatName}");
+
+            IsShareVisible = false;
+            SelectedChatName = string.Empty;
+        }
+
         public Action<Comment, string> ReplySubmitted { get; set; }
 
         public IRelayCommand UpvoteCommand { get; }

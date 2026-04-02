@@ -1,10 +1,4 @@
-using System;
 using System.Data;
-using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
-
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Repositories.Interfaces;
 
 namespace Boards_WP.Data.Repositories
 {
@@ -54,7 +48,7 @@ namespace Boards_WP.Data.Repositories
             command.ExecuteNonQuery();
         }
 
-        public List<Notification> GetNotificationsByUserId(int userId)
+        public List<Notification> GetNotificationsByUserId(int userId, int offset, int limit)
         {
             const string query = @"
                 SELECT
@@ -84,12 +78,16 @@ namespace Boards_WP.Data.Repositories
                 JOIN Users actor    ON n.actorID    = actor.userID
 LEFT JOIN Posts p          ON n.postID     = p.postID
                 WHERE n.receiverID = @UserID
-                ORDER BY n.creationTime DESC";
+                ORDER BY n.creationTime DESC
+                OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY";
+
 
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
 
             command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+            command.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+            command.Parameters.Add("@Limit", SqlDbType.Int).Value = limit;
 
             connection.Open();
             using var reader = command.ExecuteReader();

@@ -9,6 +9,6 @@ namespace Boards_WP.Data.Repositories.Interfaces
     {
         int AddNotification(Notification notification);
         void MarkNotificationAsRead(int notificationId);
-        List<Notification> GetNotificationsByUserId(int userId);
+        List<Notification> GetNotificationsByUserId(int userID, int offset, int limit);
     }
 }

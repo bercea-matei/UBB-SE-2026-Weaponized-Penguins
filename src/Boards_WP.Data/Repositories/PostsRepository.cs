@@ -151,7 +151,7 @@ public class PostsRepository : IPostsRepository
         const string query = @"
         SELECT p.*, 
                u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
-               c.name AS community_name, c.description AS community_description,
+               c.name AS community_name, c.description AS community_description, c.picture AS community_picture,
                adm.userID AS admin_userID, adm.username AS admin_username
         FROM Posts p
         JOIN Users u ON p.ownerID = u.userID
@@ -211,7 +211,7 @@ public class PostsRepository : IPostsRepository
         string query = $@"
             SELECT p.*, 
                    u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
-                   c.name AS community_name, c.description AS community_description,
+                   c.name AS community_name, c.description AS community_description, c.picture AS community_picture,
                    adm.userID AS admin_userID, adm.username AS admin_username
             FROM Posts p
             JOIN Users u ON p.ownerID = u.userID
@@ -238,7 +238,7 @@ public class PostsRepository : IPostsRepository
         string query = $@"
             SELECT p.*, 
                    u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
-                   c.name AS community_name, c.description AS community_description,
+                   c.name AS community_name, c.description AS community_description, c.picture AS community_picture,
                    adm.userID AS admin_userID, adm.username AS admin_username
             FROM Posts p
             JOIN Users u ON p.ownerID = u.userID
@@ -343,6 +343,7 @@ public class PostsRepository : IPostsRepository
             CommunityID = reader.GetInt32(reader.GetOrdinal("communityID")),
             Name = reader.GetString(reader.GetOrdinal("community_name")),
             Description = reader.GetString(reader.GetOrdinal("community_description")),
+            Picture = reader.IsDBNull(reader.GetOrdinal("community_picture")) ? null : (byte[])reader["community_picture"],
             Admin = communityAdmin,
         };
 

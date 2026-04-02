@@ -50,9 +50,14 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel>
-                        <TextBlock Text="{x:Bind ViewModel.CommunityName, Mode=OneWay}" FontWeight="Bold" FontSize="14"/>
-                        <TextBlock Text="{x:Bind ViewModel.AuthorUsername, Mode=OneWay}" FontSize="12" Foreground="Gray"/>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <PersonPicture ProfilePicture="{x:Bind helpers:ImageHelper.ConvertToBitmap(ViewModel.PostData.ParentCommunity.Picture), Mode=OneWay}"
+                                       DisplayName="{x:Bind ViewModel.CommunityName, Mode=OneWay}"
+                                       Height="36" Width="36"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{x:Bind ViewModel.CommunityName, Mode=OneWay}" FontWeight="Bold" FontSize="14"/>
+                            <TextBlock Text="{x:Bind ViewModel.AuthorUsername, Mode=OneWay}" FontSize="12" Foreground="Gray"/>
+                        </StackPanel>
                     </StackPanel>
 
                     <TextBlock Grid.Column="1" 

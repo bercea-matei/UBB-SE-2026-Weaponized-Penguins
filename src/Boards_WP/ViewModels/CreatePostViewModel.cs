@@ -1,5 +1,7 @@
 using System;
+using System.Collections.ObjectModel;
 using Boards_WP.Data.Models;
+using Boards_WP.Data.Repositories.Interfaces;
 using Boards_WP.Data.Services.Interfaces;
 using Boards_WP.Views.Pages;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,6 +14,7 @@ namespace Boards_WP.ViewModels
         private readonly IPostsService _postsService;
         private readonly INavigationService _navigationService;
         private readonly UserSession _userSession;
+        private readonly ITagsRepository _tagsRepository;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(UploadPostCommand))]
@@ -23,13 +26,28 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         private string _tagsInput = string.Empty;
 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(UploadPostCommand))]
+        private Category? _selectedCategory;
+
+        public ObservableCollection<Category> AvailableCategories { get; } = new();
+
         public Community OriginCommunity { get; set; } = null!;
 
-        public CreatePostViewModel(IPostsService postsService, INavigationService navigationService, UserSession userSession)
+        public CreatePostViewModel(IPostsService postsService, INavigationService navigationService, UserSession userSession, ITagsRepository tagsRepository)
         {
             _postsService = postsService;
             _navigationService = navigationService;
             _userSession = userSession;
+            _tagsRepository = tagsRepository;
+            LoadCategories();
+        }
+
+        private void LoadCategories()
+        {
+            AvailableCategories.Clear();
+            var categories = _tagsRepository.GetAllCategories();
+            foreach (var c in categories) AvailableCategories.Add(c);
         }
 
         [RelayCommand(CanExecute = nameof(CanUploadPost))]
@@ -46,6 +64,33 @@ namespace Boards_WP.ViewModels
                 CreationTime = DateTime.Now
             };
 
+            if (SelectedCategory != null)
+            {
+                var inputTags = TagsInput.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var createdTags = new System.Collections.Generic.List<Tag>();
+
+                foreach(var tagName in inputTags)
+                {
+                    var tag = new Tag
+                    {
+                        TagName = tagName,
+                        CategoryBelongingTo = SelectedCategory
+                    };
+                    _tagsRepository.AddTag(tag);
+                    createdTags.Add(tag);
+                }
+
+                if (createdTags.Count == 0)
+                {
+                    // Ensure at least one tag is added if none typed but category selected
+                    var tag = new Tag { TagName = SelectedCategory.CategoryName, CategoryBelongingTo = SelectedCategory };
+                    _tagsRepository.AddTag(tag);
+                    createdTags.Add(tag);
+                }
+
+                newPost.Tags = createdTags;
+            }
+
             _postsService.AddPost(newPost);
 
             // Navigate back to the community screen just as original implemented intent.
@@ -61,6 +106,6 @@ namespace Boards_WP.ViewModels
             }
         }
 
-        private bool CanUploadPost() => !string.IsNullOrWhiteSpace(PostTitle);
+        private bool CanUploadPost() => !string.IsNullOrWhiteSpace(PostTitle) && SelectedCategory != null;
     }
 }

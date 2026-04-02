@@ -1,47 +1,22 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Input;
-
-using Boards_WP.Data.Models;
-using Boards_WP.ViewModels;
+using Microsoft.UI.Xaml;
 
 namespace Boards_WP.Views
 {
     public sealed partial class PostPreviewForm : UserControl
     {
-        public PostPreviewViewModel ViewModel { get; set; }
+        // Expose the DataContext as your specific ViewModel for x:Bind
+        public ViewModels.PostPreviewViewModel ViewModel => DataContext as ViewModels.PostPreviewViewModel;
 
-        public static readonly DependencyProperty PostDataProperty =
-            DependencyProperty.Register("PostData", typeof(Post), typeof(PostPreviewForm),
-                new PropertyMetadata(null, OnPostDataChanged));
-
-        public Post PostData
+        public PostPreviewForm()
         {
-            get => (Post)GetValue(PostDataProperty);
-            set => SetValue(PostDataProperty, value);
-        }
+            this.InitializeComponent();
 
-        public PostPreviewForm() => this.InitializeComponent();
-
-        private static void OnPostDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is PostPreviewForm control && e.NewValue is Post post)
+            // When the ListView hands this UserControl a new ViewModel, tell the bindings to update
+            this.DataContextChanged += (s, e) =>
             {
-                control.ViewModel = new PostPreviewViewModel(post);
-
-                control.ViewModel.OnDeleteRequested = (p) =>
-                {
-                    control.Visibility = Visibility.Collapsed;
-                };
-
-                // FIX: Check for null to avoid CS1061 or NullReference if XAML isn't ready
-                control.Bindings?.Update();
-            }
+                Bindings.Update();
+            };
         }
-
-        private void OnPostClicked(object sender, PointerRoutedEventArgs e) => ViewModel?.OpenPostCommand.Execute(null);
-        private void Grid_PointerEntered(object sender, PointerRoutedEventArgs e) => this.ProtectedCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-        private void Grid_PointerExited(object sender, PointerRoutedEventArgs e) => this.ProtectedCursor = InputSystemCursor.Create(InputSystemCursorShape.Arrow);
     }
 }

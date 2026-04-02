@@ -32,7 +32,9 @@ public partial class App : Application
 
     public App()
     {
+        Services = ConfigureServices();
         InitializeComponent();
+
     }
 
 
@@ -58,8 +60,10 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
-        
-        string connectionString = @"Data Source=DESKTOP\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
+
+        //string connectionString = @"Data Source=DESKTOP\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
+        //string connectionString = @"Server=DESKTOP-1JCJMN6\SQLEXPRESS;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
+        string connectionString = ("Data Source=DESKTOP-GFA6UNJ\\SQLEXPRESS;Initial Catalog=WeaponizedPenguins;Integrated Security=True;Encrypt=False;TrustServerCertificate=True");
         services.AddSingleton(connectionString);
 
         //--repos
@@ -86,8 +90,9 @@ public partial class App : Application
         // ViewModels
         services.AddSingleton<FeedViewModel>();
         services.AddTransient<MainViewModel>();
-        //.AddTransient<NotificationsViewModel>()
-        //services.AddTransient<CreatePostViewModel>()
+        services.AddTransient<NotificationItemViewModel>();
+        services.AddTransient<NotificationsListViewModel>();
+        services.AddTransient<CreatePostViewModel>();
 
         services.AddTransient<CreateCommunityViewModel>();
         services.AddTransient<UpdateCommunityViewModel>();
@@ -99,6 +104,7 @@ public partial class App : Application
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
         services.AddTransient<HeaderViewModel>();
+        services.AddTransient<CommunityBarViewModel>();
 
         return services.BuildServiceProvider();
     }

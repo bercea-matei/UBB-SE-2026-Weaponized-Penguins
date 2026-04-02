@@ -31,21 +31,10 @@ namespace Boards_WP.Views
 
         private void CommunitySearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput && ViewModel != null)
             {
-                HandleSecretTrigger(sender);
-                string query = sender.Text.ToLower();
-                if (string.IsNullOrWhiteSpace(query))
-                {
-                    ResultsPopup.IsOpen = false;
-                }
-                else
-                {
-                    var matches = _allCommunities.Where(c => c.ToLower().Contains(query)).ToList();
-                    FilteredResults.Clear();
-                    foreach (var m in matches) FilteredResults.Add(m);
-                    ResultsPopup.IsOpen = FilteredResults.Count > 0;
-                }
+                ViewModel.SearchText = sender.Text;
+                ResultsPopup.IsOpen = (ViewModel.SearchResults.Count > 0);
             }
         }
 
@@ -55,48 +44,13 @@ namespace Boards_WP.Views
             {
                 ViewModel.SelectCommunityCommand.Execute(selectedCommunity);
 
-                NavigateToPage(typeof(Pages.CommunityView), selectedCommunity);
                 ResultsPopup.IsOpen = false;
             }
         }
 
         public Visibility GetVisibility(bool showText)
         {
-            // Restore the logic from 'main' - This is a UI converter
             return showText ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        // Filip's logic belongs in a separate handler called by the SearchBox
-        private void HandleSecretTrigger(AutoSuggestBox sender)
-        {
-            string query = sender.Text.ToLower().Trim();
-            
-            // SECRET TRIGGER: /weaponizedpenguins
-            if (query == "/weaponizedpenguins")
-            {
-                ResultsPopup.IsOpen = false;
-                TokenDisplay.Visibility = Visibility.Visible;
-                sender.Text = string.Empty;
-                NavigateToPage(typeof(Pages.BetsView), null);
-            }
-        }
-
-        // Helper method to handle navigation logic safely
-        private void NavigateToPage(Type pageType, object parameter)
-        {
-            if (App.Current is App myApp && myApp.m_window != null)
-            {
-                var rootFrame = myApp.m_window.Content as Frame;
-                if (rootFrame == null && myApp.m_window.Content is FrameworkElement fe)
-                {
-                    rootFrame = fe.FindName("ContentFrame") as Frame;
-                }
-
-                if (rootFrame != null)
-                {
-                    rootFrame.Navigate(pageType, parameter);
-                }
-            }
         }
     }
 }

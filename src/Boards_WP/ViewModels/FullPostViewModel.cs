@@ -84,7 +84,7 @@ namespace Boards_WP.ViewModels
             }
 
             // 3. Update the theme
-            var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
+            var newThemeColor = _postsService.DetermineThemeForASinglePost(updatedPost);
             _mainViewModel.ApplyNewTheme(newThemeColor);
         }
 
@@ -137,6 +137,7 @@ namespace Boards_WP.ViewModels
             PostComments.Insert(0, newComment);
 
             CurrentPost.CommentsNumber++;
+            _postsService.IncreaseCommentsNumber(CurrentPost.PostID);
             OnPropertyChanged(nameof(CurrentPost));
 
             // 4. Clear the textbox

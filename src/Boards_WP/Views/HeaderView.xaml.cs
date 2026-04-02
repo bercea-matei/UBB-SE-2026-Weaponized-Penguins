@@ -22,7 +22,7 @@ namespace Boards_WP.Views
         {
             if (Application.Current is App myApp)
             {
-                this.ViewModel = myApp.Services.GetService<HeaderViewModel>();
+                this.ViewModel = App.GetService<HeaderViewModel>();
                 this.DataContext = this.ViewModel;
 
                 this.Bindings.Update();

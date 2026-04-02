@@ -13,6 +13,7 @@ namespace Boards_WP.ViewModels;
 public partial class HeaderViewModel : ObservableObject
 {
     private readonly ICommunitiesService _communitiesService;
+    private readonly INavigationService _navigationService;
 
     [ObservableProperty]
     private string _searchText = string.Empty;
@@ -23,9 +24,10 @@ public partial class HeaderViewModel : ObservableObject
     [ObservableProperty]
     private bool _noResultsToggle;
 
-    public HeaderViewModel(ICommunitiesService communitiesService)
+    public HeaderViewModel(ICommunitiesService communitiesService, INavigationService navigationService)
     {
         _communitiesService = communitiesService;
+        _navigationService = navigationService;
     }
 
     partial void OnSearchTextChanged(string searchedValue)
@@ -62,7 +64,7 @@ public partial class HeaderViewModel : ObservableObject
 
         if (App.Current is App myApp && myApp.m_window is MainWindow mainWindow)
         {
-            mainWindow.NavigateToCommunity(typeof(Views.Pages.CommunityView), selected);
+            _navigationService.NavigateTo(typeof(Views.Pages.CommunityView), selected);
         }
     }
 }

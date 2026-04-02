@@ -1,11 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+using Boards_WP.Data.Models;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System;
-
-using Boards_WP.Data.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Boards_WP.ViewModels
 {
@@ -17,9 +19,19 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         private string _newCommentText;
 
+
         public ObservableCollection<Comment> PostComments { get; } = new ObservableCollection<Comment>();
 
-        public FullPostViewModel() { }
+        private readonly IPostsService _postsService;
+        private readonly MainViewModel _mainViewModel;
+
+        public FullPostViewModel()
+        {
+
+            _mainViewModel = App.Services?.GetService<MainViewModel>();
+
+            _postsService = App.Services?.GetService<IPostsService>();
+        }
 
         public void LoadPost(Post post)
         {
@@ -39,6 +51,35 @@ namespace Boards_WP.ViewModels
 
             PostComments.Clear();
             foreach (var c in hardcodedComments) PostComments.Add(c);
+        }
+
+        [RelayCommand]
+        private void Upvote()
+        {
+            if (CurrentPost == null) return;
+
+            CurrentPost.Score++;
+            OnPropertyChanged(nameof(CurrentPost));
+
+            _postsService.IncreaseScore(CurrentPost.PostID);
+
+            ThemeColor newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
+
+            _mainViewModel.ApplyNewTheme(newThemeColor);
+        }
+
+        [RelayCommand]
+        private void Downvote()
+        {
+            if (CurrentPost == null) return;
+
+            CurrentPost.Score--;
+            OnPropertyChanged(nameof(CurrentPost));
+
+            _postsService.DecreaseScore(CurrentPost.PostID);
+
+            ThemeColor newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
+            _mainViewModel.ApplyNewTheme(newThemeColor);
         }
 
         [RelayCommand]

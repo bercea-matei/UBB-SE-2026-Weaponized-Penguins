@@ -56,7 +56,7 @@
             <!-- here, we populate the sidebar with the communities names we have -->
             <ListView 
                 x:Name="CommunityListView"
-                ItemsSource="{x:Bind Communities}"
+                ItemsSource="{x:Bind ViewModel.Communities}"
                 IsItemClickEnabled="True" 
                 ItemClick="CommunityListView_ItemClick">
     

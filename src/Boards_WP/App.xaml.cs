@@ -58,9 +58,10 @@ public partial class App : Application
         var services = new ServiceCollection();
 
 
-        //string connectionString = @"Data Source=DESKTOP\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
-        string connectionString = @"Server=DESKTOP-1JCJMN6\SQLEXPRESS;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
+        string connectionString = @"Data Source=DESKTOP\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
         services.AddSingleton(connectionString);
+
+        services.AddSingleton<MainViewModel>();
 
         //--repos
         services.AddSingleton<IBetsRepository, BetsRepository>();
@@ -85,11 +86,10 @@ public partial class App : Application
 
         // ViewModels
         services.AddSingleton<FeedViewModel>();
-        services.AddTransient<MainViewModel>();
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
         services.AddTransient<CreatePostViewModel>();
-
+        services.AddTransient<CommunityBarViewModel>();
         services.AddTransient<CreateCommunityViewModel>();
         services.AddTransient<UpdateCommunityViewModel>();
         services.AddTransient<CommunityViewModel>();
@@ -100,6 +100,7 @@ public partial class App : Application
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
         services.AddTransient<HeaderViewModel>();
+        services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
 
         return services.BuildServiceProvider();
     }

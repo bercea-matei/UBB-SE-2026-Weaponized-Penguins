@@ -10,7 +10,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Width="2" Background="#6A67E1" Margin="0,5,15,5"
+        <Border Grid.Column="0" Width="2" Background="white" Margin="0,5,15,5"
                 Visibility="{x:Bind GetLineVisibility(CommentData.Indentation), Mode=OneWay}" CornerRadius="1"/>
 
         <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="15" BorderBrush="#E0E0E0" BorderThickness="1">
@@ -23,13 +23,13 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="5">
-                        <TextBlock Text="{x:Bind CommentData.Owner.Username}" FontWeight="Bold" Foreground="#6A67E1"/>
+                        <TextBlock Text="{x:Bind CommentData.Owner.Username}" FontWeight="Bold" Foreground="white"/>
                         <TextBlock Text="{x:Bind CommentData.Description}" TextWrapping="Wrap"/>
                         
                         <Button Command="{x:Bind ViewModel.ToggleReplyCommand}" Background="Transparent" HorizontalAlignment="Right">
                             <StackPanel Orientation="Horizontal" Spacing="5">
-                                <FontIcon Glyph="&#xE8BD;" FontSize="14" Foreground="#6A67E1"/>
-                                <TextBlock Text="reply" FontSize="12" Foreground="#6A67E1"/>
+                                <FontIcon Glyph="&#xE8BD;" FontSize="14" Foreground="white"/>
+                                <TextBlock Text="reply" FontSize="12" Foreground="white"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
@@ -39,7 +39,7 @@
                     <TextBox Text="{x:Bind ViewModel.ReplyText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                              PlaceholderText="Write a reply..." AcceptsReturn="True"/>
                     <Button Content="Post Reply" Command="{x:Bind ViewModel.SubmitReplyCommand}" 
-                            HorizontalAlignment="Right" Background="#6A67E1" Foreground="White" CornerRadius="8"/>
+                            HorizontalAlignment="Right" Background="white" Foreground="White" CornerRadius="8"/>
                 </StackPanel>
             </StackPanel>
         </Border>

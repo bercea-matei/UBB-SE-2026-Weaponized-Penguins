@@ -83,7 +83,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(PostData));
+                OnPropertyChanged(nameof(PostData)); 
             }
 
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
@@ -104,7 +104,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(PostData));
+                OnPropertyChanged(nameof(PostData)); 
             }
 
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();

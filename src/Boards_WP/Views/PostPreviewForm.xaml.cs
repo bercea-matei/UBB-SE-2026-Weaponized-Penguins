@@ -12,7 +12,6 @@ namespace Boards_WP.Views
         {
             this.InitializeComponent();
 
-            
             this.DataContextChanged += (s, e) =>
             {
                 Bindings.Update();

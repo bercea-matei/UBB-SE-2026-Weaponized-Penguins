@@ -1,8 +1,11 @@
 using System.Collections.ObjectModel;
+using Boards_WP.Data.Models;
+using Boards_WP.Data.Services;
 using System.IO;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -14,6 +17,7 @@ namespace Boards_WP.ViewModels
 {
     public partial class FullPostViewModel : ObservableObject
     {
+        
         private readonly IPostsService _postsService;
         private readonly ICommentsService _commentsService;
         private readonly MainViewModel _mainViewModel;
@@ -26,6 +30,37 @@ namespace Boards_WP.ViewModels
 
         [ObservableProperty]
         private string _newCommentText;
+
+        [ObservableProperty]
+        private bool _isCommentAreaVisible;
+
+        [ObservableProperty]
+        private bool _isShareAreaVisible;
+
+        [ObservableProperty]
+        private string _selectedChatName;
+
+        public ObservableCollection<string> HardcodedChats { get; } = new()
+        {
+            "General Chat", "Sports Fans", "Tech Talk", "Weaponized Penguins Team"
+        };
+
+        [RelayCommand]
+        private void ToggleShareArea()
+        {
+            IsShareAreaVisible = !IsShareAreaVisible;
+            if (IsShareAreaVisible)
+            {
+                IsCommentAreaVisible = false; 
+            }
+        }
+
+        [RelayCommand]
+        private void SendShare()
+        {
+            IsShareAreaVisible = false;
+            SelectedChatName = string.Empty;
+        }
 
         public BitmapImage PostImageSource => ConvertToBitmap(CurrentPost?.Image);
         public Visibility PostImageVisibility => CurrentPost?.Image?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -89,7 +124,7 @@ namespace Boards_WP.ViewModels
                 OnPropertyChanged(nameof(CurrentPost));
             }
 
-            var newThemeColor = _postsService.DetermineThemeForASinglePost(updatedPost);
+            var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
         }
 
@@ -115,28 +150,48 @@ namespace Boards_WP.ViewModels
         }
 
         [RelayCommand]
+        private void ShowCommentArea()
+        {
+            IsCommentAreaVisible = true;
+        }
+
+        [RelayCommand]
+        private void CancelComment()
+        {
+            IsCommentAreaVisible = false;
+            NewCommentText = string.Empty;
+        }
+
+        
+        [RelayCommand]
         private void PostComment()
         {
             if (string.IsNullOrWhiteSpace(NewCommentText) || CurrentPost == null) return;
 
-            var currentUser = _userSession.CurrentUser;
-            if (currentUser == null) return;
-
             var newComment = new Comment
             {
                 ParentPost = CurrentPost,
-                Owner = currentUser,
-                Description = NewCommentText
+                Owner = _userSession.CurrentUser,
+                Description = NewCommentText,
+                CreationTime = DateTime.Now
             };
 
-            _commentsService.AddComment(newComment);
-            PostComments.Insert(0, newComment);
+            try
+            {
+                _commentsService.AddComment(newComment);
+                PostComments.Insert(0, newComment);
+                CurrentPost.CommentsNumber++;
+                NewCommentText = string.Empty;
+                IsCommentAreaVisible = false;
 
-            CurrentPost.CommentsNumber++;
-            _postsService.IncreaseCommentsNumber(CurrentPost.PostID);
-            OnPropertyChanged(nameof(CurrentPost));
-
-            NewCommentText = string.Empty;
+                OnPropertyChanged(nameof(CurrentPost));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
         }
+
+
     }
 }

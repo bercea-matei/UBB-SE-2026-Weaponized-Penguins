@@ -86,7 +86,6 @@ namespace Boards_WP.ViewModels
 
                 if (createdTags.Count == 0)
                 {
-                    // Ensure at least one tag is added if none typed but category selected
                     var tag = new Tag { TagName = SelectedCategory.CategoryName, CategoryBelongingTo = SelectedCategory };
                     _tagsRepository.AddTag(tag);
                     createdTags.Add(tag);
@@ -97,7 +96,6 @@ namespace Boards_WP.ViewModels
 
             _postsService.AddPost(newPost);
 
-            // Navigate back to the community screen just as original implemented intent.
             _navigationService.NavigateTo(typeof(CommunityView), OriginCommunity);
         }
 

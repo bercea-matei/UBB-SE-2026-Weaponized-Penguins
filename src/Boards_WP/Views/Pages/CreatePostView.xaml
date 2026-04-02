@@ -12,6 +12,34 @@
                        Foreground="#6A67E1" 
                        Margin="0,0,0,10"/>
 
+            <!-- Updated Image Picker Section -->
+            <Grid Height="200" CornerRadius="12" Background="#E0E0E0" Margin="0,0,0,10">
+                <Border CornerRadius="12">
+                    <!-- This matches the 'PicturePreviewMask' in your C# -->
+                    <Grid x:Name="PicturePreviewMask" Visibility="Collapsed">
+                        <Rectangle RadiusX="12" RadiusY="12">
+                            <Rectangle.Fill>
+                                <!-- This matches 'PicturePreviewBrush' in your C# -->
+                                <ImageBrush x:Name="PicturePreviewBrush" Stretch="UniformToFill"/>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Grid>
+                </Border>
+
+                <Button HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Click="ImagePicker_Click"
+                        Background="#00000060"
+                        CornerRadius="8"
+                        Padding="14,8">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <!-- This matches 'PictureIcon' in your C# -->
+                        <TextBlock x:Name="PictureIcon" Text="📷" FontSize="16"/>
+                        <TextBlock Text="Add Photo" Foreground="White" FontSize="14"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
             <TextBox x:Name="TitleInput" 
                      Text="{x:Bind ViewModel.PostTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      PlaceholderText="Title" 

@@ -118,31 +118,31 @@ namespace Boards_WP.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewCommentText) || CurrentPost == null) return;
 
-var currentUser = _userSession.CurrentUser;
-if (currentUser == null) return;
+        var currentUser = _userSession.CurrentUser;
+        if (currentUser == null) return;
 
-var newComment = new Comment
-{
-    ParentPost = CurrentPost,
-    Owner = currentUser,
-    Description = NewCommentText,
-    CreationTime = DateTime.Now
-};
+        var newComment = new Comment
+        {
+            ParentPost = CurrentPost,
+            Owner = currentUser,
+            Description = NewCommentText,
+            CreationTime = DateTime.Now
+        };
 
-try
-{
-    _commentsService.AddComment(newComment);
-    PostComments.Insert(0, newComment);
-    CurrentPost.CommentsNumber++;
-    NewCommentText = string.Empty;
-    IsCommentAreaVisible = false;
+        try
+        {
+            _commentsService.AddComment(newComment);
+            PostComments.Insert(0, newComment);
+            CurrentPost.CommentsNumber++;
+            NewCommentText = string.Empty;
+            IsCommentAreaVisible = false;
 
-    OnPropertyChanged(nameof(CurrentPost));
-}
-catch (Exception ex)
-{
-    System.Diagnostics.Debug.WriteLine(ex.Message);
-}
+            OnPropertyChanged(nameof(CurrentPost));
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(ex.Message);
+        }
         }
     }
 }

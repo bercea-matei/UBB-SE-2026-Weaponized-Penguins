@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+ using System.Collections.ObjectModel;
 
 using Boards_WP.Data.Models;
 using Boards_WP.Data.Services; 
@@ -15,6 +15,8 @@ namespace Boards_WP.ViewModels
         private readonly ICommentsService _commentsService;
         private readonly MainViewModel _mainViewModel;
         private readonly UserSession _userSession;
+
+        public MainViewModel MainViewModel => _mainViewModel;
 
         [ObservableProperty]
         private Post _currentPost;

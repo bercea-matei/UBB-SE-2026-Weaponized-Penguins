@@ -15,6 +15,9 @@ namespace Boards_WP.ViewModels
         private readonly INavigationService _navigationService;
         private readonly UserSession _userSession;
         private readonly ITagsRepository _tagsRepository;
+        private MainViewModel _mainViewModel;
+
+        public MainViewModel MainViewModel => _mainViewModel;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(UploadPostCommand))]
@@ -36,6 +39,7 @@ namespace Boards_WP.ViewModels
 
         public CreatePostViewModel(IPostsService postsService, INavigationService navigationService, UserSession userSession, ITagsRepository tagsRepository)
         {
+            _mainViewModel = App.GetService<MainViewModel>();
             _postsService = postsService;
             _navigationService = navigationService;
             _userSession = userSession;

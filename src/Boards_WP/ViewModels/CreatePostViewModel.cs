@@ -118,7 +118,6 @@ namespace Boards_WP.ViewModels
 
             _postsService.AddPost(newPost);
 
-            // Navigate back to the community screen just as original implemented intent.
             _navigationService.NavigateTo(typeof(CommunityView), OriginCommunity);
         }
 

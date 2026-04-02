@@ -59,12 +59,14 @@ namespace Boards_WP.ViewModels
 
             _postsService.IncreaseScore(PostData.PostID);
             _postsService.UpdateUserInterests(userId, PostData, VoteType.Like, false);
+
             var updatedPost = _postsService.GetPostByPostID(PostData.PostID);
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(PostData));
+                OnPropertyChanged(nameof(PostData)); 
             }
+
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
 
@@ -84,7 +86,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(PostData));
+                OnPropertyChanged(nameof(PostData)); 
             }
 
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();

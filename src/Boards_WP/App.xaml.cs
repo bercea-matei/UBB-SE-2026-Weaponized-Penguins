@@ -5,17 +5,16 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 
 using Boards_WP.Data.Services;
+
+using Microsoft.Extensions.DependencyInjection;
 using Boards_WP.ViewModels;
 using Boards_WP.Views.Pages;
 
-using Microsoft.Extensions.DependencyInjection;
-﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 using Boards_WP.Data.Services.Interfaces;
 using Boards_WP.Data.Services;
-using Boards_WP.ViewModels;
 
 namespace Boards_WP;
 
@@ -34,47 +33,8 @@ public partial class App : Application
         Services = ConfigureServices();
         InitializeComponent();
 
-        Services = new ServiceCollection()
-
-            .AddSingleton<INavigationService, NavigationService>()
-            .AddSingleton<UserSession>()
-
-            .AddSingleton<IPostsService, PostsService>()
-            .AddSingleton<ICommunitiesService, CommunitiesService>()
-            .AddSingleton<INotificationsService, NotificationsService>()
-            .AddSingleton<ICommentsService, CommentsService>()
-            .AddSingleton<IBetsService, BetsService>()
-            .AddSingleton<IUsersService, UsersService>()
-
-            .AddSingleton<string>("Data Source=DESKTOP\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True") 
-            .AddSingleton<IPostsRepository, PostsRepository>()
-            .AddSingleton<ICommunitiesRepository, CommunitiesRepository>()
-            .AddSingleton<INotificationRepository, NotificationRepository>()
-            .AddSingleton<ICommentsRepository, CommentsRepository>()
-            .AddSingleton<IBetsRepository, BetsRepository>()
-            .AddSingleton<IUsersRepository, UsersRepository>()
-            .AddSingleton<ITagsRepository, TagsRepository>()
-            .AddSingleton<IUsersMoodRepository, UsersMoodRepository>()
-
-            .AddSingleton<FeedViewModel>()
-            //VMs
-            //.AddTransient<CommunityViewModel>()
-            //.AddTransient<CreateCommunityViewModel>()
-            //.AddTransient<CreatePostViewModel>()
-            .AddTransient<FullPostViewModel>()
-            //.AddTransient<NotificationsViewModel>()
-            .AddTransient<MainViewModel>()
-
-            // Components / UserControls
-            //.AddTransient<PostPreviewViewModel>();
-            //.AddTransient<CommentViewModel>();
-            .AddTransient<CommunityBarViewModel>()
-            //.AddTransient<HeaderViewModel>();
-
-            .BuildServiceProvider();
     }
 
-    
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         m_window = new MainWindow();
@@ -97,16 +57,39 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
+
+        //string connectionString = @"Data Source=DESKTOP\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
+        string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
+        services.AddSingleton(connectionString);
+
+        //--repos
+        services.AddSingleton<IBetsRepository, BetsRepository>();
+        services.AddSingleton<ICommentsRepository, CommentsRepository>();
+        services.AddSingleton<ICommunitiesRepository, CommunitiesRepository>();
+        services.AddSingleton<INotificationRepository, NotificationRepository>();
+        services.AddSingleton<IPostsRepository, PostsRepository>();
+        services.AddSingleton<ITagsRepository, TagsRepository>();
+        services.AddSingleton<IUsersMoodRepository, UsersMoodRepository>();
+        services.AddSingleton<IUsersRepository, UsersRepository>();
+
         // Services
-        services.AddSingleton<INavigationService, NavigationService>();
-        services.AddSingleton<ICommunitiesService, CommunitiesService>();
-        services.AddSingleton<IPostsService, PostsService>();
-        services.AddSingleton<IUsersService, UsersService>();
         services.AddSingleton<IBetsService, BetsService>();
         services.AddSingleton<ICommentsService, CommentsService>();
+        services.AddSingleton<ICommunitiesService, CommunitiesService>();
         services.AddSingleton<INotificationsService, NotificationsService>();
+        services.AddSingleton<IPostsService, PostsService>();
+        services.AddSingleton<IUsersService, UsersService>();
+        services.AddSingleton<INavigationService, NavigationService>();
+
+        services.AddSingleton<UserSession>();
 
         // ViewModels
+        services.AddSingleton<FeedViewModel>();
+        services.AddTransient<MainViewModel>();
+        services.AddTransient<NotificationItemViewModel>();
+        services.AddTransient<NotificationsListViewModel>();
+        services.AddTransient<CreatePostViewModel>();
+
         services.AddTransient<CreateCommunityViewModel>();
         services.AddTransient<UpdateCommunityViewModel>();
         services.AddTransient<CommunityViewModel>();
@@ -116,6 +99,7 @@ public partial class App : Application
         services.AddTransient<PostPreviewViewModel>();
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
+        services.AddTransient<HeaderViewModel>();
 
         return services.BuildServiceProvider();
     }

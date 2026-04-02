@@ -1,16 +1,20 @@
 using System.Collections.ObjectModel;
-using Microsoft.UI.Xaml.Controls;
+
 using Boards_WP.ViewModels;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Boards_WP.Views
 {
     public sealed partial class NotificationsView : UserControl
     {
-        public NotificationsListViewModel ViewModel { get; } = new NotificationsListViewModel();
+        public NotificationsListViewModel ViewModel { get; }
 
         public NotificationsView()
         {
             this.InitializeComponent();
+            ViewModel = App.Services.GetRequiredService<ViewModels.NotificationsListViewModel>();
             NotificationsList.ItemsSource = ViewModel.Notifications;
         }
 

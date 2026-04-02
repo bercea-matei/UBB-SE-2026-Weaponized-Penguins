@@ -11,7 +11,7 @@ namespace Boards_WP.ViewModels;
 
 public partial class CreateTagViewModel : ObservableObject
 {
-    private readonly ITagsRepository? _tagsRepository;
+    private readonly ITagsRepository _tagsRepository;
 
     [ObservableProperty]
     private string _tagName = string.Empty;
@@ -28,7 +28,7 @@ public partial class CreateTagViewModel : ObservableObject
     public event Action<Tag>? TagCreated;
     public event Action? Cancelled;
 
-    public CreateTagViewModel(ITagsRepository? tagsRepository = null)
+    public CreateTagViewModel(ITagsRepository tagsRepository)
     {
         _tagsRepository = tagsRepository;
         LoadCategories();
@@ -37,18 +37,8 @@ public partial class CreateTagViewModel : ObservableObject
     private void LoadCategories()
     {
         AvailableCategories.Clear();
-        if (_tagsRepository != null)
-        {
-            var categories = _tagsRepository.GetAllCategories();
-            foreach (var c in categories) AvailableCategories.Add(c);
-        }
-        else
-        {
-            // mock categories
-            AvailableCategories.Add(new Category { CategoryID = 1, CategoryName = "Technology", ColorHex = "#FF4500" });
-            AvailableCategories.Add(new Category { CategoryID = 2, CategoryName = "Science", ColorHex = "#0079D3" });
-            AvailableCategories.Add(new Category { CategoryID = 3, CategoryName = "Gaming", ColorHex = "#46D160" });
-        }
+        var categories = _tagsRepository.GetAllCategories();
+        foreach (var c in categories) AvailableCategories.Add(c);
     }
 
     [RelayCommand]
@@ -76,7 +66,7 @@ public partial class CreateTagViewModel : ObservableObject
 
         try
         {
-            _tagsRepository?.AddTag(tag);
+            _tagsRepository.AddTag(tag);
             TagCreated?.Invoke(tag);
         }
         catch (Exception ex)

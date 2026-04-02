@@ -14,7 +14,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\WPLogo1.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Assets\WeaponizedPenguinsLogo.png" />
+    <None Remove="Views\UpdateCommunityView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +59,11 @@
     <Content Update="Assets\WPLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\UpdateCommunityView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

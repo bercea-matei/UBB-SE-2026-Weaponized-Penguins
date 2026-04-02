@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 
 using Boards_WP.Data.Models;
@@ -21,10 +22,10 @@ namespace Boards_WP.ViewModels
         private readonly ICommunitiesService _communitiesService;
         private readonly UserSession _userSession;
         private readonly Action<Community> _navigateToCreatePost;
+        private readonly Action<Community> _navigateToEditCommunity;
 
         private static ObservableCollection<Community> _sidebarList;
 
-   
         [ObservableProperty]
         [NotifyPropertyChangedFor(
             nameof(BannerImage),
@@ -42,6 +43,11 @@ namespace Boards_WP.ViewModels
             nameof(CreatePostCommand))]
         private bool _isMember;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(EditButtonVisibility))]
+        [NotifyCanExecuteChangedFor(nameof(EditCommunityCommand))]
+        private bool _isOwner;
+
         public ObservableCollection<Post> CommunityPosts { get; } = new();
 
         public BitmapImage BannerImage => ConvertToBitmap(CurrentCommunity?.Banner);
@@ -50,66 +56,76 @@ namespace Boards_WP.ViewModels
 
         public Visibility JoinButtonVisibility => IsMember ? Visibility.Collapsed : Visibility.Visible;
         public Visibility MemberActionsVisibility => IsMember ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility EditButtonVisibility => IsOwner ? Visibility.Visible : Visibility.Collapsed;
 
-        public CommunityViewModel(Action<Community> navigateToCreatePost)
+        public CommunityViewModel(Action<Community> navigateToCreatePost, Action<Community> navigateToEditCommunity)
         {
             _postsService = App.Services?.GetService<IPostsService>();
             _communitiesService = App.Services?.GetService<ICommunitiesService>();
             _userSession = App.Services?.GetService<UserSession>();
             _navigateToCreatePost = navigateToCreatePost;
+            _navigateToEditCommunity = navigateToEditCommunity;
         }
 
         [RelayCommand(CanExecute = nameof(CanJoin))]
         private void Join()
         {
+            _communitiesService.AddUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
             var userId = _userSession.CurrentUser.UserID;
-
-            _communitiesService.AddUser(CurrentCommunity.CommunityID, userId);
 
             IsMember = true;
             CurrentCommunity.MembersNumber++;
             OnPropertyChanged(nameof(MemberCountText));
 
-            if (_sidebarList != null && !_sidebarList.Contains(CurrentCommunity))
-                _sidebarList.Add(CurrentCommunity);
+            App.GetService<CommunityBarViewModel>().LoadCommunities();
         }
         private bool CanJoin() => !IsMember;
 
         [RelayCommand(CanExecute = nameof(CanLeave))]
         private void Leave()
         {
-            var userId = _userSession.CurrentUser.UserID;
+          _communitiesService.RemoveUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
 
-            _communitiesService.RemoveUser(CurrentCommunity.CommunityID, userId);
+          IsMember = false;
+          CurrentCommunity.MembersNumber--;
+          OnPropertyChanged(nameof(MemberCountText));
 
-            IsMember = false;
-            CurrentCommunity.MembersNumber--;
-            OnPropertyChanged(nameof(MemberCountText));
-
-            _sidebarList?.Remove(CurrentCommunity);
+          _sidebarList?.Remove(CurrentCommunity); 
         }
-        private bool CanLeave() => IsMember;
+        private bool CanLeave() => IsMember && !IsOwner;
 
         [RelayCommand(CanExecute = nameof(CanCreatePost))]
         private void CreatePost() => _navigateToCreatePost?.Invoke(CurrentCommunity);
         private bool CanCreatePost() => IsMember && CurrentCommunity != null;
 
+        [RelayCommand(CanExecute = nameof(CanEditCommunity))]
+        private void EditCommunity() => _navigateToEditCommunity?.Invoke(CurrentCommunity);
+        private bool CanEditCommunity() => IsOwner && CurrentCommunity != null;
+
         public void ApplyNavigationParameter(object parameter)
         {
             if (parameter is Community community)
             {
-                CurrentCommunity = community;
+                var refreshedCommunity = _communitiesService.GetCommunityByID(community.CommunityID);
+
+                if (refreshedCommunity != null)
+                {
+                    CurrentCommunity = refreshedCommunity;
+                }
+                else
+                {
+                    CurrentCommunity = community;
+                }
 
                 var userId = _userSession.CurrentUser.UserID;
-                IsMember = _communitiesService.IsPartOfCommunity(userId, community.CommunityID)
-                           || _communitiesService.CheckOwner(community.CommunityID, userId);
-
+                IsOwner = _communitiesService.CheckOwner(community.CommunityID, userId);
+                IsMember = IsOwner || _communitiesService.IsPartOfCommunity(userId, community.CommunityID);
+                OnPropertyChanged(nameof(MemberCountText));
+                OnPropertyChanged(nameof(BannerImage));
+                OnPropertyChanged(nameof(ProfileImage));
                 LoadPosts(community.CommunityID);
             }
-            else if (parameter is ObservableCollection<Community> list)
-            {
-                _sidebarList = list;
-            }
+            
         }
 
         private void LoadPosts(int communityId)

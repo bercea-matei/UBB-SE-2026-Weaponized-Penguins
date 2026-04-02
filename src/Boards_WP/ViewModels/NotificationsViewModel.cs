@@ -47,7 +47,7 @@ public partial class NotificationItemViewModel : ObservableObject
         }
         else
         {
-            // Mock get message
+            
             string actorName = notification.Actor?.Username ?? "Someone";
             string postTitle = notification.RelatedPost?.Title ?? "a post";
             _message = notification.ActionType switch
@@ -83,7 +83,7 @@ public partial class NotificationItemViewModel : ObservableObject
                 _notificationsService.ReadNotification(NotificationData);
             }
             NotificationData.IsRead = true;
-            IsUnread = false; // This triggers MessageFontWeight update
+            IsUnread = false; //  triggers MessageFontWeight update
         }
 
         if (NotificationData.RelatedPost != null && NotificationData.ActionType != NotificationType.PostDeleted)
@@ -124,23 +124,12 @@ public partial class NotificationsListViewModel : ObservableObject
     public void LoadNotifications(int userId)
     {
         Notifications.Clear();
-        if (_notificationsService != null)
+        
+        var notifs = _notificationsService.GetNotificationsByUserID(userId);
+        foreach (var n in notifs)
         {
-            var notifs = _notificationsService.GetNotificationsByUserID(userId);
-            foreach (var n in notifs)
-            {
-                Notifications.Add(new NotificationItemViewModel(n, _notificationsService));
-            }
+            Notifications.Add(new NotificationItemViewModel(n, _notificationsService));
         }
-        else
-        {
-            // Adding mock data here if no service is provided
-            var mockUser = new User { UserID = 1, Username = "TestUser" };
-            var mockPost = new Post { PostID = 1, Title = "My Mock Post" };
-
-            Notifications.Add(new NotificationItemViewModel(new Notification { NotificationID = 1, ActionType = NotificationType.CommentOnPost, Actor = new User { Username = "Alice" }, Receiver = mockUser, RelatedPost = mockPost, IsRead = false, CreationTime = DateTime.Now.AddMinutes(-5) }, null));
-            Notifications.Add(new NotificationItemViewModel(new Notification { NotificationID = 2, ActionType = NotificationType.ReplyToComment, Actor = new User { Username = "Bob" }, Receiver = mockUser, RelatedPost = mockPost, IsRead = true, CreationTime = DateTime.Now.AddHours(-1) }, null));
-            Notifications.Add(new NotificationItemViewModel(new Notification { NotificationID = 3, ActionType = NotificationType.PostDeleted, Actor = new User { Username = "Moderator" }, Receiver = mockUser, RelatedPost = mockPost, IsRead = false, CreationTime = DateTime.Now.AddDays(-1) }, null));
-        }
+        
     }
 }

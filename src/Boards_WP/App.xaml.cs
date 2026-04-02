@@ -45,7 +45,7 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
-string connectionString = @"Data Source=IONUT\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
+        string connectionString = @"Server=ALEX\ALEXSQLEXPRESS;Database=Communities;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
         services.AddSingleton(connectionString);
 
 

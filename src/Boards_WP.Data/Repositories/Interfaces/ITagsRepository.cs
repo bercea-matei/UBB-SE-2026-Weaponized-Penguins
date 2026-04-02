@@ -9,6 +9,6 @@ namespace Boards_WP.Data.Repositories.Interfaces;
 public interface ITagsRepository
 {
     public List<Category> GetAllCategories();
-    public void AddTag(Tag t);
+    public int AddTag(Tag t);
     public int GetCategoryCount();
 }

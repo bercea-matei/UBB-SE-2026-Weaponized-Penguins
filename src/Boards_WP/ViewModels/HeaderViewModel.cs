@@ -16,8 +16,7 @@ namespace Boards_WP.ViewModels
         private readonly ICommunitiesService _communitiesService;
         private readonly INavigationService _navigationService;
 
-        // The Source Generator will create the 'UserTokens' property from this field.
-        // This allows 'ViewModel.UserTokens += 5' to work in your View.
+        
         [ObservableProperty]
         private int _userTokens;
 
@@ -35,14 +34,11 @@ namespace Boards_WP.ViewModels
             _communitiesService = communitiesService;
             _navigationService = navigationService;
 
-            // Initialize with a default or fetched value rather than hardcoding 1250 directly in the field
-            // In a real app, you might fetch this from a UserSessionService
+            
             UserTokens = 1250;
         }
 
-        /// <summary>
-        /// Triggered automatically by the CommunityToolkit when SearchText changes.
-        /// </summary>
+        
         partial void OnSearchTextChanged(string searchedValue)
         {
             if (string.IsNullOrWhiteSpace(searchedValue) || searchedValue.Length < 2)
@@ -52,7 +48,7 @@ namespace Boards_WP.ViewModels
                 return;
             }
 
-            // Perform the search via the service
+            
             var matches = _communitiesService.searchCommunities(searchedValue);
 
             SearchResults.Clear();
@@ -72,7 +68,7 @@ namespace Boards_WP.ViewModels
             SearchText = string.Empty;
             SearchResults.Clear();
 
-            // Use the injected navigation service to keep logic out of the View-Behind
+            
             _navigationService.NavigateTo(typeof(Views.Pages.CommunityView), selected);
         }
     }

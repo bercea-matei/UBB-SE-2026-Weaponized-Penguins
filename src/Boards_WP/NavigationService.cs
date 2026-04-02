@@ -1,9 +1,4 @@
-﻿using System;
-
-using Microsoft.UI.Xaml.Controls; // Keep this here
-
-using Boards_WP.Data.Services.Interfaces;
-
+﻿using Microsoft.UI.Xaml.Controls;
 namespace Boards_WP.Data.Services;
 
 public class NavigationService : INavigationService
@@ -12,16 +7,14 @@ public class NavigationService : INavigationService
 
     public bool CanGoBack => _frame?.CanGoBack ?? false;
 
-    // Accept an 'object' to satisfy the interface
     public void Initialize(object frame)
     {
-        // Safely cast it back to a WinUI Frame
         _frame = frame as Frame;
     }
 
     public void NavigateTo(Type pageType, object? parameter = null)
     {
-        if (_frame != null && _frame.CurrentSourcePageType != pageType)
+        if (_frame != null)
         {
             _frame.Navigate(pageType, parameter);
         }

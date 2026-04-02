@@ -99,6 +99,7 @@ public partial class App : Application
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
         services.AddTransient<HeaderViewModel>();
+        services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
 
         return services.BuildServiceProvider();
     }

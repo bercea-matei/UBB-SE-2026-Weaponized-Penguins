@@ -13,6 +13,7 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
+      path: 'app'
 
     - name: Setup .NET 10
       uses: actions/setup-dotnet@v4

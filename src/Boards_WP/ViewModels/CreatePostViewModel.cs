@@ -24,11 +24,15 @@ namespace Boards_WP.ViewModels
         private string _postDescription = string.Empty;
 
         [ObservableProperty]
-        private string _tagsInput = string.Empty;
+        [NotifyCanExecuteChangedFor(nameof(AddTagCommand))]
+        private string _currentTagText = string.Empty;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(UploadPostCommand))]
+        [NotifyCanExecuteChangedFor(nameof(AddTagCommand))]
         private Category? _selectedCategory;
+
+        public ObservableCollection<Tag> AddedTags { get; } = new();
 
         public ObservableCollection<Category> AvailableCategories { get; } = new();
 
@@ -50,6 +54,34 @@ namespace Boards_WP.ViewModels
             foreach (var c in categories) AvailableCategories.Add(c);
         }
 
+        [RelayCommand(CanExecute = nameof(CanAddTag))]
+        private void AddTag()
+        {
+            if (CanAddTag())
+            {
+                var newTag = new Tag
+                {
+                    TagName = CurrentTagText.Trim(),
+                    CategoryBelongingTo = SelectedCategory!
+                };
+                AddedTags.Add(newTag);
+                CurrentTagText = string.Empty;
+                AddTagCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        private bool CanAddTag() => AddedTags.Count < 10 && !string.IsNullOrWhiteSpace(CurrentTagText) && SelectedCategory != null;
+
+        [RelayCommand]
+        private void RemoveTag(Tag tagToRemove)
+        {
+            if (tagToRemove != null)
+            {
+                AddedTags.Remove(tagToRemove);
+                AddTagCommand.NotifyCanExecuteChanged();
+            }
+        }
+
         [RelayCommand(CanExecute = nameof(CanUploadPost))]
         private void UploadPost()
         {
@@ -64,32 +96,25 @@ namespace Boards_WP.ViewModels
                 CreationTime = DateTime.Now
             };
 
-            if (SelectedCategory != null)
+            if (SelectedCategory != null && AddedTags.Count == 0 && !string.IsNullOrWhiteSpace(CurrentTagText))
             {
-                var inputTags = TagsInput.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                var createdTags = new System.Collections.Generic.List<Tag>();
-
-                foreach(var tagName in inputTags)
-                {
-                    var tag = new Tag
-                    {
-                        TagName = tagName,
-                        CategoryBelongingTo = SelectedCategory
-                    };
-                    _tagsRepository.AddTag(tag);
-                    createdTags.Add(tag);
-                }
-
-                if (createdTags.Count == 0)
-                {
-                    // Ensure at least one tag is added if none typed but category selected
-                    var tag = new Tag { TagName = SelectedCategory.CategoryName, CategoryBelongingTo = SelectedCategory };
-                    _tagsRepository.AddTag(tag);
-                    createdTags.Add(tag);
-                }
-
-                newPost.Tags = createdTags;
+                AddTag();
             }
+
+            if (AddedTags.Count == 0 && SelectedCategory != null)
+            {
+                var tag = new Tag { TagName = SelectedCategory.CategoryName, CategoryBelongingTo = SelectedCategory };
+                AddedTags.Add(tag);
+            }
+
+            var finalTags = new System.Collections.Generic.List<Tag>();
+            foreach (var tag in AddedTags)
+            {
+                _tagsRepository.AddTag(tag);
+                finalTags.Add(tag);
+            }
+
+            newPost.Tags = finalTags;
 
             _postsService.AddPost(newPost);
 

@@ -21,7 +21,7 @@ public class TagsRepository : ITagsRepository
         var categories = new List<Category>();
         using var connection = new SqlConnection(_connectionString);
 
-        const string query = "SELECT CategoryID, CategoryName, ColorHex FROM Categories";
+        const string query = "SELECT CategoryID, CategoryName, CategoryColor FROM Categories";
         using var command = new SqlCommand(query, connection);
 
         connection.Open();
@@ -33,7 +33,7 @@ public class TagsRepository : ITagsRepository
             {
                 CategoryID = reader.GetInt32(reader.GetOrdinal("CategoryID")),
                 CategoryName = reader.GetString(reader.GetOrdinal("CategoryName")),
-                ColorHex = reader.GetString(reader.GetOrdinal("ColorHex"))
+                ColorHex = reader.GetString(reader.GetOrdinal("CategoryColor"))
             });
         }
 

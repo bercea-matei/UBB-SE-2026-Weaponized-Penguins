@@ -15,7 +15,7 @@ public partial class CommunityBarViewModel
 {
     private readonly INavigationService _navigationService;
     private readonly ICommunitiesService _communitiesService;
-    private readonly FeedViewModel _feedViewModel; // Injected Singleton
+    private readonly FeedViewModel _feedViewModel;
     private readonly MainViewModel _mainViewModel;
     private readonly UserSession _userSession;
 

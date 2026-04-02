@@ -217,9 +217,17 @@ public class PostsRepository : IPostsRepository
             JOIN Users u ON p.ownerID = u.userID
             JOIN Communities c ON p.communityID = c.communityID
             JOIN Users adm ON c.adminID = adm.userID
-            WHERE p.communityID IN ({idList})";
+            WHERE p.communityID IN ({idList});
 
-        return FetchList(query);
+            SELECT pt.postID, t.tagID, t.tagName, cat.categoryID, cat.categoryName, cat.categoryColor, pt.position
+            FROM Tags t
+            JOIN PostTags pt ON t.tagID = pt.tagID
+            JOIN Categories cat ON t.tagCategoryID = cat.categoryID
+            JOIN Posts p ON pt.postID = p.postID
+            WHERE p.communityID IN ({idList})
+            ORDER BY pt.postID, pt.position;";
+
+        return FetchListWithTags(query);
     }
 
     public List<Post> GetPostExceptCommunityIDs(int[] communityIDs)
@@ -236,12 +244,66 @@ public class PostsRepository : IPostsRepository
             JOIN Users u ON p.ownerID = u.userID
             JOIN Communities c ON p.communityID = c.communityID
             JOIN Users adm ON c.adminID = adm.userID
-            WHERE p.communityID NOT IN ({idList})";
+            WHERE p.communityID NOT IN ({idList});
 
-        return FetchList(query);
+            SELECT pt.postID, t.tagID, t.tagName, cat.categoryID, cat.categoryName, cat.categoryColor, pt.position
+            FROM Tags t
+            JOIN PostTags pt ON t.tagID = pt.tagID
+            JOIN Categories cat ON t.tagCategoryID = cat.categoryID
+            JOIN Posts p ON pt.postID = p.postID
+            WHERE p.communityID NOT IN ({idList})
+            ORDER BY pt.postID, pt.position;";
+
+        return FetchListWithTags(query);
     }
 
 
+
+    private List<Post> FetchListWithTags(string query)
+    {
+        var list = new List<Post>();
+        var postDictionary = new Dictionary<int, Post>();
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(query, connection);
+        connection.Open();
+
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            var post = MapReaderToPost(reader);
+            post.Tags = new List<Tag>();
+            list.Add(post);
+            postDictionary[post.PostID] = post;
+        }
+
+        if (reader.NextResult())
+        {
+            while (reader.Read())
+            {
+                int postId = reader.GetInt32(reader.GetOrdinal("postID"));
+                if (postDictionary.TryGetValue(postId, out var post))
+                {
+                    var category = new Category
+                    {
+                        CategoryID = reader.GetInt32(reader.GetOrdinal("categoryID")),
+                        CategoryName = reader.GetString(reader.GetOrdinal("categoryName")),
+                        ColorHex = reader.GetString(reader.GetOrdinal("categoryColor"))
+                    };
+
+                    post.Tags.Add(new Tag
+                    {
+                        TagID = reader.GetInt32(reader.GetOrdinal("tagID")),
+                        TagName = reader.GetString(reader.GetOrdinal("tagName")),
+                        CategoryBelongingTo = category
+                    });
+                }
+            }
+        }
+
+        return list;
+    }
 
     private List<Post> FetchList(string query)
     {

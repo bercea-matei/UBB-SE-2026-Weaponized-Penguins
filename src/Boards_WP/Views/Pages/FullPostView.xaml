@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Boards_WP.Views.Pages"
     xmlns:views="using:Boards_WP.Views"
+    xmlns:helpers="using:Boards_WP.Helpers"
     xmlns:viewmodels="using:Boards_WP.ViewModels"
     xmlns:models="using:Boards_WP.Data.Models"
     Background="Transparent">
@@ -51,6 +52,20 @@
                                                FontWeight="Bold" FontSize="14"/>
                                     <TextBlock Text="{x:Bind ViewModel.CurrentPost.Owner.Username, Mode=OneWay}"
                                                FontSize="12" Foreground="Gray"/>
+                                    <ItemsControl ItemsSource="{x:Bind ViewModel.CurrentPost.Tags, Mode=OneWay}" Margin="0,5,0,0">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" Spacing="6"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="models:Tag">
+                                                <Border CornerRadius="8" Padding="6,2" Background="{x:Bind helpers:ColorHelper.GetBrushForCategory(CategoryBelongingTo.CategoryID), Mode=OneWay}">
+                                                    <TextBlock Text="{x:Bind TagName, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="White"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                                 </StackPanel>
                                 <TextBlock Grid.Column="1"
                                            Text="{x:Bind ViewModel.CurrentPost.CreationTime, Mode=OneWay}"

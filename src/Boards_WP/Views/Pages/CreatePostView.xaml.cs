@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Navigation;
 
 using Boards_WP.Data.Models;
 using Boards_WP.ViewModels;
+using Microsoft.UI.Xaml;
 
 namespace Boards_WP.Views.Pages
 {
@@ -21,7 +22,7 @@ namespace Boards_WP.Views.Pages
             base.OnNavigatedTo(e);
             if (e.Parameter is Community com)
             {
-                _originCommunity = com;
+                ViewModel.OriginCommunity = com;
             }   
         }
 

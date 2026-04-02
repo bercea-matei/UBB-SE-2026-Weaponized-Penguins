@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Boards_WP.ViewModels;
 using Boards_WP.Views.Pages;
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -35,6 +37,7 @@ public partial class App : Application
 
     }
 
+
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         m_window = new MainWindow();
@@ -57,9 +60,7 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
-
-        string connectionString = @"Data Source=DESKTOP\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
-        //string connectionString = @"Server=IONUT\SQLEXPRESS;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
+string connectionString = @"Data Source=DESKTOP-1JCJMN6\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
         services.AddSingleton(connectionString);
 
         services.AddSingleton<MainViewModel>();
@@ -101,7 +102,8 @@ public partial class App : Application
         services.AddTransient<NotificationItemViewModel>();
         services.AddTransient<NotificationsListViewModel>();
         services.AddTransient<HeaderViewModel>();
-        services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
+        services.AddTransient<CommunityBarViewModel>();
+        services.AddTransient<BetsViewModel>();
 
         return services.BuildServiceProvider();
     }

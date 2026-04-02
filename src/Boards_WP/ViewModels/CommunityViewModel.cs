@@ -43,12 +43,12 @@ namespace Boards_WP.ViewModels
             nameof(CreatePostCommand))]
         private bool _isMember;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(EditButtonVisibility))]
-        [NotifyCanExecuteChangedFor(nameof(EditCommunityCommand))]
-        private bool _isOwner;
+[ObservableProperty]
+[NotifyPropertyChangedFor(nameof(EditButtonVisibility))]
+[NotifyCanExecuteChangedFor(nameof(EditCommunityCommand))]
+private bool _isOwner;
 
-        public ObservableCollection<Post> CommunityPosts { get; } = new();
+public ObservableCollection<PostPreviewViewModel> CommunityPosts { get; } = new();
 
         public BitmapImage BannerImage => ConvertToBitmap(CurrentCommunity?.Banner);
         public BitmapImage ProfileImage => ConvertToBitmap(CurrentCommunity?.Picture);
@@ -133,8 +133,12 @@ namespace Boards_WP.ViewModels
             CommunityPosts.Clear();
             var posts = _postsService.GetPostsByCommunityID(communityId);
             if (posts == null) return;
+            var mainViewModel = App.Services?.GetService<MainViewModel>();
             foreach (var post in posts)
-                CommunityPosts.Add(post);
+            {
+                var previewVm = new PostPreviewViewModel(post, _postsService, _userSession, mainViewModel);
+                CommunityPosts.Add(previewVm);
+            }
         }
 
         private static BitmapImage ConvertToBitmap(byte[] data)

@@ -45,6 +45,7 @@ namespace Boards_WP.Views
                 {
                     var userSession = App.GetService<UserSession>();
                     var commentsService = App.GetService<Boards_WP.Data.Services.Interfaces.ICommentsService>();
+                    var postsService = App.GetService<Boards_WP.Data.Services.Interfaces.IPostsService>();
 
                     var newReply = new Comment
                     {
@@ -59,8 +60,6 @@ namespace Boards_WP.Views
                     try
                     {
                         commentsService.AddComment(newReply);
-
-                        // We ask the post page to reload the comments from DB so sorting stays consistent
                         postPage.ViewModel.Initialize(postPage.ViewModel.CurrentPost);
                     }
                     catch (Exception ex)

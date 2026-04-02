@@ -48,6 +48,7 @@ public partial class CommunityBarViewModel
     [RelayCommand]
     private void NavigateHome()
     {
+        _feedViewModel.IsHome = true;
         _feedViewModel.LoadHome(); 
         _navigationService.NavigateTo(typeof(FeedView));
     }
@@ -55,6 +56,7 @@ public partial class CommunityBarViewModel
     [RelayCommand]
     private void NavigateDiscovery()
     {
+        _feedViewModel.IsHome = false;
         _feedViewModel.LoadDiscovery();
         _navigationService.NavigateTo(typeof(FeedView));
     }

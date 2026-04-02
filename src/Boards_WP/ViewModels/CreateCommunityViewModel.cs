@@ -7,12 +7,15 @@ using Boards_WP.Views.Pages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Boards_WP.ViewModels
 {
     public partial class CreateCommunityViewModel : ObservableObject
     {
         private readonly ICommunitiesService _communitiesService;
         private readonly INavigationService _navigationService;
+        private readonly MainViewModel _mainViewModel;
         private readonly UserSession _userSession;
 
         [ObservableProperty]

@@ -15,7 +15,6 @@ namespace Boards_WP.Views.Pages
         {
             var postsService = App.GetService<IPostsService>();
             ViewModel = new CommunityViewModel(
-                postsService: postsService,
                 navigateToCreatePost: community => Frame.Navigate(typeof(CreatePostView), community));
             this.InitializeComponent();
         }

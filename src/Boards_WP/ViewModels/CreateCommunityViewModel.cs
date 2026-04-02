@@ -39,12 +39,11 @@ namespace Boards_WP.ViewModels
 
         public ObservableCollection<Community> SidebarList { get; set; } = [];
 
-        public CreateCommunityViewModel()
+        public CreateCommunityViewModel(ICommunitiesService communitiesService, INavigationService navigationService, UserSession userSession)
         {
-            _mainViewModel = App.Services?.GetService<MainViewModel>();
-            _communitiesService = App.Services?.GetService<ICommunitiesService>();
-            _navigationService = App.Services?.GetService<INavigationService>();
-            _userSession = App.Services?.GetService<UserSession>();
+            _communitiesService = communitiesService;
+            _navigationService = navigationService;
+            _userSession = userSession;
         }
 
         [RelayCommand(CanExecute = nameof(CanCreateCommunity))]

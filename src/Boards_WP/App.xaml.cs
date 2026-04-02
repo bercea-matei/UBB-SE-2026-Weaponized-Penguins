@@ -45,7 +45,7 @@ public partial class App : Application
             .AddSingleton<IBetsService, BetsService>()
             .AddSingleton<IUsersService, UsersService>()
 
-            .AddSingleton<string>("Data Source=IONUT\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True")
+            .AddSingleton<string>("Data Source=DESKTOP-1JCJMN6\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True") 
             .AddSingleton<IPostsRepository, PostsRepository>()
             .AddSingleton<ICommunitiesRepository, CommunitiesRepository>()
             .AddSingleton<INotificationRepository, NotificationRepository>()
@@ -59,7 +59,7 @@ public partial class App : Application
             //VMs
             .AddTransient<CommunityViewModel>()
             .AddTransient<CreateCommunityViewModel>()
-            //.AddTransient<CreatePostViewModel>()
+            .AddTransient<CreatePostViewModel>()
             .AddTransient<FullPostViewModel>()
             .AddTransient<NotificationItemViewModel>()
             .AddTransient<NotificationsListViewModel>()

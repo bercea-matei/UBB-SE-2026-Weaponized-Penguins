@@ -82,6 +82,11 @@ public class PostsService : IPostsService
         else throw new UnauthorizedAccessException("Only the owner of the post can delete it.");
     }
 
+    public void IncreaseCommentsNumber(int postId)
+    {
+        _postsRepo.IncreaseCommentsNumber(postId);
+    }
+
     public void IncreaseScore(int postId)
     {
         

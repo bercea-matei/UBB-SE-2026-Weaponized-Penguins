@@ -12,11 +12,9 @@ namespace Boards_WP.Views.Pages
         public CommunityView()
         {
             this.InitializeComponent();
-
-            var postsService = App.GetService<IPostsService>();
-
             ViewModel = new CommunityViewModel(
-                navigateToCreatePost: community => Frame.Navigate(typeof(CreatePostView), community));
+                navigateToCreatePost: community => Frame.Navigate(typeof(CreatePostView), community),
+                navigateToEditCommunity: community => Frame.Navigate(typeof(UpdateCommunityView), community));
 
             this.DataContext = ViewModel;
         }

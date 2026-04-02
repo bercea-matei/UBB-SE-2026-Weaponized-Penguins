@@ -10,7 +10,7 @@ namespace Boards_WP.Data.Repositories;
 public class CommunitiesRepository : ICommunitiesRepository
 {
 
-    private readonly String _connectionString; 
+    private readonly String _connectionString;
 
     public CommunitiesRepository(String connectionString)
     {
@@ -66,7 +66,7 @@ public class CommunitiesRepository : ICommunitiesRepository
 
         using var reader = command.ExecuteReader();
 
-        if(reader.Read())
+        if (reader.Read())
         {
             int ownerIDFromDB = (int)reader["adminID"];
 
@@ -358,5 +358,65 @@ SELECT
 
         connection.Open();
         command.ExecuteNonQuery();
+    }
+
+    public Community? GetCommunityByID(int communityID)
+    {
+        const string query = @"
+    SELECT
+        c.communityID,
+        c.name,
+        c.description,
+        c.picture,
+        c.banner,
+        c.membersNumber,
+
+        u.userID AS adminUserID,
+        u.username AS adminUsername,
+        u.email AS adminEmail,
+        u.passwordHash AS adminPasswordHash,
+        u.avatarUrl AS adminAvatarUrl,
+        u.bio AS adminBio,
+        u.status AS adminStatus
+
+    FROM Communities c
+    INNER JOIN Users u ON c.adminID = u.userID
+    WHERE c.communityID = @communityID";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(query, connection);
+
+        command.Parameters.Add("@communityID", SqlDbType.Int).Value = communityID;
+
+        connection.Open();
+
+        using var reader = command.ExecuteReader();
+
+        if (reader.Read())
+        {
+            var admin = new User
+            {
+                UserID = (int)reader["adminUserID"],
+                Username = reader["adminUsername"].ToString(),
+                Email = reader["adminEmail"].ToString(),
+                PasswordHash = reader["adminPasswordHash"].ToString(),
+                AvatarUrl = reader["adminAvatarUrl"].ToString(),
+                Bio = reader["adminBio"].ToString(),
+                Status = reader["adminStatus"].ToString()
+            };
+
+            return new Community
+            {
+                CommunityID = (int)reader["communityID"],
+                Name = reader["name"].ToString(),
+                Description = reader["description"].ToString(),
+                Picture = reader["picture"] as byte[],
+                Banner = reader["banner"] as byte[],
+                MembersNumber = (int)reader["membersNumber"],
+                Admin = admin
+            };
+        }
+
+        return null;
     }
 }

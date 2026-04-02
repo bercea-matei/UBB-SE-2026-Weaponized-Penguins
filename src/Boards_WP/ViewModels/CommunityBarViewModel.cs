@@ -12,19 +12,23 @@ public partial class CommunityBarViewModel
 {
     private readonly INavigationService _navigationService;
     private readonly ICommunitiesService _communitiesService;
-    private readonly FeedViewModel _feedViewModel;
-    private readonly UserSession _userSession = App.GetService<UserSession>();
+    private readonly FeedViewModel _feedViewModel; // Injected Singleton
+    private readonly MainViewModel _mainViewModel;
+    private readonly UserSession _userSession;
+
+    public MainViewModel MainViewModel => _mainViewModel;
 
     public ObservableCollection<Community> Communities { get; } = new();
 
     public CommunityBarViewModel(
-        INavigationService navigationService,
-        ICommunitiesService communitiesService,
-        FeedViewModel feedViewModel)
+        INavigationService navigationService, ICommunitiesService communitiesService,
+        FeedViewModel feedViewModel, UserSession userSession, MainViewModel mainViewModel)
     {
         _navigationService = navigationService;
         _communitiesService = communitiesService;
         _feedViewModel = feedViewModel;
+        _userSession = userSession;
+        _mainViewModel = mainViewModel;
 
         LoadCommunities();
     }

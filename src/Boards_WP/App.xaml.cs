@@ -60,6 +60,7 @@ public partial class App : Application
         services.AddSingleton<ITagsRepository, TagsRepository>();
         services.AddSingleton<IUsersMoodRepository, UsersMoodRepository>();
         services.AddSingleton<IUsersRepository, UsersRepository>();
+        services.AddSingleton<IBetsRepository, BetsRepository>();
 
         // Services
         services.AddSingleton<IBetsService, BetsService>();
@@ -69,6 +70,8 @@ public partial class App : Application
         services.AddSingleton<IPostsService, PostsService>();
         services.AddSingleton<IUsersService, UsersService>();
         services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<IBetsService, BetsService>();
+
 
         services.AddSingleton<UserSession>();
 
@@ -87,6 +90,7 @@ public partial class App : Application
         services.AddTransient<PostPreviewViewModel>();
         services.AddTransient<HeaderViewModel>();
         services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
+        services.AddTransient<BetsViewModel>();
 
         return services.BuildServiceProvider();
     }

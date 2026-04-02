@@ -41,7 +41,7 @@ namespace Boards_WP.Views.Pages
             if (e.Parameter is Community com)
             {
                 _originCommunity = com;
-            }
+            }   
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

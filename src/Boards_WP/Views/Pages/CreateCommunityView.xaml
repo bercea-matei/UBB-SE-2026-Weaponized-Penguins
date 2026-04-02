@@ -8,8 +8,7 @@
         <StackPanel Spacing="20" MaxWidth="800" HorizontalAlignment="Left">
             <TextBlock Text="Start a Community" 
                        FontSize="32" 
-                       FontWeight="Bold" 
-                       Foreground="{x:"/>
+                       FontWeight="Bold"/>
 
         
             <Grid Height="160" CornerRadius="12" Background="#E0E0E0">

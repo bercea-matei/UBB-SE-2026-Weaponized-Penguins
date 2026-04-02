@@ -60,7 +60,7 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
-        string connectionString = @"Data Source = DESKTOP\SQLEXPRESS;Database=Communities;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+        string connectionString = @"Data Source = ALEX\ALEXSQLEXPRESS;Database=Communities;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
         services.AddSingleton(connectionString);
 
         services.AddSingleton<MainViewModel>();

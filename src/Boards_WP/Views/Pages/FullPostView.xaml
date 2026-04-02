@@ -35,7 +35,7 @@
                             <Button Content="▲" Command="{x:Bind ViewModel.UpvoteCommand}"
                                     Background="Transparent" BorderThickness="0" HorizontalAlignment="Center"/>
                             <TextBlock Text="{x:Bind ViewModel.CurrentPost.Score, Mode=OneWay}"
-                                       HorizontalAlignment="Center" FontWeight="Bold" Foreground="white"/>
+                                       HorizontalAlignment="Center" FontWeight="Bold" Foreground="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}"/>
                             <Button Content="▼" Command="{x:Bind ViewModel.DownvoteCommand}"
                                     Background="Transparent" BorderThickness="0" HorizontalAlignment="Center"/>
                         </StackPanel>
@@ -68,9 +68,9 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Center">
-                            <Border BorderBrush="#E0E0FF" BorderThickness="1" CornerRadius="5" Padding="5">
+                            <Border BorderBrush="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}" BorderThickness="1" CornerRadius="5" Padding="5">
                                 <StackPanel>
-                                    <FontIcon Glyph="&#xE8BD;" FontSize="18" Foreground="white"/>
+                                    <FontIcon Glyph="&#xE8BD;" FontSize="18" Foreground="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}"/>
                                     <TextBlock Text="{x:Bind ViewModel.CurrentPost.CommentsNumber, Mode=OneWay}"
                                                HorizontalAlignment="Center" FontSize="10"/>
                                 </StackPanel>
@@ -88,7 +88,7 @@
                         
                         <Button Grid.Column="1" Content="Post Comment" 
                                 Command="{x:Bind ViewModel.PostCommentCommand}"
-                                Background="#6A67E1" Foreground="White" CornerRadius="8" VerticalAlignment="Bottom" Margin="10,0,0,0"/>
+                                Background="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}" Foreground="White" CornerRadius="8" VerticalAlignment="Bottom" Margin="10,0,0,0"/>
                     </Grid>
                 </Border>
 

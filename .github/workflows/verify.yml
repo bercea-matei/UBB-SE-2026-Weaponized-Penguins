@@ -13,21 +13,14 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
-      path: 'app'
 
     - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.0.x
 
-    - name: Clear NuGet cache
-      run: dotnet nuget locals all --clear
-
     - name: Restore Dependencies
       run: dotnet restore Boards_WP.slnx
-
-    - name: Clean build artifacts
-      run: dotnet clean
 
     - name: Build Solution
       run: dotnet build Boards_WP.slnx -c Debug --no-restore /p:Platform=x64 /p:PublishReadyToRun=false

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -17,14 +18,32 @@ namespace Boards_WP.ViewModels
         private readonly UserSession _userSession;
         private readonly INavigationService _navigationService;
 
+        private readonly HashSet<int> _claimedBetIDs = new();
+
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HomeTabOpacity))]
+        [NotifyPropertyChangedFor(nameof(UserBetsTabOpacity))]
         private bool _isHomeTabSelected = true;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(OngoingSubTabOpacity))]
+        [NotifyPropertyChangedFor(nameof(ExpiredSubTabOpacity))]
+        private bool _isOngoingSubTabSelected = true;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TokenBalanceText))]
+        private int _userTokenBalance;
+
         public ObservableCollection<BetItemViewModel> FilteredBets { get; set; } = new();
-        public ObservableCollection<UserBetItemViewModel> UserBets { get; set; } = new();
+        public ObservableCollection<UserBetItemViewModel> OngoingUserBets { get; set; } = new();
+        public ObservableCollection<UserBetItemViewModel> ExpiredUserBets { get; set; } = new();
 
         public double HomeTabOpacity => IsHomeTabSelected ? 1.0 : 0.6;
         public double UserBetsTabOpacity => IsHomeTabSelected ? 0.6 : 1.0;
+        public double OngoingSubTabOpacity => IsOngoingSubTabSelected ? 1.0 : 0.6;
+        public double ExpiredSubTabOpacity => IsOngoingSubTabSelected ? 0.6 : 1.0;
+
+        public string TokenBalanceText => $"{UserTokenBalance} tokens";
 
         public ICommand CreateBetCommand { get; set; }
 
@@ -34,6 +53,24 @@ namespace Boards_WP.ViewModels
             _navigationService = navigationService;
             _userSession = App.Services?.GetService<UserSession>();
             LoadHomeBets();
+            LoadUserTokenBalance();
+        }
+
+        private void LoadUserTokenBalance()
+        {
+            var currentUserId = _userSession?.CurrentUser?.UserID ?? 0;
+            if (currentUserId == 0) return;
+
+            try
+            {
+                UserTokenBalance = _betsService.GetUserTokenCount(currentUserId);
+            }
+            catch { }
+        }
+
+        private void OnPayoutClaimed(int updatedTokens)
+        {
+            UserTokenBalance = updatedTokens;
         }
 
         private void OpenBetPlacement(Bet bet, BetVote vote, decimal odd)
@@ -60,12 +97,6 @@ namespace Boards_WP.ViewModels
             LoadBetsByKeywords(keywords);
         }
 
-        partial void OnIsHomeTabSelectedChanged(bool value)
-        {
-            OnPropertyChanged(nameof(HomeTabOpacity));
-            OnPropertyChanged(nameof(UserBetsTabOpacity));
-        }
-
         [RelayCommand]
         private void ShowHome()
         {
@@ -77,13 +108,27 @@ namespace Boards_WP.ViewModels
         private void ShowUserBets()
         {
             IsHomeTabSelected = false;
+            IsOngoingSubTabSelected = true;
             LoadCurrentUserBets();
+        }
+
+        [RelayCommand]
+        private void ShowOngoingSubTab()
+        {
+            IsOngoingSubTabSelected = true;
+        }
+
+        [RelayCommand]
+        private void ShowExpiredSubTab()
+        {
+            IsOngoingSubTabSelected = false;
         }
 
         private void LoadHomeBets()
         {
             FilteredBets.Clear();
-            UserBets.Clear();
+            OngoingUserBets.Clear();
+            ExpiredUserBets.Clear();
 
             var currentUserId = _userSession?.CurrentUser?.UserID ?? 0;
             var allBets = _betsService.GetAllBets();
@@ -94,9 +139,7 @@ namespace Boards_WP.ViewModels
                 var (yesOdd, noOdd) = _betsService.CalculateBetOdds(bet.BetID, oddsUserId);
 
                 FilteredBets.Add(new BetItemViewModel(
-                    bet,
-                    yesOdd,
-                    noOdd,
+                    bet, yesOdd, noOdd,
                     (vote, odd) => OpenBetPlacement(bet, vote, odd)));
             }
         }
@@ -104,7 +147,8 @@ namespace Boards_WP.ViewModels
         private void LoadBetsByKeywords(string keywords)
         {
             FilteredBets.Clear();
-            UserBets.Clear();
+            OngoingUserBets.Clear();
+            ExpiredUserBets.Clear();
 
             var currentUserId = _userSession?.CurrentUser?.UserID ?? 0;
             var bets = _betsService.SearchBetsByKeywords(keywords);
@@ -115,9 +159,7 @@ namespace Boards_WP.ViewModels
                 var (yesOdd, noOdd) = _betsService.CalculateBetOdds(bet.BetID, oddsUserId);
 
                 FilteredBets.Add(new BetItemViewModel(
-                    bet,
-                    yesOdd,
-                    noOdd,
+                    bet, yesOdd, noOdd,
                     (vote, odd) => OpenBetPlacement(bet, vote, odd)));
             }
         }
@@ -125,21 +167,19 @@ namespace Boards_WP.ViewModels
         private void LoadCurrentUserBets()
         {
             FilteredBets.Clear();
-            UserBets.Clear();
+            OngoingUserBets.Clear();
+            ExpiredUserBets.Clear();
 
             var currentUserId = _userSession?.CurrentUser?.UserID ?? 0;
-            if (currentUserId == 0)
-            {
-                return;
-            }
+            if (currentUserId == 0) return;
 
-            var userBets = _betsService.GetPlacedBetsOfUser(currentUserId);
-            foreach (var bet in userBets)
-            {
-                UserBets.Add(new UserBetItemViewModel(bet));
-            }
+            var ongoingBets = _betsService.GetOngoingPlacedBetsOfUser(currentUserId);
+            foreach (var bet in ongoingBets)
+                OngoingUserBets.Add(new UserBetItemViewModel(bet, _betsService, currentUserId, _claimedBetIDs, OnPayoutClaimed));
 
-            OnPropertyChanged(nameof(UserBets));
+            var expiredBets = _betsService.GetExpiredPlacedBetsOfUser(currentUserId);
+            foreach (var bet in expiredBets)
+                ExpiredUserBets.Add(new UserBetItemViewModel(bet, _betsService, currentUserId, _claimedBetIDs, OnPayoutClaimed));
         }
     }
 }

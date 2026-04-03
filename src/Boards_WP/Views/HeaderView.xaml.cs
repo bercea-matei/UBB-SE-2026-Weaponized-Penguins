@@ -1,19 +1,26 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 
 using Boards_WP.ViewModels;
 using Boards_WP.Data.Models;
+using Boards_WP.Data.Services;
 
 namespace Boards_WP.Views
 {
     public sealed partial class HeaderView : UserControl
     {
         public HeaderViewModel ViewModel { get; private set; }
+        private readonly IBetsService _betsService;
+        private readonly UserSession _userSession;
+        private Frame _contentFrame;
 
         public HeaderView()
         {
             this.InitializeComponent();
+            _betsService = App.GetService<IBetsService>();
+            _userSession = App.GetService<UserSession>();
 
             this.Loaded += HeaderView_Loaded;
         }
@@ -25,8 +32,32 @@ namespace Boards_WP.Views
                 this.ViewModel = App.GetService<HeaderViewModel>();
                 this.DataContext = this.ViewModel;
 
+                _contentFrame = myApp.m_window?.Content is FrameworkElement fe
+                    ? fe.FindName("ContentFrame") as Frame
+                    : null;
+
+                if (_contentFrame != null)
+                {
+                    _contentFrame.Navigated -= ContentFrame_Navigated;
+                    _contentFrame.Navigated += ContentFrame_Navigated;
+                    UpdateTokenVisibility(_contentFrame.Content?.GetType());
+                }
+
                 this.Bindings.Update();
             }
+        }
+
+        private void ContentFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+            UpdateTokenVisibility(e.SourcePageType);
+        }
+
+        private void UpdateTokenVisibility(Type currentPageType)
+        {
+            var inBetsArea = currentPageType == typeof(Pages.BetsView)
+                || currentPageType == typeof(Pages.CreateBetView);
+
+            TokenDisplay.Visibility = inBetsArea ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void CommunitySearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -35,19 +66,40 @@ namespace Boards_WP.Views
             {
                 string query = sender.Text.ToLower().Trim();
 
-                if (query == "/weaponizedpenguins")
+                if (_betsService.IsSecretKey(query))
                 {
-                    TokenDisplay.Visibility = Visibility.Visible;
-                    sender.Text = string.Empty;
-                    ViewModel.UserTokens += 5;
-                    NavigateToPage(typeof(Pages.BetsView), null);
-
                     ResultsPopup.IsOpen = false;
                     return;
                 }
 
                 ViewModel.SearchText = sender.Text;
                 ResultsPopup.IsOpen = (ViewModel.SearchResults.Count > 0);
+            }
+        }
+
+        private void CommunitySearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (ViewModel == null) return;
+
+            string query = sender.Text.ToLower().Trim();
+
+            if (_betsService.IsSecretKey(query))
+            {
+                var userId = _userSession?.CurrentUser?.UserID ?? 0;
+                if (userId != 0)
+                {
+                    var tokens = _betsService.RegisterSecretAreaVisitAndGetTokens(userId);
+                    ViewModel.UserTokens = tokens;
+                    TokenCountText.Text = tokens.ToString();
+                }
+
+                var keywords = _betsService.ExtractBetKeywords(query);
+                NavigateToPage(typeof(Pages.BetsView), keywords);
+
+                sender.Text = string.Empty;
+                ViewModel.SearchText = string.Empty;
+                ResultsPopup.IsOpen = false;
+                return;
             }
         }
 

@@ -30,10 +30,6 @@ namespace Boards_WP.ViewModels
         [NotifyPropertyChangedFor(nameof(ExpiredSubTabOpacity))]
         private bool _isOngoingSubTabSelected = true;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(TokenBalanceText))]
-        private int _userTokenBalance;
-
         public ObservableCollection<BetItemViewModel> FilteredBets { get; set; } = new();
         public ObservableCollection<UserBetItemViewModel> OngoingUserBets { get; set; } = new();
         public ObservableCollection<UserBetItemViewModel> ExpiredUserBets { get; set; } = new();
@@ -43,8 +39,6 @@ namespace Boards_WP.ViewModels
         public double OngoingSubTabOpacity => IsOngoingSubTabSelected ? 1.0 : 0.6;
         public double ExpiredSubTabOpacity => IsOngoingSubTabSelected ? 0.6 : 1.0;
 
-        public string TokenBalanceText => $"{UserTokenBalance} tokens";
-
         public ICommand CreateBetCommand { get; set; }
 
         public BetsViewModel(IBetsService betsService, INavigationService navigationService)
@@ -53,24 +47,11 @@ namespace Boards_WP.ViewModels
             _navigationService = navigationService;
             _userSession = App.Services?.GetService<UserSession>();
             LoadHomeBets();
-            LoadUserTokenBalance();
-        }
-
-        private void LoadUserTokenBalance()
-        {
-            var currentUserId = _userSession?.CurrentUser?.UserID ?? 0;
-            if (currentUserId == 0) return;
-
-            try
-            {
-                UserTokenBalance = _betsService.GetUserTokenCount(currentUserId);
-            }
-            catch { }
         }
 
         private void OnPayoutClaimed(int updatedTokens)
         {
-            UserTokenBalance = updatedTokens;
+            TokenEvents.NotifyTokensUpdated(updatedTokens);
         }
 
         private void OpenBetPlacement(Bet bet, BetVote vote, decimal odd)

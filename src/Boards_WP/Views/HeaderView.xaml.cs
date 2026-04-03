@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.ComponentModel;
+
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +25,7 @@ namespace Boards_WP.Views
             _userSession = App.GetService<UserSession>();
 
             this.Loaded += HeaderView_Loaded;
+            this.Unloaded += HeaderView_Unloaded;
         }
 
         private void HeaderView_Loaded(object sender, RoutedEventArgs e)
@@ -31,6 +34,10 @@ namespace Boards_WP.Views
             {
                 this.ViewModel = App.GetService<HeaderViewModel>();
                 this.DataContext = this.ViewModel;
+
+                this.ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+
+                TokenEvents.TokensUpdated += OnTokensUpdated;
 
                 _contentFrame = myApp.m_window?.Content is FrameworkElement fe
                     ? fe.FindName("ContentFrame") as Frame
@@ -44,6 +51,33 @@ namespace Boards_WP.Views
                 }
 
                 this.Bindings.Update();
+            }
+        }
+
+        private void HeaderView_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (this.ViewModel != null)
+                this.ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+
+            TokenEvents.TokensUpdated -= OnTokensUpdated;
+        }
+
+        private void OnTokensUpdated(int newAmount)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                TokenCountText.Text = newAmount.ToString();
+            });
+        }
+
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(HeaderViewModel.UserTokens))
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    TokenCountText.Text = ViewModel.UserTokens.ToString();
+                });
             }
         }
 
@@ -69,9 +103,7 @@ namespace Boards_WP.Views
                     {
                         ViewModel.UserTokens = _betsService.GetUserTokenCount(userId);
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
             }
         }
@@ -133,7 +165,6 @@ namespace Boards_WP.Views
             if (e.ClickedItem is Community selectedCommunity && ViewModel != null)
             {
                 ViewModel.SelectCommunityCommand.Execute(selectedCommunity);
-
                 ResultsPopup.IsOpen = false;
             }
         }

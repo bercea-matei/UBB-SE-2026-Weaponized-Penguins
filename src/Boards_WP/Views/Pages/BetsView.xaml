@@ -33,16 +33,6 @@
                         Spacing="25"
                         Margin="0,0,25,0">
 
-                <!-- Token balance -->
-                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                    <TextBlock Text="&#xE8FD;" FontFamily="Segoe MDL2 Assets" Foreground="#FFD700" FontSize="16" VerticalAlignment="Center"/>
-                    <TextBlock Text="{x:Bind ViewModel.TokenBalanceText, Mode=OneWay}"
-                               Foreground="#FFD700"
-                               FontSize="14"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
-                </StackPanel>
-
                 <HyperlinkButton Content="Home"
                                  Foreground="White"
                                  FontSize="16"

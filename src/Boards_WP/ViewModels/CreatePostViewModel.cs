@@ -15,6 +15,9 @@ namespace Boards_WP.ViewModels
         private readonly INavigationService _navigationService;
         private readonly UserSession _userSession;
         private readonly ITagsRepository _tagsRepository;
+        private MainViewModel _mainViewModel;
+
+        public MainViewModel MainViewModel => _mainViewModel;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(UploadPostCommand))]
@@ -30,12 +33,16 @@ namespace Boards_WP.ViewModels
         [NotifyCanExecuteChangedFor(nameof(UploadPostCommand))]
         private Category? _selectedCategory;
 
+        [ObservableProperty]
+        private byte[]? _postImage;
+
         public ObservableCollection<Category> AvailableCategories { get; } = new();
 
         public Community OriginCommunity { get; set; } = null!;
 
         public CreatePostViewModel(IPostsService postsService, INavigationService navigationService, UserSession userSession, ITagsRepository tagsRepository)
         {
+            _mainViewModel = App.GetService<MainViewModel>();
             _postsService = postsService;
             _navigationService = navigationService;
             _userSession = userSession;
@@ -60,6 +67,7 @@ namespace Boards_WP.ViewModels
                 ParentCommunity = OriginCommunity,
                 Owner = _userSession.CurrentUser,
                 Score = 0,
+                Image = PostImage,
                 CommentsNumber = 0,
                 CreationTime = DateTime.Now
             };
@@ -82,6 +90,7 @@ namespace Boards_WP.ViewModels
 
                 if (createdTags.Count == 0)
                 {
+                    
                     var tag = new Tag { TagName = SelectedCategory.CategoryName, CategoryBelongingTo = SelectedCategory };
                     _tagsRepository.AddTag(tag);
                     createdTags.Add(tag);
@@ -92,6 +101,7 @@ namespace Boards_WP.ViewModels
 
             _postsService.AddPost(newPost);
 
+            
             _navigationService.NavigateTo(typeof(CommunityView), OriginCommunity);
         }
 

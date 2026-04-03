@@ -1,7 +1,13 @@
+using System.IO;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
+
 using Boards_WP.Data.Models;
-using Boards_WP.Data.Services.Interfaces; 
+using Boards_WP.Data.Services.Interfaces;
 
 namespace Boards_WP.ViewModels
 {
@@ -11,9 +17,13 @@ namespace Boards_WP.ViewModels
         private readonly UserSession _userSession;
         private readonly MainViewModel _mainViewModel;
 
+        public MainViewModel MainViewModel => _mainViewModel;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(FormattedDate))]
-        [NotifyPropertyChangedFor(nameof(DescriptionSnippet))] 
+        [NotifyPropertyChangedFor(nameof(DescriptionSnippet))]
+        [NotifyPropertyChangedFor(nameof(PostImageSource))]
+        [NotifyPropertyChangedFor(nameof(PostImageVisibility))]
         private Post _postData;
 
         [ObservableProperty]
@@ -22,6 +32,9 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         private string _authorUsername;
 
+        public BitmapImage PostImageSource => ConvertToBitmap(PostData?.Image);
+        public Visibility PostImageVisibility => PostData?.Image?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+
         public string FormattedDate => PostData?.CreationTime.ToString("dd/MM/yyyy") ?? "";
 
         public string DescriptionSnippet
@@ -29,16 +42,15 @@ namespace Boards_WP.ViewModels
             get
             {
                 if (string.IsNullOrEmpty(PostData?.Description)) return string.Empty;
-                return PostData.Description.Length > 150 
-                    ? PostData.Description.Substring(0, 150) + "..." 
+                return PostData.Description.Length > 150
+                    ? PostData.Description.Substring(0, 150) + "..."
                     : PostData.Description;
             }
         }
 
-
         public PostPreviewViewModel(
-            Post post, 
-            IPostsService postsService, 
+            Post post,
+            IPostsService postsService,
             UserSession userSession,
             MainViewModel mainViewModel)
         {
@@ -48,6 +60,15 @@ namespace Boards_WP.ViewModels
             _mainViewModel = mainViewModel;
             _communityName = post.ParentCommunity?.Name ?? "Unknown";
             _authorUsername = post.Owner?.Username ?? "Unknown";
+        }
+
+        private static BitmapImage ConvertToBitmap(byte[] data)
+        {
+            if (data == null || data.Length == 0) return null;
+            var bitmap = new BitmapImage();
+            using var ms = new MemoryStream(data);
+            bitmap.SetSource(ms.AsRandomAccessStream());
+            return bitmap;
         }
 
         [RelayCommand]
@@ -64,12 +85,12 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
+
                 OnPropertyChanged(nameof(PostData)); 
             }
 
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
-
         }
 
         [RelayCommand]
@@ -86,6 +107,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
+
                 OnPropertyChanged(nameof(PostData)); 
             }
 

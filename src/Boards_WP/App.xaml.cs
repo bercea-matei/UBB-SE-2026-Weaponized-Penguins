@@ -28,15 +28,15 @@ public partial class App : Application
         m_window = new MainWindow();
 
         var navService = Services.GetRequiredService<INavigationService>() as NavigationService;
-        if (m_window.Content is FrameworkElement root)
-        {
-            var frame = root.FindName("ContentFrame") as Frame;
-            if (frame != null)
-            {
-                navService.Initialize(frame);
-                navService.NavigateTo(typeof(FeedView));
-            }
-        }
+        //if (m_window.Content is FrameworkElement root)
+        //{
+        //    var frame = root.FindName("ContentFrame") as Frame;
+        //    if (frame != null)
+        //    {
+        //        navService.Initialize(frame);
+        //        navService.NavigateTo(typeof(FeedView));
+        //    }
+        //}
 
         m_window.Activate();
     }
@@ -45,7 +45,13 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
-string connectionString = @"Data Source=IONUT\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
+        //string connectionString = @"Server=ALEX\ALEXSQLEXPRESS;Database=Communities;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+        string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
+        //string connectionString = @"Data Source=DESKTOP\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
+        //string connectionString = @"Server=IONUT\SQLEXPRESS;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
+        //services.AddSingleton<string>("Data Source=DESKTOP-GFA6UNJ\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True");
+        //string connectionString = @"Data Source = DESKTOP\SQLEXPRESS;Database=Communities;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+
         services.AddSingleton(connectionString);
 
 
@@ -60,6 +66,7 @@ string connectionString = @"Data Source=IONUT\SQLEXPRESS;Initial Catalog=Communi
         services.AddSingleton<ITagsRepository, TagsRepository>();
         services.AddSingleton<IUsersMoodRepository, UsersMoodRepository>();
         services.AddSingleton<IUsersRepository, UsersRepository>();
+        services.AddSingleton<IBetsRepository, BetsRepository>();
 
         // Services
         services.AddSingleton<IBetsService, BetsService>();
@@ -69,6 +76,9 @@ string connectionString = @"Data Source=IONUT\SQLEXPRESS;Initial Catalog=Communi
         services.AddSingleton<IPostsService, PostsService>();
         services.AddSingleton<IUsersService, UsersService>();
         services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<IBetsService, BetsService>();
+        services.AddTransient<LoginViewModel>();
+
 
         services.AddSingleton<UserSession>();
 
@@ -80,7 +90,7 @@ string connectionString = @"Data Source=IONUT\SQLEXPRESS;Initial Catalog=Communi
         services.AddTransient<CommunityBarViewModel>();
         services.AddTransient<CreateCommunityViewModel>();
         services.AddTransient<UpdateCommunityViewModel>();
-        services.AddTransient<CommunityViewModel>();
+        services.AddSingleton<CommunityViewModel>();
         services.AddTransient<CreateTagViewModel>();
         services.AddTransient<CommentViewModel>();
         services.AddTransient<FullPostViewModel>();
@@ -88,6 +98,7 @@ string connectionString = @"Data Source=IONUT\SQLEXPRESS;Initial Catalog=Communi
         services.AddTransient<HeaderViewModel>();
         services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
         services.AddTransient<BetsViewModel>();
+
         services.AddTransient<BetItemViewModel>();
         services.AddTransient<CreateBetViewModel>();
         services.AddTransient<PlaceBetViewModel>();

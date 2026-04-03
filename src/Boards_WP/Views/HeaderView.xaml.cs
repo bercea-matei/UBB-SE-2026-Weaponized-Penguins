@@ -112,16 +112,18 @@ namespace Boards_WP.Views
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput && ViewModel != null)
             {
-                string query = sender.Text.ToLower().Trim();
-
-                if (_betsService.IsSecretKey(query))
-                {
-                    ResultsPopup.IsOpen = false;
-                    return;
-                }
-
                 ViewModel.SearchText = sender.Text;
-                ResultsPopup.IsOpen = (ViewModel.SearchResults.Count > 0);
+            }
+        }
+
+        private void CommunitySearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            if (args.SelectedItem is Community selectedCommunity && ViewModel != null)
+            {
+                if (selectedCommunity.CommunityID == -1) return;
+
+                ViewModel.SelectCommunityCommand.Execute(selectedCommunity);
+                sender.Text = string.Empty; 
             }
         }
 
@@ -140,13 +142,19 @@ namespace Boards_WP.Views
                     ViewModel.UserTokens = tokens;
                 }
 
+                TokenDisplay.Visibility = Visibility.Visible;
                 var keywords = _betsService.ExtractBetKeywords(query);
+
                 NavigateToPage(typeof(Pages.BetsView), keywords);
 
                 sender.Text = string.Empty;
                 ViewModel.SearchText = string.Empty;
-                ResultsPopup.IsOpen = false;
                 return;
+            }
+            if (args.ChosenSuggestion is Community selected)
+            {
+                ViewModel.SelectCommunityCommand.Execute(selected);
+                sender.Text = string.Empty;
             }
         }
 
@@ -165,13 +173,18 @@ namespace Boards_WP.Views
             if (e.ClickedItem is Community selectedCommunity && ViewModel != null)
             {
                 ViewModel.SelectCommunityCommand.Execute(selectedCommunity);
-                ResultsPopup.IsOpen = false;
+                //ResultsPopup.IsOpen = false;
             }
         }
 
         public Visibility GetVisibility(bool showText)
         {
             return showText ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public static Visibility GetVisibilityFromId(int id)
+        {
+            return id == -1 ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 }

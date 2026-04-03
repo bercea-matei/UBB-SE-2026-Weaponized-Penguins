@@ -210,7 +210,7 @@ public class PostsRepository : IPostsRepository
         string query = $@"
         SELECT p.*, 
                u.username AS owner_username, u.email AS owner_email, u.avatarUrl AS owner_avatarUrl, u.bio AS owner_bio, u.status AS owner_status,
-               c.name AS community_name, c.description AS community_description, c.picture AS community_picture,
+               c.name AS community_name, c.description AS community_description,
                adm.userID AS admin_userID, adm.username AS admin_username
         FROM Posts p
         JOIN Users u ON p.ownerID = u.userID
@@ -218,15 +218,15 @@ public class PostsRepository : IPostsRepository
         JOIN Users adm ON c.adminID = adm.userID
         WHERE p.communityID IN ({idList})
         ORDER BY p.creationTime DESC
-        OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+        OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY;
 
-            SELECT pt.postID, t.tagID, t.tagName, cat.categoryID, cat.categoryName, cat.categoryColor, pt.position
-            FROM Tags t
-            JOIN PostTags pt ON t.tagID = pt.tagID
-            JOIN Categories cat ON t.tagCategoryID = cat.categoryID
-            JOIN Posts p ON pt.postID = p.postID
-            WHERE p.communityID IN ({idList})
-            ORDER BY pt.postID, pt.position;";
+        SELECT pt.postID, t.tagID, t.tagName, cat.categoryID, cat.categoryName, cat.categoryColor, pt.position
+        FROM Tags t
+        JOIN PostTags pt ON t.tagID = pt.tagID
+        JOIN Categories cat ON t.tagCategoryID = cat.categoryID
+        JOIN Posts p ON pt.postID = p.postID
+        WHERE p.communityID IN ({idList})
+        ORDER BY pt.postID, pt.position;";
 
         return FetchListWithTags(query);
     }

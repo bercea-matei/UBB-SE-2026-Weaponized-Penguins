@@ -36,6 +36,7 @@
                                 Padding="15,9,15,0"
                                 Margin="0,5,0,0"
                                 TextChanged="CommunitySearchBox_TextChanged"
+                                QuerySubmitted="CommunitySearchBox_QuerySubmitted"
                                 ItemsSource="{x:Bind ViewModel.SearchResults, Mode=OneWay}"
                                 TextMemberPath="Name"
                                 SuggestionChosen="CommunitySearchBox_SuggestionChosen"

@@ -14,7 +14,7 @@
                     MaxWidth="600"
                     HorizontalAlignment="Left">
 
-            <!-- Title -->
+         
             <TextBlock Text="Create New Bet"
                        FontSize="32"
                        FontWeight="Bold"
@@ -24,13 +24,14 @@
                        Foreground="Gray"
                        Margin="0,-15,0,0"/>
 
-            <!-- Community -->
+
             <ComboBox Header="Target Community"
                       ItemsSource="{Binding Communities}"
                       SelectedItem="{Binding SelectedCommunity, Mode=TwoWay}"
-                      HorizontalAlignment="Stretch"/>
+                      DisplayMemberPath="Name"
+                      HorizontalAlignment="Stretch"/>   
 
-            <!-- Bet Type -->
+
             <StackPanel Spacing="5">
                 <TextBlock Text="Bet Type"
                            FontWeight="SemiBold"/>
@@ -42,12 +43,12 @@
              Checked="Comment_Checked"/>
             </StackPanel>
 
-            <!-- Expression -->
+          
             <TextBox Header="Expression"
                      Text="{Binding Expression, Mode=TwoWay}"
                      PlaceholderText="Enter the phrase..."/>
 
-            <!-- Ending Time -->
+          
             <StackPanel Spacing="5">
                 <TextBlock Text="Ending Time (Validation)"
                            FontWeight="SemiBold"/>
@@ -62,7 +63,6 @@
                 </StackPanel>
             </StackPanel>
 
-            <!-- Buttons -->
             <StackPanel Orientation="Horizontal"
                         Spacing="10"
                         Margin="0,20,0,0">
@@ -77,7 +77,7 @@
                         Width="100"/>
             </StackPanel>
 
-            <!-- Error Message -->
+            
             <TextBlock Text="{Binding ErrorMessage}"
                        Foreground="Red"
                        TextWrapping="Wrap"/>

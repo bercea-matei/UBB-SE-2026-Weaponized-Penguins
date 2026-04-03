@@ -13,44 +13,63 @@ namespace Boards_WP.ViewModels
     public partial class CreateBetViewModel : ObservableObject
     {
         private readonly IBetsService _betsService;
+        private readonly ICommunitiesService _communitiesService;
+        private readonly UserSession _userSession;
 
         public CreateBetViewModel(IBetsService betsService)
         {
             _betsService = betsService;
+            _communitiesService = App.GetService<ICommunitiesService>();
+            _userSession = App.GetService<UserSession>();
 
-            Communities = new ObservableCollection<string>
-            {
-                "UBB",
-                "Weaponized Penguins",
-                "Programming"
-            };
+            Communities = new ObservableCollection<Community>();
 
-            SelectedCommunity = Communities[0];
-            EndDate = DateTime.Now;
-            EndTime = DateTime.Now.TimeOfDay;
+            LoadCommunities();
         }
 
 
         [ObservableProperty]
         private string expression;
 
-        [ObservableProperty]
-        private string selectedCommunity;
 
         [ObservableProperty]
         private bool isPost = true;
 
         [ObservableProperty]
-        private DateTimeOffset endDate;
+        private DateTimeOffset endDate = DateTimeOffset.Now;
 
         [ObservableProperty]
-        private TimeSpan endTime;
+        private TimeSpan endTime = DateTime.Now.TimeOfDay;
 
 
-        public ObservableCollection<string> Communities { get; }
+        public ObservableCollection<Community> Communities { get; }
+
+        [ObservableProperty]
+        private Community _selectedCommunity;
 
         [ObservableProperty]
         private string errorMessage;
+
+        private void LoadCommunities()
+        {
+            try
+            {
+                var communities = _communitiesService.GetCommunitiesUserIsPartOf(_userSession.CurrentUser.UserID);
+
+                Communities.Clear();
+
+                foreach (var community in communities)
+                {
+                    Communities.Add(community);
+                }
+
+                SelectedCommunity = Communities.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+        }
 
 
         [RelayCommand]
@@ -58,15 +77,9 @@ namespace Boards_WP.ViewModels
         {
             try
             {
-                int currentUserId = 1; // replace later
+                int currentUserId = _userSession.CurrentUser.UserID;
 
-                int communityId = SelectedCommunity switch
-                {
-                    "UBB" => 1,
-                    "Weaponized Penguins" => 2,
-                    "Programming" => 3,
-                    _ => 1
-                };
+                int communityId = SelectedCommunity.CommunityID;
 
                 Bet newBet = new Bet
                 {
@@ -76,7 +89,7 @@ namespace Boards_WP.ViewModels
                     Type = IsPost ? BetType.Post : BetType.Comment,
                     YesAmount = 0,
                     NoAmount = 0,
-                    BetCommunity = new Community { CommunityID = communityId }
+                    BetCommunity = SelectedCommunity
                 };
 
                 _betsService.ValidateCreateBet(currentUserId, newBet);

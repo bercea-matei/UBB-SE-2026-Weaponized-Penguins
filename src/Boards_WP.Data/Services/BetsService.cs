@@ -57,7 +57,7 @@ public class BetsService : IBetsService
 
         List<Post> AllPosts = _postsService.GetPostsByCommunityIDs(new[] { b.BetCommunity.CommunityID }, 0, int.MaxValue);
 
-        foreach(Post post in AllPosts)
+        foreach (Post post in AllPosts)
         {
             if (post.CreationTime >= b.StartingTime && post.CreationTime <= b.EndingTime)
                 PostsFromInterval.Add(post);
@@ -74,10 +74,10 @@ public class BetsService : IBetsService
             Bet BetToCheck = _betsRepository.GetBetByID(BetID);
             String Expression = BetToCheck.Expression;
 
-            
+
             List<Post> PostsFromBetInterval = GetPostsFromBetInterval(BetToCheck);
 
-            if(BetToCheck.Type == BetType.Post)
+            if (BetToCheck.Type == BetType.Post)
             {
                 foreach (Post p in PostsFromBetInterval)
                     if (p.Title.Contains(Expression) || p.Description.Contains(Expression))
@@ -88,8 +88,8 @@ public class BetsService : IBetsService
                 foreach (Post p in PostsFromBetInterval)
                 {
 
-                   List<Comment> CommentsOfPost = _commentsService.GetCommentsByPost(p.PostID, p.Owner.UserID); //ID of owner because for this thing I don't care about which user is asking for the comments, I just want all the comments of the post
-                   foreach (Comment c in CommentsOfPost)
+                    List<Comment> CommentsOfPost = _commentsService.GetCommentsByPost(p.PostID, p.Owner.UserID);
+                    foreach (Comment c in CommentsOfPost)
                         if (c.Description.Contains(Expression))
                             return BetVote.YES;
                 }
@@ -101,7 +101,7 @@ public class BetsService : IBetsService
         {
             throw new Exception("Failed to check bet.");
         }
-        
+
     }
 
     public void CreateBet(Bet CreatedBet, int CreatorID)
@@ -143,7 +143,7 @@ public class BetsService : IBetsService
         int firstSpaceIndex = input.IndexOf(' ');
 
         if (firstSpaceIndex == -1)
-            return string.Empty; 
+            return string.Empty;
 
         return input.Substring(firstSpaceIndex + 1).Trim();
     }
@@ -235,6 +235,49 @@ public class BetsService : IBetsService
             throw new Exception("Failed to retrieve placed bets of user.");
         }
     }
+
+    public List<UsersBets> GetOngoingPlacedBetsOfUser(int UserID)
+    {
+        try
+        {
+            var allBets = _betsRepository.GetUserBetsByUser(UserID);
+            var ongoingBets = new List<UsersBets>();
+
+            foreach (var userBet in allBets)
+            {
+                if (userBet.SelectedBet.EndingTime >= DateTime.Now)
+                    ongoingBets.Add(userBet);
+            }
+
+            return ongoingBets;
+        }
+        catch
+        {
+            throw new Exception("Failed to retrieve ongoing bets of user.");
+        }
+    }
+
+    public List<UsersBets> GetExpiredPlacedBetsOfUser(int UserID)
+    {
+        try
+        {
+            var allBets = _betsRepository.GetUserBetsByUser(UserID);
+            var expiredBets = new List<UsersBets>();
+
+            foreach (var userBet in allBets)
+            {
+                if (userBet.SelectedBet.EndingTime < DateTime.Now)
+                    expiredBets.Add(userBet);
+            }
+
+            return expiredBets;
+        }
+        catch
+        {
+            throw new Exception("Failed to retrieve expired bets of user.");
+        }
+    }
+
     public Bet GetBetByID(int BetID)
     {
         try
@@ -255,7 +298,7 @@ public class BetsService : IBetsService
         List<UsersBets> AllBetsOfUser = _betsRepository.GetUserBetsByUser(UserID);
         foreach (UsersBets bet in AllBetsOfUser)
         {
-            if(bet.SelectedBet.EndingTime < DateTime.Now)
+            if (bet.SelectedBet.EndingTime < DateTime.Now)
                 ExpiredBets.Add(bet.SelectedBet);
         }
 
@@ -382,7 +425,7 @@ public class BetsService : IBetsService
                 throw new Exception("Bet amount must be greater than 0.");
             if (UserTokens < Amount)
                 throw new Exception("User does not have enough tokens to place this bet.");
-            if(Amount > 1000)
+            if (Amount > 1000)
                 throw new Exception("Bet amount must be less than or equal to 1000 tokens.");
 
             return true;

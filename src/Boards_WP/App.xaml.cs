@@ -100,6 +100,10 @@ public partial class App : Application
         services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
         services.AddTransient<BetsViewModel>();
 
+        services.AddTransient<BetItemViewModel>();
+        services.AddTransient<CreateBetViewModel>();
+        services.AddTransient<PlaceBetViewModel>();
+
         return services.BuildServiceProvider();
     }
 }

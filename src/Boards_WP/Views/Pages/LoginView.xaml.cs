@@ -1,21 +1,23 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml.Controls;
-
 using Boards_WP.ViewModels;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Boards_WP.Views.Pages
 {
     public sealed partial class LoginView : Page
     {
-        // Property for XAML Binding
         public LoginViewModel ViewModel { get; }
+
+        public Visibility StringToVis(string error) => string.IsNullOrEmpty(error) ? Visibility.Collapsed : Visibility.Visible;
 
         public LoginView()
         {
             this.InitializeComponent();
 
-            // Resolve the ViewModel from the service provider
             ViewModel = App.Services.GetRequiredService<LoginViewModel>();
         }
+
     }
 }

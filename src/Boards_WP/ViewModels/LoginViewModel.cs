@@ -35,33 +35,42 @@ namespace Boards_WP.ViewModels
         }
 
         [RelayCommand]
-        private void Login()
+        private void Login(object parameter)
         {
+            string password = string.Empty;
+            if (parameter is Microsoft.UI.Xaml.Controls.PasswordBox passwordBox)
+            {
+                password = passwordBox.Password;
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                ErrorMessage = "Password is required.";
+                return;
+            }
+
             try
             {
-                var user = _usersService.Login(Email, Password);
+                var user = _usersService.Login(Email, password);
+
                 if (user != null)
                 {
                     _userSession.CurrentUser = user;
-
-                    // 1. Show the main UI
                     var mainVM = App.Services.GetRequiredService<MainViewModel>();
                     mainVM.IsLoggedIn = true;
 
-                    // 2. Find the MainWindow to switch frames
                     if (((App)App.Current).m_window is MainWindow mainWindow)
                     {
-                        // Move the navigation service from the "Full Window" frame 
-                        // to the "Middle Section" frame
                         _navigationService.Initialize(mainWindow.ContentFrame);
                         _navigationService.NavigateTo(typeof(Views.Pages.FeedView));
-
-                        // Hide the login frame entirely
                         mainWindow.LoginFrame.Visibility = Visibility.Collapsed;
                     }
                 }
             }
-            catch (Exception ex) { ErrorMessage = ex.Message; }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
         }
     }
 }

@@ -12,11 +12,16 @@ namespace Boards_WP
         private readonly MainViewModel _mainViewModel;
         public MainViewModel MainViewModel => _mainViewModel;
 
+        public Visibility BoolToVis(bool isLoggedIn) => isLoggedIn ? Visibility.Visible : Visibility.Collapsed;
+
         public MainWindow()
         {
-            this.InitializeComponent();
+            
             _mainViewModel = App.Services.GetRequiredService<MainViewModel>();
             _mainViewModel.IsLoggedIn = false;
+
+            this.InitializeComponent();
+
 
             if (App.Current is App myApp)
             {
@@ -29,8 +34,6 @@ namespace Boards_WP
 
         public void NavigateToPage(Type pageType, object parameter = null)
         {
-            // We use ContentFrame here because this method is typically called 
-            // for feed navigation once the user is already inside the app.
             ContentFrame.Navigate(pageType, parameter);
         }
     }

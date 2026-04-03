@@ -28,15 +28,15 @@ public partial class App : Application
         m_window = new MainWindow();
 
         var navService = Services.GetRequiredService<INavigationService>() as NavigationService;
-        if (m_window.Content is FrameworkElement root)
-        {
-            var frame = root.FindName("ContentFrame") as Frame;
-            if (frame != null)
-            {
-                navService.Initialize(frame);
-                navService.NavigateTo(typeof(FeedView));
-            }
-        }
+        //if (m_window.Content is FrameworkElement root)
+        //{
+        //    var frame = root.FindName("ContentFrame") as Frame;
+        //    if (frame != null)
+        //    {
+        //        navService.Initialize(frame);
+        //        navService.NavigateTo(typeof(FeedView));
+        //    }
+        //}
 
         m_window.Activate();
     }

@@ -9,14 +9,12 @@
     Title="Boards_WP">
 
     <Grid x:Name="RootGrid" Background="{x:Bind MainViewModel.AppThemeBrush, Mode=OneWay}">
-        <Grid.Resources>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        </Grid.Resources>
+        
         
         <Frame x:Name="LoginFrame" x:FieldModifier="public" Canvas.ZIndex="10" />
 
         <Grid x:Name="MainLayout" 
-              Visibility="{x:Bind MainViewModel.IsLoggedIn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            Visibility="{x:Bind BoolToVis(MainViewModel.IsLoggedIn), Mode=OneWay}">
             
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

@@ -82,12 +82,15 @@ public class PostsService : IPostsService
 
     public void DeletePost(int postId)
     {
+        var post = _postsRepo.GetPostByPostID(postId);
+        int currentUserId = _userSession.CurrentUser.UserID;
 
-        if(_userSession.CurrentUser == _postsRepo.GetPostByPostID(postId).Owner)
+        if (currentUserId == post.Owner.UserID)
             _postsRepo.DeletePost(postId);
-        else if (_userSession.CurrentUser == _postsRepo.GetPostByPostID(postId).ParentCommunity.Admin)
+        else if (currentUserId == post.ParentCommunity.Admin.UserID)
             _postsRepo.DeletePost(postId);
-        else throw new UnauthorizedAccessException("Only the owner of the post can delete it.");
+        else
+            throw new UnauthorizedAccessException("Only the owner of the post can delete it.");
     }
 
     public void IncreaseCommentsNumber(int postId)
@@ -171,7 +174,7 @@ public class PostsService : IPostsService
 
     public List<Post> GetPostsByCommunityIDs(int[] communityIds, int offset, int limit)
     {
-        return _postsRepo.GetPostsByCommunityIDs(communityIds, offset, limit);
+        return _postsRepo.GetPostsByCommunityIDs(communityIds, offset, limit).OrderByDescending(post => post.CreationTime).ToList();
     }
 
     public List<Post> GetPostsForHomePage(int userId, int offset, int limit)
@@ -181,7 +184,7 @@ public class PostsService : IPostsService
 
         int[] communityIds = communities.Select(c => c.CommunityID).ToArray();
 
-        return _postsRepo.GetPostsByCommunityIDs(communityIds, offset, limit);
+        return _postsRepo.GetPostsByCommunityIDs(communityIds, offset, limit).OrderByDescending(post => post.CreationTime).ToList(); 
     }
 
     public List<Post> GetPostsForDiscoveryPage(int userId, int offset, int limit)
@@ -229,6 +232,15 @@ public class PostsService : IPostsService
         .ToList();
 
         int totalCount = rankedPool.Count;
+        int minThreshold = (_initialDiscoveryBatch * _goldenPostsDiscoveryPercent) / 100;
+
+        if (totalCount <= minThreshold)
+        {
+            _discoveryBuffer.AddRange(rankedPool);
+            _discoveryKeptPool.Clear();
+            return;
+        }
+
         int topCount = totalCount * _goldenPostsDiscoveryPercent / 100;
         int middleCount = totalCount * (100 - _goldenPostsDiscoveryPercent - _badPostsDiscoveryPercent) / 100;
 
@@ -273,7 +285,7 @@ public class PostsService : IPostsService
 
     private readonly int[] _tagWeights = { 34, 21, 13, 8, 5, 3, 2, 1, 1, 1 };
 
-    private ThemeColor CalculateDominantColor(IEnumerable<Post> posts)
+    public ThemeColor CalculateDominantColor(IEnumerable<Post> posts)
     {
         
         var colorScores = new Dictionary<ThemeColor, int>

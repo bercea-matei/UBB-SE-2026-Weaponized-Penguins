@@ -38,6 +38,6 @@ namespace Boards_WP
             ContentFrame.Navigate(pageType, parameter);
         }
 
-        
+
     }
 }

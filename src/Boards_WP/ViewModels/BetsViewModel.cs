@@ -8,8 +8,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Boards_WP.ViewModels
 {
@@ -85,11 +83,15 @@ namespace Boards_WP.ViewModels
         private void LoadHomeBets()
         {
             FilteredBets.Clear();
+            UserBets.Clear();
+
+            var currentUserId = _userSession?.CurrentUser?.UserID ?? 0;
             var allBets = _betsService.GetAllBets();
 
             foreach (var bet in allBets)
             {
-                var (yesOdd, noOdd) = _betsService.CalculateBetOdds(bet.BetID, _userSession.CurrentUser.UserID);
+                var oddsUserId = currentUserId == 0 ? 1 : currentUserId;
+                var (yesOdd, noOdd) = _betsService.CalculateBetOdds(bet.BetID, oddsUserId);
 
                 FilteredBets.Add(new BetItemViewModel(
                     bet,
@@ -102,14 +104,21 @@ namespace Boards_WP.ViewModels
         private void LoadBetsByKeywords(string keywords)
         {
             FilteredBets.Clear();
+            UserBets.Clear();
 
             var currentUserId = _userSession?.CurrentUser?.UserID ?? 0;
             var bets = _betsService.SearchBetsByKeywords(keywords);
+
             foreach (var bet in bets)
             {
                 var oddsUserId = currentUserId == 0 ? 1 : currentUserId;
                 var (yesOdd, noOdd) = _betsService.CalculateBetOdds(bet.BetID, oddsUserId);
-                FilteredBets.Add(new BetItemViewModel(bet, yesOdd, noOdd));
+
+                FilteredBets.Add(new BetItemViewModel(
+                    bet,
+                    yesOdd,
+                    noOdd,
+                    (vote, odd) => OpenBetPlacement(bet, vote, odd)));
             }
         }
 

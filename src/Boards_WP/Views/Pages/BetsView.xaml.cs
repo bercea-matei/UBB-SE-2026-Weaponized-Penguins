@@ -33,7 +33,6 @@ namespace Boards_WP.Views.Pages
         {
             return value ? Visibility.Collapsed : Visibility.Visible;
         }
-
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);

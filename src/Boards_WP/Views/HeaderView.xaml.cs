@@ -55,7 +55,8 @@ namespace Boards_WP.Views
         private void UpdateTokenVisibility(Type currentPageType)
         {
             var inBetsArea = currentPageType == typeof(Pages.BetsView)
-                || currentPageType == typeof(Pages.CreateBetView);
+                || currentPageType == typeof(Pages.CreateBetView)
+                || currentPageType == typeof(Pages.PlaceBetView);
 
             TokenDisplay.Visibility = inBetsArea ? Visibility.Visible : Visibility.Collapsed;
 

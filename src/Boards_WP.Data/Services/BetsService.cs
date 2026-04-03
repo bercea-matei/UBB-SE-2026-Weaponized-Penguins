@@ -235,7 +235,6 @@ public class BetsService : IBetsService
             throw new Exception("Failed to retrieve placed bets of user.");
         }
     }
-
     public Bet GetBetByID(int BetID)
     {
         try

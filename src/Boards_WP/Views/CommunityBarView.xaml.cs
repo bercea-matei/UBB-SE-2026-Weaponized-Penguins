@@ -33,6 +33,7 @@ namespace Boards_WP.Views
             }
         }
 
+
         private void HomeNavigation_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             ViewModel.NavigateHomeCommand.Execute(null);

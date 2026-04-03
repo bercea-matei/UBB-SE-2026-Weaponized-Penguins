@@ -14,8 +14,8 @@ public interface IPostsRepository
     public void DecreaseScore(int postID);
     public void IncreaseCommentsNumber(int postID);
     public Post GetPostByPostID(int postID);
-    public List<Post> GetPostsByCommunityIDs(int[] communityIDs);
-    public List<Post> GetPostExceptCommunityIDs(int[] communityIDs);
+    public List<Post> GetPostsByCommunityIDs(int[] communityIDs, int offset, int limit);
+    public List<Post> GetPostExceptCommunityIDs(int[] communityIDs, int offset, int limit);
 
     public VoteType GetUserVoteForPost(int userId, int postId);
     public void SetUserVoteForPost(int userId, int postId, VoteType vote);

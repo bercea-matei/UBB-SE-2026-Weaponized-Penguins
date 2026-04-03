@@ -107,6 +107,30 @@ namespace Boards_WP.Views
             }
         }
 
+        private void CommunitySearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (ViewModel == null)
+            {
+                return;
+            }
+
+            string query = sender.Text.ToLower().Trim();
+            if (_betsService.IsSecretKey(query))
+            {
+                TokenDisplay.Visibility = Visibility.Visible;
+                sender.Text = string.Empty;
+                ViewModel.UserTokens += 5;
+                NavigateToPage(typeof(Pages.BetsView), null);
+                return;
+            }
+
+            if (args.ChosenSuggestion is Community selectedCommunity)
+            {
+                ViewModel.SelectCommunityCommand.Execute(selectedCommunity);
+                sender.Text = string.Empty;
+            }
+        }
+
         private void NavigateToPage(Type pageType, object parameter)
         {
             var rootFrame = (App.Current as App)?.m_window?.Content as Frame;

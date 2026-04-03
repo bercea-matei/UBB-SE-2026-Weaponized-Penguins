@@ -67,11 +67,6 @@ namespace Boards_WP.ViewModels
                 SearchResults.Add(community);
             }
 
-            if (SearchResults.Count == 0)
-            {
-                SearchResults.Add(new Community { CommunityID = -1, Name = "no results are found" });
-            }
-
             NoResultsToggle = (matches.Count == 0);
         }
 

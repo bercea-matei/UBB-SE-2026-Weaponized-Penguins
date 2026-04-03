@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:models="using:Boards_WP.Data.Models" 
     xmlns:helpers="using:Boards_WP.Helpers"
-    xmlns:views="using:Boards_WP.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -38,54 +37,23 @@
                                 Margin="0,5,0,0"
                                 TextChanged="CommunitySearchBox_TextChanged"
                                 ItemsSource="{x:Bind ViewModel.SearchResults, Mode=OneWay}"
-                                UpdateTextOnSelect="False"
-                                SuggestionChosen="CommunitySearchBox_SuggestionChosen">
+                                TextMemberPath="Name"
+                                SuggestionChosen="CommunitySearchBox_SuggestionChosen"
+                                QuerySubmitted="CommunitySearchBox_QuerySubmitted"
+                >
                     <AutoSuggestBox.ItemTemplate>
                         <DataTemplate x:DataType="models:Community">
-                            <StackPanel Orientation="Horizontal" Padding="10">
+                            <StackPanel Orientation="Horizontal" Spacing="10" Padding="8,6">
                                 <PersonPicture ProfilePicture="{x:Bind helpers:ImageHelper.ConvertToBitmap(Picture), Mode=OneWay}"
-                                               DisplayName="{x:Bind Name}" 
-                                               Height="32" Width="32" Margin="0,0,10,0"
-                                               Visibility="{x:Bind views:HeaderView.GetVisibilityFromId(CommunityID)}"/>
+                                               DisplayName="{x:Bind Name}"
+                                               Width="28"
+                                               Height="28"/>
                                 <TextBlock Text="{x:Bind Name}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </DataTemplate>
                     </AutoSuggestBox.ItemTemplate>
                 </AutoSuggestBox>
             </Border>
-            <TextBlock Text="No matches found"
-                       HorizontalAlignment="Center"
-                       Foreground="Gray"
-                       Margin="0,50,0,0"
-                       Visibility="{x:Bind GetVisibility(ViewModel.NoResultsToggle), Mode=OneWay}"/>
-                                QuerySubmitted="CommunitySearchBox_QuerySubmitted"
-                ></AutoSuggestBox>
-            </Border>
-
-            <Popup x:Name="ResultsPopup" 
-               VerticalOffset="45" 
-               HorizontalOffset="0"
-               IsLightDismissEnabled="True">
-                <Border Background="White" 
-                    CornerRadius="0,0,15,15" 
-                    BorderBrush="#6A67E1" 
-                    BorderThickness="1">   
-                    <ListView x:Name="ResultsList" 
-                      SelectionMode="None" 
-                      IsItemClickEnabled="True"
-                      ItemClick="ResultsList_ItemClick"
-                      ItemsSource="{x:Bind ViewModel.SearchResults, Mode=OneWay}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:Community">
-                                <StackPanel Orientation="Horizontal" Padding="10">
-                                    <SymbolIcon Symbol="People" Margin="0,0,10,0" Foreground="#6A67E1"/>
-                                    <TextBlock Text="{x:Bind Name}" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </Border>
-            </Popup>
 
             <TextBlock Text="No matches found" 
                HorizontalAlignment="Center" 

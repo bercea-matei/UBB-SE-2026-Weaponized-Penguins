@@ -148,6 +148,46 @@ public class BetsService : IBetsService
         return input.Substring(firstSpaceIndex + 1).Trim();
     }
 
+    public int RegisterSecretAreaVisitAndGetTokens(int UserID)
+    {
+        try
+        {
+            if (!_betsRepository.UserTokensExist(UserID))
+            {
+                var user = _usersService.GetUserByID(UserID);
+                if (user == null)
+                    throw new Exception("User not found.");
+
+                var tokens = new UsersTokens
+                {
+                    CurrentUser = user,
+                    TokensNumber = 5,
+                    LastSeen = DateTime.Now
+                };
+
+                _betsRepository.AddUserTokens(tokens);
+                return tokens.TokensNumber;
+            }
+
+            var existing = _betsRepository.GetUserTokens(UserID);
+            var now = DateTime.Now;
+            var daysToAward = (now.Date - existing.LastSeen.Date).Days;
+
+            if (daysToAward > 0)
+            {
+                var updatedAmount = existing.TokensNumber + daysToAward;
+                _betsRepository.UpdateUserTokens(UserID, updatedAmount);
+                return updatedAmount;
+            }
+
+            return existing.TokensNumber;
+        }
+        catch
+        {
+            throw new Exception("Failed to update user tokens for secret area.");
+        }
+    }
+
     public List<Bet> GetAllBets()
     {
         try
@@ -158,6 +198,29 @@ public class BetsService : IBetsService
         catch
         {
             throw new Exception("Failed to retrieve bets.");
+        }
+    }
+
+    public List<Bet> GetBetsOfUser(int UserID)
+    {
+        try
+        {
+            var userBets = _betsRepository.GetUserBetsByUser(UserID);
+            var bets = new List<Bet>();
+
+            foreach (var userBet in userBets)
+            {
+                if (userBet.SelectedBet != null)
+                {
+                    bets.Add(userBet.SelectedBet);
+                }
+            }
+
+            return bets;
+        }
+        catch
+        {
+            throw new Exception("Failed to retrieve user bets.");
         }
     }
 

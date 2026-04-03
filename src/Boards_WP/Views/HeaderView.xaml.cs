@@ -55,9 +55,25 @@ namespace Boards_WP.Views
         private void UpdateTokenVisibility(Type currentPageType)
         {
             var inBetsArea = currentPageType == typeof(Pages.BetsView)
-                || currentPageType == typeof(Pages.CreateBetView);
+                || currentPageType == typeof(Pages.CreateBetView)
+                || currentPageType == typeof(Pages.PlaceBetView);
 
             TokenDisplay.Visibility = inBetsArea ? Visibility.Visible : Visibility.Collapsed;
+
+            if (inBetsArea && ViewModel != null)
+            {
+                var userId = _userSession?.CurrentUser?.UserID ?? 0;
+                if (userId != 0)
+                {
+                    try
+                    {
+                        ViewModel.UserTokens = _betsService.GetUserTokenCount(userId);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
         }
 
         private void CommunitySearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -90,7 +106,6 @@ namespace Boards_WP.Views
                 {
                     var tokens = _betsService.RegisterSecretAreaVisitAndGetTokens(userId);
                     ViewModel.UserTokens = tokens;
-                    TokenCountText.Text = tokens.ToString();
                 }
 
                 var keywords = _betsService.ExtractBetKeywords(query);

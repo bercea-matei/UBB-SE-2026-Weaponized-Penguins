@@ -224,6 +224,17 @@ public class BetsService : IBetsService
         }
     }
 
+    public List<UsersBets> GetPlacedBetsOfUser(int UserID)
+    {
+        try
+        {
+            return _betsRepository.GetUserBetsByUser(UserID);
+        }
+        catch
+        {
+            throw new Exception("Failed to retrieve placed bets of user.");
+        }
+    }
     public Bet GetBetByID(int BetID)
     {
         try
@@ -292,6 +303,8 @@ public class BetsService : IBetsService
     {
         try
         {
+            ValidatePlaceUserBet(UserID, Amount);
+
             UsersBets PlacedBet = new UsersBets
             {
                 BettingUser = _usersService.GetUserByID(UserID),
@@ -302,6 +315,9 @@ public class BetsService : IBetsService
             };
 
             _betsRepository.AddUserBet(PlacedBet);
+
+            int currentTokens = _betsRepository.GetUserTokens(UserID).TokensNumber;
+            _betsRepository.UpdateUserTokens(UserID, currentTokens - Amount);
         }
         catch
         {

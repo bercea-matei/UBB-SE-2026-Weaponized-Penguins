@@ -28,15 +28,15 @@ public partial class App : Application
         m_window = new MainWindow();
 
         var navService = Services.GetRequiredService<INavigationService>() as NavigationService;
-        if (m_window.Content is FrameworkElement root)
-        {
-            var frame = root.FindName("ContentFrame") as Frame;
-            if (frame != null)
-            {
-                navService.Initialize(frame);
-                navService.NavigateTo(typeof(FeedView));
-            }
-        }
+        //if (m_window.Content is FrameworkElement root)
+        //{
+        //    var frame = root.FindName("ContentFrame") as Frame;
+        //    if (frame != null)
+        //    {
+        //        navService.Initialize(frame);
+        //        navService.NavigateTo(typeof(FeedView));
+        //    }
+        //}
 
         m_window.Activate();
     }
@@ -76,6 +76,7 @@ public partial class App : Application
         services.AddSingleton<IUsersService, UsersService>();
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<IBetsService, BetsService>();
+        services.AddTransient<LoginViewModel>();
 
 
         services.AddSingleton<UserSession>();
@@ -95,7 +96,6 @@ public partial class App : Application
         services.AddTransient<PostPreviewViewModel>();
         services.AddTransient<HeaderViewModel>();
         services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
-
         services.AddTransient<BetsViewModel>();
 
         return services.BuildServiceProvider();

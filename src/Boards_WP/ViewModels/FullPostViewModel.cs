@@ -9,6 +9,8 @@ using Boards_WP.Data.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
+using System.Collections.Generic;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -29,6 +31,8 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(PostImageSource))]
         [NotifyPropertyChangedFor(nameof(PostImageVisibility))]
+        [NotifyPropertyChangedFor(nameof(AuthorUsername))]
+        [NotifyPropertyChangedFor(nameof(CurrentPostTags))]
         private Post _currentPost;
 
         [ObservableProperty]
@@ -70,6 +74,8 @@ namespace Boards_WP.ViewModels
 
         public BitmapImage PostImageSource => ConvertToBitmap(CurrentPost?.Image);
         public Visibility PostImageVisibility => CurrentPost?.Image?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        public string AuthorUsername => CurrentPost?.Owner?.Username ?? "Unknown";
+        public IEnumerable<Tag> CurrentPostTags => CurrentPost?.Tags ?? new List<Tag>();
 
         public ObservableCollection<Comment> PostComments { get; } = new();
 
@@ -246,5 +252,7 @@ namespace Boards_WP.ViewModels
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
+
+
     }
 }

@@ -28,9 +28,14 @@
 
 
     <Border Background="{x:Bind ViewModel.MainViewModel.MidThemeBrush, Mode=OneWay}" CornerRadius="15" Margin="4">
-        <StackPanel Padding="10,20">
+        <Grid Padding="10,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             
-            <ListView SelectionMode="Single" ItemContainerStyle="{StaticResource NavigationListViewStyle}">
+            <ListView Grid.Row="0" SelectionMode="Single" ItemContainerStyle="{StaticResource NavigationListViewStyle}">
     
                 <ListViewItem x:Name="HomeItem" Tapped="HomeNavigation_Tapped">
                     <TextBlock Text="Home" Foreground="White" FontSize="18" FontWeight="SemiBold" />
@@ -46,17 +51,21 @@
     
             </ListView>
 
-            <TextBlock Text="MY COMMUNITIES" 
+            <TextBlock Grid.Row="1"
+                       Text="MY COMMUNITIES" 
                        Foreground="#FFFFFF" 
                        FontSize="11" 
                        FontWeight="Bold" 
                        Margin="12,20,0,10" />
 
             <ListView 
+                Grid.Row="2"
                 x:Name="CommunityListView"
                 ItemsSource="{x:Bind ViewModel.Communities}"
                 IsItemClickEnabled="True" 
-                ItemClick="CommunityListView_ItemClick">
+                ItemClick="CommunityListView_ItemClick"
+                ScrollViewer.VerticalScrollMode="Enabled"
+                ScrollViewer.VerticalScrollBarVisibility="Auto">
     
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:Community">
@@ -70,6 +79,6 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </StackPanel>
+        </Grid>
     </Border>
 </UserControl>

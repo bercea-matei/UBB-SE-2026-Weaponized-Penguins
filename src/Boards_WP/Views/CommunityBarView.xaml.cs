@@ -22,6 +22,7 @@ namespace Boards_WP.Views
         {
             this.ViewModel = App.GetService<CommunityBarViewModel>();
             this.DataContext = this.ViewModel;
+            this.ViewModel.LoadCommunities();
             this.Bindings.Update();
         }
 

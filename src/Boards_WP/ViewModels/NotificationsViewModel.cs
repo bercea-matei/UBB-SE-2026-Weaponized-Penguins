@@ -69,7 +69,7 @@ public partial class NotificationItemViewModel : ObservableObject
                 _notificationsService.ReadNotification(NotificationData);
             }
             NotificationData.IsRead = true;
-            IsUnread = false;
+            IsUnread = false; 
         }
 
         if (NotificationData.RelatedPost != null && NotificationData.ActionType != NotificationType.PostDeleted)

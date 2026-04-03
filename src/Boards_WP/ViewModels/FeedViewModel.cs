@@ -67,4 +67,5 @@ public partial class FeedViewModel : ObservableObject
 
     public void LoadHome() { IsHome = true; LoadFeed(); }
     public void LoadDiscovery() { IsHome = false; LoadFeed(); }
+
 }

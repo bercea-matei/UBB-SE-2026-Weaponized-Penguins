@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Boards_WP.Views"
     xmlns:models="using:Boards_WP.Data.Models"
+    xmlns:viewmodels="using:Boards_WP.ViewModels"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
@@ -53,15 +54,55 @@
                     Command="{x:Bind ViewModel.CreateBetCommand, Mode=OneWay}"/>
         </Grid>
 
-        <ListView Grid.Row="1" 
-                  ItemsSource="{x:Bind ViewModel.FilteredBets, Mode=OneWay}" 
-                  Padding="20" 
-                  SelectionMode="None">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:Bet">
-                    <local:BetItemControl ViewModel="{Binding}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <Grid Grid.Row="1">
+            <ListView ItemsSource="{x:Bind ViewModel.FilteredBets, Mode=OneWay}" 
+                      Padding="20" 
+                      SelectionMode="None"
+                      Visibility="{x:Bind BooleanToVisibility(ViewModel.IsHomeTabSelected), Mode=OneWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:BetItemViewModel">
+                        <local:BetItemControl ViewModel="{Binding}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView ItemsSource="{x:Bind ViewModel.UserBets, Mode=OneWay}"
+                      Padding="20"
+                      SelectionMode="None"
+                      Visibility="{x:Bind BooleanToInverseVisibility(ViewModel.IsHomeTabSelected), Mode=OneWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:UserBetItemViewModel">
+                        <Border Background="White" CornerRadius="12" Margin="0,0,0,16" Padding="20" BorderBrush="#E0E0FF" BorderThickness="1">
+                            <StackPanel Spacing="8">
+                                <TextBlock TextWrapping="Wrap" FontSize="15" LineHeight="22">
+                                    <Run Text="Someone will create a "/>
+                                    <Run Text="{x:Bind BetData.Type, Mode=OneWay}" FontWeight="Bold"/>
+                                    <Run Text=" in "/>
+                                    <Run Text="{x:Bind BetData.BetCommunity.Name, Mode=OneWay}" FontWeight="Bold"/>
+                                    <Run Text=" which contains the expression "/>
+                                    <Run Text="{x:Bind BetData.Expression, Mode=OneWay}" Foreground="#6A67E1" FontWeight="Bold"/>
+                                    <Run Text="."/>
+                                </TextBlock>
+
+                                <TextBlock>
+                                    <Run Text="Your bet: "/>
+                                    <Run Text="{x:Bind BetAmount, Mode=OneWay}" FontWeight="SemiBold"/>
+                                    <Run Text=" tokens on "/>
+                                    <Run Text="{x:Bind Vote, Mode=OneWay}" FontWeight="SemiBold"/>
+                                </TextBlock>
+
+                                <TextBlock>
+                                    <Run Text="Locked odd: "/>
+                                    <Run Text="{x:Bind LockedOddText, Mode=OneWay}" FontWeight="SemiBold"/>
+                                    <Run Text=" • Potential win: "/>
+                                    <Run Text="{x:Bind PotentialWinText, Mode=OneWay}" FontWeight="Bold" Foreground="#6A67E1"/>
+                                    <Run Text=" tokens"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
     </Grid>
 </Page>

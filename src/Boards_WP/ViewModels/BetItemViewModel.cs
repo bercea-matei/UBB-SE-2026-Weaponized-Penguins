@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Windows.Input;
 
 using Boards_WP.Data.Models;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Boards_WP.ViewModels
 {
     public partial class BetItemViewModel : ObservableObject
     {
+        private readonly Action<BetVote, decimal>? _openBetPlacement;
+
         [ObservableProperty]
         private Bet _betData;
 
@@ -16,6 +20,12 @@ namespace Boards_WP.ViewModels
 
         [ObservableProperty]
         private string _noOdds;
+
+        public decimal YesOddValue { get; }
+        public decimal NoOddValue { get; }
+
+        public ICommand BetYesCommand { get; }
+        public ICommand BetNoCommand { get; }
 
         public string TimeLeft
         {
@@ -30,11 +40,17 @@ namespace Boards_WP.ViewModels
             }
         }
 
-        public BetItemViewModel(Bet bet, decimal yesOdd, decimal noOdd)
+        public BetItemViewModel(Bet bet, decimal yesOdd, decimal noOdd, Action<BetVote, decimal>? openBetPlacement = null)
         {
             BetData = bet;
+            YesOddValue = yesOdd;
+            NoOddValue = noOdd;
             YesOdds = $"{yesOdd:F2}x";
             NoOdds = $"{noOdd:F2}x";
+            _openBetPlacement = openBetPlacement;
+
+            BetYesCommand = new RelayCommand(() => _openBetPlacement?.Invoke(BetVote.YES, YesOddValue));
+            BetNoCommand = new RelayCommand(() => _openBetPlacement?.Invoke(BetVote.NO, NoOddValue));
         }
     }
 }

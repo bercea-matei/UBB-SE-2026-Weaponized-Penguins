@@ -49,6 +49,17 @@
                     <TextBlock Text="{x:Bind ViewModel.TimeLeft, Mode=OneWay}" FontSize="16" FontWeight="Bold" Foreground="#6A67E1"/>
                 </StackPanel>
             </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Content="Bet Yes"
+                        Command="{x:Bind ViewModel.BetYesCommand, Mode=OneWay}"
+                        Background="#E7F8EE"
+                        Foreground="Green"/>
+                <Button Content="Bet No"
+                        Command="{x:Bind ViewModel.BetNoCommand, Mode=OneWay}"
+                        Background="#FDEDED"
+                        Foreground="Red"/>
+            </StackPanel>
         </StackPanel>
     </Border>
 </UserControl>

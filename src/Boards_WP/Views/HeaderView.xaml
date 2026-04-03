@@ -79,7 +79,7 @@
                     Visibility="Collapsed">
             <FontIcon Glyph="&#xEB1B;" Foreground="Gold" VerticalAlignment="Center" FontSize="20"/>
             <TextBlock x:Name="TokenCountText" 
-                       Text="1250" 
+                       Text="{x:Bind ViewModel.UserTokens, Mode=OneWay}" 
                        FontSize="20" 
                        FontWeight="Bold" 
                        VerticalAlignment="Center"/>

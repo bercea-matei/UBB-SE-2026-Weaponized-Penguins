@@ -24,6 +24,16 @@ namespace Boards_WP.Views.Pages
             this.Frame.Navigate(typeof(CreateBetView));
         }
 
+        public Visibility BooleanToVisibility(bool value)
+        {
+            return value ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public Visibility BooleanToInverseVisibility(bool value)
+        {
+            return value ? Visibility.Collapsed : Visibility.Visible;
+        }
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);

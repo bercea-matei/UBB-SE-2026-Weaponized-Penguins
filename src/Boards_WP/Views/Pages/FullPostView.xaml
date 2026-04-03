@@ -5,6 +5,7 @@
     xmlns:local="using:Boards_WP.Views.Pages"
     xmlns:views="using:Boards_WP.Views"
     xmlns:models="using:Boards_WP.Data.Models"
+    xmlns:helpers="using:Boards_WP.Helpers"
     Background="Transparent">
 
     <Grid>
@@ -41,6 +42,23 @@
 
                         <!-- Middle Column: Content -->
                         <StackPanel Grid.Column="1" Margin="15,0">
+                            <StackPanel Margin="0,0,0,8">
+                                <TextBlock Text="{x:Bind ViewModel.AuthorUsername, Mode=OneWay}" FontSize="12" Foreground="Gray" Margin="0,0,0,6"/>
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.CurrentPostTags, Mode=OneWay}" Margin="0,0,0,6">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="8"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Tag">
+                                            <Border CornerRadius="12" Padding="8,4" Background="{x:Bind helpers:ColorHelper.GetBrushForCategory(CategoryBelongingTo.CategoryID), Mode=OneWay}">
+                                                <TextBlock Text="{x:Bind TagName, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="White"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
                             <TextBlock Text="{x:Bind ViewModel.CurrentPost.Title, Mode=OneWay}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,10"/>
                             <TextBlock Text="{x:Bind ViewModel.CurrentPost.Description, Mode=OneWay}" TextWrapping="Wrap" Foreground="#444" Margin="0,0,0,15"/>
 
@@ -56,32 +74,45 @@
 
                                 <Button Command="{x:Bind ViewModel.ShowCommentAreaCommand}" 
                                         Visibility="{x:Bind BooleanToInverseVisibility(ViewModel.IsCommentAreaVisible), Mode=OneWay}"
-                                        Background="Transparent" BorderThickness="0">
+                                        Background="Transparent" BorderThickness="0"
+                                        HorizontalAlignment="Left">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon Glyph="&#xE8BD;" FontSize="16" Foreground="#6A67E1"/>
                                         <TextBlock Text="Write Comment" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#6A67E1"/>
                                     </StackPanel>
                                 </Button>
 
-                                <Button Grid.Column="1" Command="{x:Bind ViewModel.ToggleShareAreaCommand}" Background="Transparent" BorderThickness="0">
-                                    <StackPanel Orientation="Horizontal" Spacing="5">
-                                        <FontIcon Glyph="&#xE72D;" FontSize="14" Foreground="#6A67E1"/>
-                                        <TextBlock Text="share" FontSize="12" Foreground="#6A67E1"/>
-                                    </StackPanel>
-                                </Button>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="15" HorizontalAlignment="Right">
+                                    <Button Command="{x:Bind ViewModel.DeletePostCommand}" 
+                                            Visibility="{x:Bind BooleanToVisibility(ViewModel.CanDeletePost), Mode=OneWay}"
+                                            Background="Transparent" BorderThickness="0">
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <FontIcon Glyph="&#xE74D;" FontSize="14" Foreground="Red"/>
+                                            <TextBlock Text="delete" FontSize="12" Foreground="Red"/>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button Command="{x:Bind ViewModel.ToggleShareAreaCommand}" Background="Transparent" BorderThickness="0">
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <FontIcon Glyph="&#xE72D;" FontSize="14" Foreground="#6A67E1"/>
+                                            <TextBlock Text="share" FontSize="12" Foreground="#6A67E1"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
                             </Grid>
                         </StackPanel>
 
                         <!-- Right Column: Comment Count -->
                         <StackPanel Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Center">
-                            <Border BorderBrush="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}" BorderThickness="1" CornerRadius="5" Padding="5">
-                                <StackPanel>
-                                    <FontIcon Glyph="&#xE8BD;" FontSize="18" Foreground="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}"/>
-                                    <TextBlock Text="{x:Bind ViewModel.CurrentPost.CommentsNumber, Mode=OneWay}"
-                                               HorizontalAlignment="Center" FontSize="10"/>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
+                        <Border BorderBrush="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}" BorderThickness="1" CornerRadius="5" Padding="5">
+                            <StackPanel>
+                                <FontIcon Glyph="&#xE8BD;" FontSize="18" Foreground="{x:Bind ViewModel.MainViewModel.VividThemeBrush, Mode=OneWay}"/>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentPost.CommentsNumber, Mode=OneWay}"
+                                           HorizontalAlignment="Center" FontSize="10"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
                     </Grid>
                 </Border>
 

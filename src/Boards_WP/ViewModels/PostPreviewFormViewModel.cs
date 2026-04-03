@@ -24,6 +24,7 @@ namespace Boards_WP.ViewModels
         [NotifyPropertyChangedFor(nameof(DescriptionSnippet))]
         [NotifyPropertyChangedFor(nameof(PostImageSource))]
         [NotifyPropertyChangedFor(nameof(PostImageVisibility))]
+        [NotifyPropertyChangedFor(nameof(CommunityPictureSource))]
         private Post _postData;
 
         [ObservableProperty]
@@ -33,6 +34,7 @@ namespace Boards_WP.ViewModels
         private string _authorUsername;
 
         public BitmapImage PostImageSource => ConvertToBitmap(PostData?.Image);
+        public BitmapImage CommunityPictureSource => ConvertToBitmap(PostData?.ParentCommunity?.Picture);
         public Visibility PostImageVisibility => PostData?.Image?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
         public string FormattedDate

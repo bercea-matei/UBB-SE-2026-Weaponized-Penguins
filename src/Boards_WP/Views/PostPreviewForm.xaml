@@ -48,16 +48,25 @@
                
                 <Grid Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel>
+                    <PersonPicture Grid.Column="0"
+                                   ProfilePicture="{x:Bind ViewModel.CommunityPictureSource, Mode=OneWay}"
+                                   DisplayName="{x:Bind ViewModel.CommunityName, Mode=OneWay}"
+                                   Width="28"
+                                   Height="28"
+                                   Margin="0,0,8,0"
+                                   VerticalAlignment="Top"/>
+
+                    <StackPanel Grid.Column="1">
                         <TextBlock Text="{x:Bind ViewModel.CommunityName, Mode=OneWay}" FontWeight="Bold" FontSize="14"/>
                         <TextBlock Text="{x:Bind ViewModel.AuthorUsername, Mode=OneWay}" FontSize="12" Foreground="Gray"/>
                     </StackPanel>
 
-                    <TextBlock Grid.Column="1"
+                    <TextBlock Grid.Column="2"
                                Text="{x:Bind ViewModel.FormattedDate, Mode=OneWay}"
                                FontSize="11" Foreground="Silver" VerticalAlignment="Top"/>
                 </Grid>

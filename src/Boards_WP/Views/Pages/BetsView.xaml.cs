@@ -1,8 +1,9 @@
-using Microsoft.UI.Xaml.Controls;
-
 using Boards_WP.ViewModels;
 
 using CommunityToolkit.Mvvm.Input;
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Boards_WP.Views.Pages
 {
@@ -21,5 +22,6 @@ namespace Boards_WP.Views.Pages
         {
             this.Frame.Navigate(typeof(CreateBetView));
         }
+
     }
 }

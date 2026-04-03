@@ -59,7 +59,7 @@
                   SelectionMode="None">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:Bet">
-                    <local:BetItemControl BetData="{Binding}"/>
+                    <local:BetItemControl ViewModel="{Binding}"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

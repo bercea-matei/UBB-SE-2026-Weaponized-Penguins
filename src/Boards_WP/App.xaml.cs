@@ -87,6 +87,9 @@ string connectionString = @"Data Source=IONUT\SQLEXPRESS;Initial Catalog=Communi
         services.AddTransient<PostPreviewViewModel>();
         services.AddTransient<HeaderViewModel>();
         services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
+        services.AddTransient<BetsViewModel>();
+        services.AddTransient<BetItemViewModel>();
+        services.AddTransient<CreateBetViewModel>();
 
         return services.BuildServiceProvider();
     }

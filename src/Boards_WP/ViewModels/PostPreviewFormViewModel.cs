@@ -85,6 +85,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
+
                 OnPropertyChanged(nameof(PostData)); 
             }
 
@@ -106,6 +107,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
+
                 OnPropertyChanged(nameof(PostData)); 
             }
 

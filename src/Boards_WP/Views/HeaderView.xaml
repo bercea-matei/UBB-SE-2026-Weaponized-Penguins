@@ -53,6 +53,11 @@
                     </AutoSuggestBox.ItemTemplate>
                 </AutoSuggestBox>
             </Border>
+            <TextBlock Text="No matches found"
+                       HorizontalAlignment="Center"
+                       Foreground="Gray"
+                       Margin="0,50,0,0"
+                       Visibility="{x:Bind GetVisibility(ViewModel.NoResultsToggle), Mode=OneWay}"/>
         </Grid>
 
         <StackPanel x:Name="TokenDisplay" 

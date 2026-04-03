@@ -84,37 +84,26 @@ namespace Boards_WP.Views
 
                 if (_betsService.IsSecretKey(query))
                 {
-                    ResultsPopup.IsOpen = false;
+                    TokenDisplay.Visibility = Visibility.Visible;
+                    sender.Text = string.Empty;
+                    ViewModel.UserTokens += 5;
+                    NavigateToPage(typeof(Pages.BetsView), null);
+
                     return;
                 }
 
                 ViewModel.SearchText = sender.Text;
-                ResultsPopup.IsOpen = (ViewModel.SearchResults.Count > 0);
             }
         }
 
-        private void CommunitySearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        private void CommunitySearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
-            if (ViewModel == null) return;
-
-            string query = sender.Text.ToLower().Trim();
-
-            if (_betsService.IsSecretKey(query))
+            if (args.SelectedItem is Community selectedCommunity && ViewModel != null)
             {
-                var userId = _userSession?.CurrentUser?.UserID ?? 0;
-                if (userId != 0)
-                {
-                    var tokens = _betsService.RegisterSecretAreaVisitAndGetTokens(userId);
-                    ViewModel.UserTokens = tokens;
-                }
+                if (selectedCommunity.CommunityID == -1) return;
 
-                var keywords = _betsService.ExtractBetKeywords(query);
-                NavigateToPage(typeof(Pages.BetsView), keywords);
-
-                sender.Text = string.Empty;
-                ViewModel.SearchText = string.Empty;
-                ResultsPopup.IsOpen = false;
-                return;
+                ViewModel.SelectCommunityCommand.Execute(selectedCommunity);
+                sender.Text = string.Empty; 
             }
         }
 
@@ -128,19 +117,14 @@ namespace Boards_WP.Views
             rootFrame?.Navigate(pageType, parameter);
         }
 
-        private void ResultsList_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            if (e.ClickedItem is Community selectedCommunity && ViewModel != null)
-            {
-                ViewModel.SelectCommunityCommand.Execute(selectedCommunity);
-
-                ResultsPopup.IsOpen = false;
-            }
-        }
-
         public Visibility GetVisibility(bool showText)
         {
             return showText ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public static Visibility GetVisibilityFromId(int id)
+        {
+            return id == -1 ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 }

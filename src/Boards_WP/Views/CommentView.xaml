@@ -10,16 +10,27 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Width="2" Background="#6A67E1" Margin="0,5,15,5"
+        <Border Grid.Column="0" Width="2" Background="white" Margin="0,5,15,5"
                 Visibility="{x:Bind GetLineVisibility(CommentData.Indentation), Mode=OneWay}" CornerRadius="1"/>
 
         <StackPanel Grid.Column="1">
             <Border Background="White" CornerRadius="12" Padding="15" BorderBrush="#E0E0E0" BorderThickness="1">
                 <StackPanel Spacing="5">
                     <TextBlock Text="{x:Bind CommentData.Owner.Username}" FontWeight="Bold" Foreground="#6A67E1"/>
-                    <TextBlock Text="{x:Bind CommentData.Description}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{x:Bind ViewModel.CommentText, Mode=OneWay}" TextWrapping="Wrap"/>
                     
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="15" Margin="0,5,0,0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="15" Margin="0,5,0,0"
+                                Visibility="{x:Bind ViewModel.ActionButtonsVisibility, Mode=OneWay}">
+    
+                        <Button Command="{x:Bind ViewModel.DeleteCommentCommand}" 
+                                Visibility="{x:Bind ViewModel.DeleteButtonVisibility, Mode=OneWay}" 
+                                Background="Transparent" BorderThickness="0" Padding="0">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <FontIcon Glyph="&#xE74D;" FontSize="14" Foreground="Red"/>
+                                <TextBlock Text="delete" FontSize="12" Foreground="Red"/>
+                            </StackPanel>
+                        </Button>
+
                         <Button Command="{x:Bind ViewModel.ToggleShareCommand}" Background="Transparent" BorderThickness="0" Padding="0">
                             <StackPanel Orientation="Horizontal" Spacing="5">
                                 <FontIcon Glyph="&#xE72D;" FontSize="14" Foreground="#6A67E1"/>
@@ -52,11 +63,11 @@
                 </Grid>
             </Border>
 
-            <StackPanel Visibility="{x:Bind ViewModel.IsReplyAreaVisible, Mode=OneWay}" Margin="20,10,0,0" Spacing="8">
+            <StackPanel Visibility="{x:Bind ViewModel.IsReplyAreaVisible, Mode=OneWay}" Margin="40,10,0,0" Spacing="8">
                 <TextBox Text="{x:Bind ViewModel.ReplyText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                         PlaceholderText="Write a reply..." AcceptsReturn="True" CornerRadius="8"/>
+                         PlaceholderText="Write a reply..." AcceptsReturn="True"/>
                 <Button Content="Post Reply" Command="{x:Bind ViewModel.SubmitReplyCommand}" 
-                        HorizontalAlignment="Right" Background="#6A67E1" Foreground="White" CornerRadius="8"/>
+                        HorizontalAlignment="Right" Background="white" Foreground="White" CornerRadius="8"/>
             </StackPanel>
         </StackPanel>
     </Grid>

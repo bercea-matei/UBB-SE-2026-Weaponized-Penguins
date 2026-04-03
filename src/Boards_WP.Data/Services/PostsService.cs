@@ -14,7 +14,15 @@ public class PostsService : IPostsService
     private readonly UserSession _userSession;
     private readonly IUsersMoodRepository _usersMoodRepository;
     private int _cachedCategoryCount = 0;
-    private readonly int _goldenPostsPercent = 25;
+    private readonly int _goldenPostsDiscoveryPercent = 25;
+    private readonly int _badPostsDiscoveryPercent = 25;
+    private readonly int _safetyDiscoveryThreshHold = 2500;
+    private readonly int _safetyDiscoveryResetCount = 500;
+    private readonly int _initialDiscoveryBatch = 1000;
+
+    private List<Post> _discoveryBuffer = new();
+    private List<Post> _discoveryKeptPool = new();
+    private int _discoveryDbOffset = 0;
 
     private List<Post> _lastLikesOfCurrentUser= new List<Post>();  
 
@@ -74,12 +82,15 @@ public class PostsService : IPostsService
 
     public void DeletePost(int postId)
     {
+        var post = _postsRepo.GetPostByPostID(postId);
+        int currentUserId = _userSession.CurrentUser.UserID;
 
-        if(_userSession.CurrentUser == _postsRepo.GetPostByPostID(postId).Owner)
+        if (currentUserId == post.Owner.UserID)
             _postsRepo.DeletePost(postId);
-        else if (_userSession.CurrentUser == _postsRepo.GetPostByPostID(postId).ParentCommunity.Admin)
+        else if (currentUserId == post.ParentCommunity.Admin.UserID)
             _postsRepo.DeletePost(postId);
-        else throw new UnauthorizedAccessException("Only the owner of the post can delete it.");
+        else
+            throw new UnauthorizedAccessException("Only the owner of the post can delete it.");
     }
 
     public void IncreaseCommentsNumber(int postId)
@@ -161,52 +172,100 @@ public class PostsService : IPostsService
         }
     }
 
-    public List<Post> GetPostsByCommunityID(int communityId)
+    public List<Post> GetPostsByCommunityIDs(int[] communityIds, int offset, int limit)
     {
-
-        //todo pagination?
-        return _postsRepo.GetPostsByCommunityIDs(new[] { communityId });
+        return _postsRepo.GetPostsByCommunityIDs(communityIds, offset, limit).OrderByDescending(post => post.CreationTime).ToList();
     }
 
-    public List<Post> GetPostsForHomePage(int userId)
+    public List<Post> GetPostsForHomePage(int userId, int offset, int limit)
     {
         
-
-
         List<Community> communities = _communitiesRepo.GetCommunitiesUserIsPartOf(userId);
 
         int[] communityIds = communities.Select(c => c.CommunityID).ToArray();
 
-        return _postsRepo.GetPostsByCommunityIDs(communityIds);//sort? daca nu avem algoritm pt asta
+        return _postsRepo.GetPostsByCommunityIDs(communityIds, offset, limit).OrderByDescending(post => post.CreationTime).ToList(); 
     }
 
-    public List<Post> GetPostsForDiscoveryPage(int userId)
+    public List<Post> GetPostsForDiscoveryPage(int userId, int offset, int limit)
     {
-        
+        if (offset == 0)
+        {
+            _discoveryBuffer.Clear();
+            _discoveryKeptPool.Clear();
+            _discoveryDbOffset = 0;
+        }
 
+        if (_discoveryBuffer.Count < (offset + limit))
+        {
+            RunDiscoveryAlgorithmCycle(userId);
+        }
+
+        return _discoveryBuffer.Skip(offset).Take(limit).ToList();
+    }
+
+    private void RunDiscoveryAlgorithmCycle(int userId)
+    {
         List<Community> communities = _communitiesRepo.GetCommunitiesUserIsPartOf(userId);
+        int[] communityIds = communities.Select(c => c.CommunityID).ToArray();
 
-        if(_cachedCategoryCount == 0)
+        var freshPosts = _postsRepo.GetPostExceptCommunityIDs(communityIds, _discoveryDbOffset, _initialDiscoveryBatch);
+        _discoveryDbOffset += _initialDiscoveryBatch;
+
+        if (freshPosts.Count == 0 && _discoveryKeptPool.Count == 0) return;
+
+        var totalPool = new List<Post>(_discoveryKeptPool);
+        totalPool.AddRange(freshPosts);
+
+        if (_cachedCategoryCount == 0)
             _cachedCategoryCount = _tagsRepo.GetCategoryCount();
         var userScores = _usersMoodRepository.GetUsersMoodScores(userId, _cachedCategoryCount);
         List<int> allCategoryIds = _tagsRepo.GetAllCategories().Select(c => c.CategoryID).ToList();
-        int[] communityIds = communities.Select(c => c.CommunityID).ToArray();
-        //--TODO: should get 1k from here and keep only 25% of it
-        var candidates = _postsRepo.GetPostExceptCommunityIDs(communityIds);
-        var keptPostsCount = candidates.Count() * _goldenPostsPercent / 100;
-
-        var scoredCandidates = candidates.Select(post => new
+        var rankedPool = totalPool.Select(post => new
         {
             OriginalPost = post,
-            Score = CalculateManhattanDistance(userScores, post, allCategoryIds)
+            RankScore = CalculateManhattanDistance(userScores, post, allCategoryIds)
         })
-        .OrderBy(temp => temp.Score)
+        .OrderBy(temp => temp.RankScore)
         .ThenByDescending(temp => temp.OriginalPost.CreationTime)
-        .Take(keptPostsCount)
         .Select(temp => temp.OriginalPost)
         .ToList();
 
-        return scoredCandidates;
+        int totalCount = rankedPool.Count;
+        int minThreshold = (_initialDiscoveryBatch * _goldenPostsDiscoveryPercent) / 100;
+
+        if (totalCount <= minThreshold)
+        {
+            _discoveryBuffer.AddRange(rankedPool);
+            _discoveryKeptPool.Clear();
+            return;
+        }
+
+        int topCount = totalCount * _goldenPostsDiscoveryPercent / 100;
+        int middleCount = totalCount * (100 - _goldenPostsDiscoveryPercent - _badPostsDiscoveryPercent) / 100;
+
+        _discoveryBuffer.AddRange(rankedPool.Take(topCount));
+        var nextKeptPool = rankedPool.Skip(topCount).Take(middleCount).ToList();
+
+        if (_discoveryBuffer.Count + nextKeptPool.Count >= _safetyDiscoveryThreshHold)
+        {
+            var elitePool = _discoveryBuffer.Concat(nextKeptPool)
+                .Select(p => new { Post = p, Score = CalculateManhattanDistance(userScores, p, allCategoryIds) })
+                .OrderBy(x => x.Score)
+                .Take(_safetyDiscoveryResetCount)
+                .Select(x => x.Post)
+                .ToList();
+
+            int resetTopCount = (_safetyDiscoveryResetCount * _goldenPostsDiscoveryPercent) / 100;
+            int resetMidCount = (_safetyDiscoveryResetCount * (100 - _goldenPostsDiscoveryPercent - _badPostsDiscoveryPercent)) / 100;
+
+            _discoveryBuffer = elitePool.Take(resetTopCount).ToList();
+            _discoveryKeptPool = elitePool.Skip(resetTopCount).Take(resetMidCount).ToList();
+        }
+        else
+        {
+            _discoveryKeptPool = nextKeptPool;
+        }
     }
 
     public ThemeColor DetermineThemeForASinglePost(Post post)
@@ -226,7 +285,7 @@ public class PostsService : IPostsService
 
     private readonly int[] _tagWeights = { 34, 21, 13, 8, 5, 3, 2, 1, 1, 1 };
 
-    private ThemeColor CalculateDominantColor(IEnumerable<Post> posts)
+    public ThemeColor CalculateDominantColor(IEnumerable<Post> posts)
     {
         
         var colorScores = new Dictionary<ThemeColor, int>
@@ -264,11 +323,6 @@ public class PostsService : IPostsService
         var winningColor = colorScores.OrderByDescending(kvp => kvp.Value).First();
 
         return winningColor.Value > 0 ? winningColor.Key : ThemeColor.Default;
-    }
-
-    public void UpdateUserPreferences(int userID, Post p, bool hasCommented)
-    {
-        throw new NotImplementedException();
     }
 
     private double GetInteractionIntensity(VoteType vote, bool hasCommented)

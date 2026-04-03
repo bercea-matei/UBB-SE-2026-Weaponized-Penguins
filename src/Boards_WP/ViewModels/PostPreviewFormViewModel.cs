@@ -17,6 +17,8 @@ namespace Boards_WP.ViewModels
         private readonly UserSession _userSession;
         private readonly MainViewModel _mainViewModel;
 
+        public MainViewModel MainViewModel => _mainViewModel;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(FormattedDate))]
         [NotifyPropertyChangedFor(nameof(DescriptionSnippet))]
@@ -33,7 +35,24 @@ namespace Boards_WP.ViewModels
         public BitmapImage PostImageSource => ConvertToBitmap(PostData?.Image);
         public Visibility PostImageVisibility => PostData?.Image?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-        public string FormattedDate => PostData?.CreationTime.ToString("dd/MM/yyyy") ?? "";
+        public string FormattedDate
+        {
+            get
+            {
+                if (PostData == null) return "";
+
+                var elapsed = DateTime.Now - PostData.CreationTime;
+
+                if (elapsed.TotalMinutes < 1)
+                    return "just now";
+                if (elapsed.TotalHours < 1)
+                    return $"{(int)elapsed.TotalMinutes}m ago";
+                if (elapsed.TotalHours < 24)
+                    return $"{(int)elapsed.TotalHours}h ago";
+
+                return PostData.CreationTime.ToString("dd/MM/yyyy");
+            }
+        }
 
         public string DescriptionSnippet
         {
@@ -83,6 +102,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
+
                 OnPropertyChanged(nameof(PostData)); 
             }
 
@@ -104,6 +124,7 @@ namespace Boards_WP.ViewModels
             if (updatedPost != null)
             {
                 PostData.Score = updatedPost.Score;
+
                 OnPropertyChanged(nameof(PostData)); 
             }
 

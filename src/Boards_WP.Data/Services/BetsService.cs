@@ -55,7 +55,7 @@ public class BetsService : IBetsService
     {
         List<Post> PostsFromInterval = new List<Post>();
 
-        List<Post> AllPosts = _postsService.GetPostsByCommunityID(b.BetCommunity.CommunityID);
+        List<Post> AllPosts = _postsService.GetPostsByCommunityIDs(new[] { b.BetCommunity.CommunityID }, 0, int.MaxValue);
 
         foreach(Post post in AllPosts)
         {

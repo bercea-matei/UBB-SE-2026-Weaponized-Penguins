@@ -1,17 +1,20 @@
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
+
+using Boards_WP.Data.Models;
 using Boards_WP.Data.Models;
 using Boards_WP.Data.Services;
-using System.IO;
+using Boards_WP.Data.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
-
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Services;
 
 namespace Boards_WP.ViewModels
 {
@@ -23,9 +26,13 @@ namespace Boards_WP.ViewModels
         private readonly MainViewModel _mainViewModel;
         private readonly UserSession _userSession;
 
+        public MainViewModel MainViewModel => _mainViewModel;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(PostImageSource))]
         [NotifyPropertyChangedFor(nameof(PostImageVisibility))]
+        [NotifyPropertyChangedFor(nameof(AuthorUsername))]
+        [NotifyPropertyChangedFor(nameof(CurrentPostTags))]
         private Post _currentPost;
 
         [ObservableProperty]
@@ -39,6 +46,12 @@ namespace Boards_WP.ViewModels
 
         [ObservableProperty]
         private string _selectedChatName;
+
+        [ObservableProperty]
+        private bool _canDeletePost;
+
+        private VoteType _finalVote = VoteType.None;
+        private bool _hasCommented = false;
 
         public ObservableCollection<string> HardcodedChats { get; } = new()
         {
@@ -64,9 +77,12 @@ namespace Boards_WP.ViewModels
 
         public BitmapImage PostImageSource => ConvertToBitmap(CurrentPost?.Image);
         public Visibility PostImageVisibility => CurrentPost?.Image?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        public string AuthorUsername => CurrentPost?.Owner?.Username ?? "Unknown";
+        public IEnumerable<Tag> CurrentPostTags => CurrentPost?.Tags ?? new List<Tag>();
 
         public ObservableCollection<Comment> PostComments { get; } = new();
 
+        
         public FullPostViewModel(
             IPostsService postsService,
             ICommentsService commentsService,
@@ -79,11 +95,50 @@ namespace Boards_WP.ViewModels
             _userSession = userSession;
         }
 
+        
         public void Initialize(Post post)
         {
+            
             var fullPost = _postsService.GetPostByPostID(post.PostID);
             CurrentPost = fullPost ?? post;
+
+            if (CurrentPost != null && _userSession.CurrentUser != null)
+            {
+                int currentUserId = _userSession.CurrentUser.UserID;
+
+                
+                bool isOwner = CurrentPost.Owner?.UserID == currentUserId;
+
+                bool isAdmin = CurrentPost.ParentCommunity?.Admin?.UserID == currentUserId;
+
+                _canDeletePost = isOwner || isAdmin;
+            }
+
             LoadComments();
+        }
+
+        [RelayCommand]
+        private void DeletePost()
+        {
+            if (CurrentPost == null) return;
+
+            try
+            {
+                
+                _postsService.DeletePost(CurrentPost.PostID);
+
+                
+                var navService = App.Services.GetService<INavigationService>();
+                if (navService != null)
+                {
+                    navService.GoBack();
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to delete post: {ex.Message}");
+            }
         }
 
         private void LoadComments()
@@ -92,6 +147,8 @@ namespace Boards_WP.ViewModels
             if (CurrentPost == null) return;
 
             var userId = _userSession.CurrentUser?.UserID ?? 0;
+
+            
             var comments = _commentsService.GetCommentsByPost(CurrentPost.PostID, userId);
 
             foreach (var c in comments)
@@ -114,18 +171,22 @@ namespace Boards_WP.ViewModels
             var userId = _userSession.CurrentUser?.UserID ?? 0;
             if (userId == 0) return;
 
+            
             _postsService.IncreaseScore(CurrentPost.PostID);
-            _postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Like, false);
+            //_postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Like, false);
 
+           
             var updatedPost = _postsService.GetPostByPostID(CurrentPost.PostID);
             if (updatedPost != null)
             {
                 CurrentPost.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(CurrentPost));
+                OnPropertyChanged(nameof(CurrentPost)); 
             }
 
-            var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
+            
+            var newThemeColor = _postsService.DetermineThemeForASinglePost(updatedPost);
             _mainViewModel.ApplyNewTheme(newThemeColor);
+            _finalVote = VoteType.Like;
         }
 
         [RelayCommand]
@@ -135,18 +196,22 @@ namespace Boards_WP.ViewModels
             var userId = _userSession.CurrentUser?.UserID ?? 0;
             if (userId == 0) return;
 
+            
             _postsService.DecreaseScore(CurrentPost.PostID);
-            _postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Dislike, false);
+            //_postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Dislike, false);
 
+           
             var updatedPost = _postsService.GetPostByPostID(CurrentPost.PostID);
             if (updatedPost != null)
             {
                 CurrentPost.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(CurrentPost));
+                OnPropertyChanged(nameof(CurrentPost)); 
             }
 
+           
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
+            _finalVote = VoteType.Dislike;
         }
 
         [RelayCommand]
@@ -186,11 +251,24 @@ namespace Boards_WP.ViewModels
 
                 _postsService.IncreaseCommentsNumber(CurrentPost.PostID);
                 OnPropertyChanged(nameof(CurrentPost));
+                _hasCommented = true;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
+        }
+
+        public void OnExitView()
+        {
+            if (CurrentPost == null || _userSession.CurrentUser == null) return;
+
+            _postsService.UpdateUserInterests(
+                _userSession.CurrentUser.UserID,
+                CurrentPost,
+                _finalVote,
+                _hasCommented);
+
         }
     }
 }

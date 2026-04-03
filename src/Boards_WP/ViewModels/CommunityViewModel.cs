@@ -13,10 +13,20 @@ namespace Boards_WP.ViewModels
         private readonly IPostsService _postsService;
         private readonly ICommunitiesService _communitiesService;
         private readonly UserSession _userSession;
+        private readonly MainViewModel _mainViewModel;
+
+        [ObservableProperty]
+        private ThemeColor _communityTheme;
+        public MainViewModel MainViewModel => _mainViewModel;
+
         private readonly Action<Community> _navigateToCreatePost;
         private readonly Action<Community> _navigateToEditCommunity;
 
-        private static ObservableCollection<Community> _sidebarList;
+        private int _currentOffset = 0;
+        private const int PageSize = 200; //--PAGINATION
+
+        [ObservableProperty]
+        private bool _hasMorePosts = true;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(
@@ -35,12 +45,13 @@ namespace Boards_WP.ViewModels
             nameof(CreatePostCommand))]
         private bool _isMember;
 
-[ObservableProperty]
-[NotifyPropertyChangedFor(nameof(EditButtonVisibility))]
-[NotifyCanExecuteChangedFor(nameof(EditCommunityCommand))]
-private bool _isOwner;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(EditButtonVisibility))]
+        [NotifyCanExecuteChangedFor(nameof(EditCommunityCommand))]
+        private bool _isOwner;
 
-public ObservableCollection<PostPreviewViewModel> CommunityPosts { get; } = new();
+
+        public ObservableCollection<PostPreviewViewModel> CommunityPosts { get; } = new();
 
         public BitmapImage BannerImage => ConvertToBitmap(CurrentCommunity?.Banner);
         public BitmapImage ProfileImage => ConvertToBitmap(CurrentCommunity?.Picture);
@@ -55,6 +66,7 @@ public ObservableCollection<PostPreviewViewModel> CommunityPosts { get; } = new(
             _postsService = App.Services?.GetService<IPostsService>();
             _communitiesService = App.Services?.GetService<ICommunitiesService>();
             _userSession = App.Services?.GetService<UserSession>();
+            _mainViewModel = App.Services?.GetService<MainViewModel>();
             _navigateToCreatePost = navigateToCreatePost;
             _navigateToEditCommunity = navigateToEditCommunity;
         }
@@ -75,21 +87,21 @@ public ObservableCollection<PostPreviewViewModel> CommunityPosts { get; } = new(
         [RelayCommand(CanExecute = nameof(CanLeave))]
         private void Leave()
         {
-          _communitiesService.RemoveUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
+            var userId = _userSession.CurrentUser.UserID;
+            _communitiesService.RemoveUser(CurrentCommunity.CommunityID, userId);
 
-            if (_communitiesService.CheckOwner(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID))
+            if (_communitiesService.CheckOwner(CurrentCommunity.CommunityID, userId))
             {
                 return;
             }
 
-            _communitiesService.RemoveUser(CurrentCommunity.CommunityID, _userSession.CurrentUser.UserID);
+            _communitiesService.RemoveUser(CurrentCommunity.CommunityID, userId);
 
             IsMember = false;
             CurrentCommunity.MembersNumber--;
             OnPropertyChanged(nameof(MemberCountText));
 
-            //App.GetService<CommunityBarViewModel>().LoadCommunities();
-            _sidebarList?.Remove(CurrentCommunity); 
+            App.GetService<CommunityBarViewModel>().LoadCommunities();
         }
         private bool CanLeave() => IsMember && !IsOwner;
 
@@ -106,39 +118,54 @@ public ObservableCollection<PostPreviewViewModel> CommunityPosts { get; } = new(
             if (parameter is Community community)
             {
                 var refreshedCommunity = _communitiesService.GetCommunityByID(community.CommunityID);
+                CurrentCommunity = refreshedCommunity ?? community;
 
-                if (refreshedCommunity != null)
-                {
-                    CurrentCommunity = refreshedCommunity;
-                }
-                else
-                {
-                    CurrentCommunity = community;
-                }
+                UpdateCommunityTheme();
+
+                _currentOffset = 0;
+                HasMorePosts = true;
+                CommunityPosts.Clear();
+                LoadBatch();
 
                 var userId = _userSession.CurrentUser.UserID;
-                IsOwner = _communitiesService.CheckOwner(community.CommunityID, userId);
-                IsMember = IsOwner || _communitiesService.IsPartOfCommunity(userId, community.CommunityID);
-                OnPropertyChanged(nameof(MemberCountText));
-                OnPropertyChanged(nameof(BannerImage));
-                OnPropertyChanged(nameof(ProfileImage));
-                LoadPosts(community.CommunityID);
-            }
-            
+                IsOwner = _communitiesService.CheckOwner(CurrentCommunity.CommunityID, userId);
+
+                IsMember = IsOwner || _communitiesService.IsPartOfCommunity(userId, CurrentCommunity.CommunityID);
+            }  
         }
 
-        private void LoadPosts(int communityId)
+        private void UpdateCommunityTheme()
         {
-            CommunityPosts.Clear();
-            var posts = _postsService.GetPostsByCommunityID(communityId);
-            if (posts == null) return;
-            var mainViewModel = App.Services?.GetService<MainViewModel>();
-            foreach (var post in posts)
+            if (CurrentCommunity != null)
             {
-                var previewVm = new PostPreviewViewModel(post, _postsService, _userSession, mainViewModel);
-                CommunityPosts.Add(previewVm);
+                
+                _communityTheme = _communitiesService.DetermineCommunityThemeColor(CurrentCommunity.CommunityID);
             }
         }
+
+        [RelayCommand]
+        public void LoadBatch()
+        {
+            if (CurrentCommunity == null || !HasMorePosts) return;
+
+            int[] communityIds = new[] { CurrentCommunity.CommunityID };
+
+            var posts = _postsService.GetPostsByCommunityIDs(communityIds, _currentOffset, PageSize);
+
+            if (posts != null && posts.Count > 0)
+            {
+                var mainViewModel = App.GetService<MainViewModel>();
+                foreach (var post in posts)
+                {
+                    var previewVm = new PostPreviewViewModel(post, _postsService, _userSession, mainViewModel);
+                    CommunityPosts.Add(previewVm);
+                }
+                _currentOffset += posts.Count;
+            }
+
+            HasMorePosts = (posts?.Count == PageSize);
+        }
+
 
         private static BitmapImage ConvertToBitmap(byte[] data)
         {

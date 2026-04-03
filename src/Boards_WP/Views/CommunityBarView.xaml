@@ -61,10 +61,10 @@
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:Community">
                         <StackPanel Orientation="Horizontal" Spacing="10" Margin="5">
-                            <Border Width="32" Height="32" CornerRadius="16" Background="#D9D9D9">
-                                <Image Source="{x:Bind helpers:ImageHelper.ConvertToBitmap(Picture), Mode=OneWay}"
-                                       Stretch="UniformToFill"/>
-                            </Border>
+                            <PersonPicture ProfilePicture="{x:Bind helpers:ImageHelper.ConvertToBitmap(Picture), Mode=OneWay}"
+                                           DisplayName="{x:Bind Name}"
+                                           Width="32"
+                                           Height="32" />
                             <TextBlock Text="{x:Bind Name}" Margin="0,0" Foreground="White" VerticalAlignment="Center"/>
                         </StackPanel>
                     </DataTemplate>

@@ -232,6 +232,15 @@ public class PostsService : IPostsService
         .ToList();
 
         int totalCount = rankedPool.Count;
+        int minThreshold = (_initialDiscoveryBatch * _goldenPostsDiscoveryPercent) / 100;
+
+        if (totalCount <= minThreshold)
+        {
+            _discoveryBuffer.AddRange(rankedPool);
+            _discoveryKeptPool.Clear();
+            return;
+        }
+
         int topCount = totalCount * _goldenPostsDiscoveryPercent / 100;
         int middleCount = totalCount * (100 - _goldenPostsDiscoveryPercent - _badPostsDiscoveryPercent) / 100;
 

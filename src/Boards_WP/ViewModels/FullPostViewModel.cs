@@ -50,6 +50,9 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         private bool _canDeletePost;
 
+        private VoteType _finalVote = VoteType.None;
+        private bool _hasCommented = false;
+
         public ObservableCollection<string> HardcodedChats { get; } = new()
         {
             "General Chat", "Sports Fans", "Tech Talk", "Weaponized Penguins Team"
@@ -170,7 +173,7 @@ namespace Boards_WP.ViewModels
 
             
             _postsService.IncreaseScore(CurrentPost.PostID);
-            _postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Like, false);
+            //_postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Like, false);
 
            
             var updatedPost = _postsService.GetPostByPostID(CurrentPost.PostID);
@@ -183,6 +186,7 @@ namespace Boards_WP.ViewModels
             
             var newThemeColor = _postsService.DetermineThemeForASinglePost(updatedPost);
             _mainViewModel.ApplyNewTheme(newThemeColor);
+            _finalVote = VoteType.Like;
         }
 
         [RelayCommand]
@@ -194,7 +198,7 @@ namespace Boards_WP.ViewModels
 
             
             _postsService.DecreaseScore(CurrentPost.PostID);
-            _postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Dislike, false);
+            //_postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Dislike, false);
 
            
             var updatedPost = _postsService.GetPostByPostID(CurrentPost.PostID);
@@ -207,6 +211,7 @@ namespace Boards_WP.ViewModels
            
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
+            _finalVote = VoteType.Dislike;
         }
 
         [RelayCommand]
@@ -246,6 +251,7 @@ namespace Boards_WP.ViewModels
 
                 _postsService.IncreaseCommentsNumber(CurrentPost.PostID);
                 OnPropertyChanged(nameof(CurrentPost));
+                _hasCommented = true;
             }
             catch (Exception ex)
             {
@@ -253,6 +259,16 @@ namespace Boards_WP.ViewModels
             }
         }
 
+        public void OnExitView()
+        {
+            if (CurrentPost == null || _userSession.CurrentUser == null) return;
 
+            _postsService.UpdateUserInterests(
+                _userSession.CurrentUser.UserID,
+                CurrentPost,
+                _finalVote,
+                _hasCommented);
+
+        }
     }
 }

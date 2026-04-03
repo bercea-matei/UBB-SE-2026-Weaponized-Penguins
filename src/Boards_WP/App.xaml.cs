@@ -49,8 +49,9 @@ public partial class App : Application
         //string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
         //string connectionString = @"Data Source=DESKTOP\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
         //string connectionString = @"Server=IONUT\SQLEXPRESS;Database=Communities;Trusted_Connection=True;TrustServerCertificate=True;";
-        services.AddSingleton<string>("Data Source=DESKTOP-GFA6UNJ\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True");
-        //services.AddSingleton(connectionString);
+        //services.AddSingleton<string>("Data Source=DESKTOP-GFA6UNJ\\SQLEXPRESS;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True");
+        string connectionString = @"Data Source = DESKTOP\SQLEXPRESS;Database=Communities;Initial Catalog=Communities;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+        services.AddSingleton(connectionString);
 
 
         services.AddSingleton<MainViewModel>();
@@ -64,6 +65,7 @@ public partial class App : Application
         services.AddSingleton<ITagsRepository, TagsRepository>();
         services.AddSingleton<IUsersMoodRepository, UsersMoodRepository>();
         services.AddSingleton<IUsersRepository, UsersRepository>();
+        services.AddSingleton<IBetsRepository, BetsRepository>();
 
         // Services
         services.AddSingleton<IBetsService, BetsService>();
@@ -73,7 +75,9 @@ public partial class App : Application
         services.AddSingleton<IPostsService, PostsService>();
         services.AddSingleton<IUsersService, UsersService>();
         services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<IBetsService, BetsService>();
         services.AddTransient<LoginViewModel>();
+
 
         services.AddSingleton<UserSession>();
 
@@ -92,6 +96,8 @@ public partial class App : Application
         services.AddTransient<PostPreviewViewModel>();
         services.AddTransient<HeaderViewModel>();
         services.AddSingleton<CommunityBarViewModel>(); //--this must be signelton
+
+        services.AddTransient<BetsViewModel>();
 
         return services.BuildServiceProvider();
     }

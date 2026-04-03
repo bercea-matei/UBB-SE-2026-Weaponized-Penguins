@@ -1,9 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 using Boards_WP.Data.Models;
 using Boards_WP.Data.Services;
+
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Boards_WP.ViewModels;
 
@@ -12,6 +13,12 @@ public partial class FeedViewModel : ObservableObject
     private readonly IPostsService _postsService;
     private readonly UserSession _userSession;
     private readonly MainViewModel _mainViewModel;
+
+    private int _currentOffset = 0;
+    private const int PageSize = 200; //--PAGINATION
+
+    [ObservableProperty]
+    private bool _hasMorePosts = true;
 
     [ObservableProperty]
     private bool _isHome = true;
@@ -26,36 +33,39 @@ public partial class FeedViewModel : ObservableObject
 
     public void LoadFeed()
     {
-        if (_isHome)
-            LoadHome();
+        _currentOffset = 0;
+        HasMorePosts = true;
+        Posts.Clear();
+
+        LoadBatch();
+    }
+
+    [RelayCommand]
+    public void LoadBatch()
+    {
+        if (!HasMorePosts) return;
+
+        var userId = _userSession.CurrentUser?.UserID ?? 0;
+        List<Post> data;
+
+        if (IsHome)
+            data = _postsService.GetPostsForHomePage(userId, _currentOffset, PageSize);
         else
-            LoadDiscovery();
-    }
-    public void LoadHome()
-    {
-        
-        Posts.Clear();
+            data = _postsService.GetPostsForDiscoveryPage(userId, _currentOffset, PageSize);
 
-        var userId = _userSession.CurrentUser?.UserID ?? 0;
-        var data = _postsService.GetPostsForHomePage(userId);
-
-        foreach (var post in data)
+        if (data != null && data.Count > 0)
         {
-            var previewVm = new PostPreviewViewModel(post, _postsService, _userSession, _mainViewModel);
-            Posts.Add(previewVm);
+            foreach (var post in data)
+            {
+                Posts.Add(new PostPreviewViewModel(post, _postsService, _userSession, _mainViewModel));
+            }
+            _currentOffset += data.Count;
         }
+
+        HasMorePosts = (data?.Count == PageSize);
     }
 
-    public void LoadDiscovery()
-    {
+    public void LoadHome() { IsHome = true; LoadFeed(); }
+    public void LoadDiscovery() { IsHome = false; LoadFeed(); }
 
-        Posts.Clear();
-        var userId = _userSession.CurrentUser?.UserID ?? 0;
-        var rawPosts = _postsService.GetPostsForDiscoveryPage(userId);
-        foreach (var post in rawPosts)
-        {
-            var previewVm = new PostPreviewViewModel(post, _postsService, _userSession, _mainViewModel);
-            Posts.Add(previewVm);
-        }
-    }
 }

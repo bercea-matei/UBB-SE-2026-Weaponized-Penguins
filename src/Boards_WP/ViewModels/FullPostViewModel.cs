@@ -1,9 +1,17 @@
 using System.Collections.ObjectModel;
 using Boards_WP.Data.Models;
 using Boards_WP.Data.Services;
+using System.IO;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
+
+using Boards_WP.Data.Models;
+using Boards_WP.Data.Services;
 
 namespace Boards_WP.ViewModels
 {
@@ -15,7 +23,11 @@ namespace Boards_WP.ViewModels
         private readonly MainViewModel _mainViewModel;
         private readonly UserSession _userSession;
 
+        public MainViewModel MainViewModel => _mainViewModel;
+
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(PostImageSource))]
+        [NotifyPropertyChangedFor(nameof(PostImageVisibility))]
         private Post _currentPost;
 
         [ObservableProperty]
@@ -52,8 +64,12 @@ namespace Boards_WP.ViewModels
             SelectedChatName = string.Empty;
         }
 
+        public BitmapImage PostImageSource => ConvertToBitmap(CurrentPost?.Image);
+        public Visibility PostImageVisibility => CurrentPost?.Image?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+
         public ObservableCollection<Comment> PostComments { get; } = new();
 
+        
         public FullPostViewModel(
             IPostsService postsService,
             ICommentsService commentsService,
@@ -66,8 +82,10 @@ namespace Boards_WP.ViewModels
             _userSession = userSession;
         }
 
+        
         public void Initialize(Post post)
         {
+            
             var fullPost = _postsService.GetPostByPostID(post.PostID);
             CurrentPost = fullPost ?? post;
             LoadComments();
@@ -79,12 +97,21 @@ namespace Boards_WP.ViewModels
             if (CurrentPost == null) return;
 
             var userId = _userSession.CurrentUser?.UserID ?? 0;
+
+            
             var comments = _commentsService.GetCommentsByPost(CurrentPost.PostID, userId);
 
             foreach (var c in comments)
-            {
                 PostComments.Add(c);
-            }
+        }
+
+        private static BitmapImage ConvertToBitmap(byte[] data)
+        {
+            if (data == null || data.Length == 0) return null;
+            var bitmap = new BitmapImage();
+            using var ms = new MemoryStream(data);
+            bitmap.SetSource(ms.AsRandomAccessStream());
+            return bitmap;
         }
 
         [RelayCommand]
@@ -94,17 +121,20 @@ namespace Boards_WP.ViewModels
             var userId = _userSession.CurrentUser?.UserID ?? 0;
             if (userId == 0) return;
 
+            
             _postsService.IncreaseScore(CurrentPost.PostID);
             _postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Like, false);
 
+           
             var updatedPost = _postsService.GetPostByPostID(CurrentPost.PostID);
             if (updatedPost != null)
             {
                 CurrentPost.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(CurrentPost));
+                OnPropertyChanged(nameof(CurrentPost)); 
             }
 
-            var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
+            
+            var newThemeColor = _postsService.DetermineThemeForASinglePost(updatedPost);
             _mainViewModel.ApplyNewTheme(newThemeColor);
         }
 
@@ -115,16 +145,19 @@ namespace Boards_WP.ViewModels
             var userId = _userSession.CurrentUser?.UserID ?? 0;
             if (userId == 0) return;
 
+            
             _postsService.DecreaseScore(CurrentPost.PostID);
             _postsService.UpdateUserInterests(userId, CurrentPost, VoteType.Dislike, false);
 
+           
             var updatedPost = _postsService.GetPostByPostID(CurrentPost.PostID);
             if (updatedPost != null)
             {
                 CurrentPost.Score = updatedPost.Score;
-                OnPropertyChanged(nameof(CurrentPost));
+                OnPropertyChanged(nameof(CurrentPost)); 
             }
 
+           
             var newThemeColor = _postsService.DetermineFeedThemeColorByLastLikes();
             _mainViewModel.ApplyNewTheme(newThemeColor);
         }
@@ -164,6 +197,7 @@ namespace Boards_WP.ViewModels
                 NewCommentText = string.Empty;
                 IsCommentAreaVisible = false;
 
+                _postsService.IncreaseCommentsNumber(CurrentPost.PostID);
                 OnPropertyChanged(nameof(CurrentPost));
             }
             catch (Exception ex)

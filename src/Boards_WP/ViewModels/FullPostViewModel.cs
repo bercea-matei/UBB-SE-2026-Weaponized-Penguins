@@ -1,17 +1,20 @@
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
+
+using Boards_WP.Data.Models;
 using Boards_WP.Data.Models;
 using Boards_WP.Data.Services;
-using System.IO;
+using Boards_WP.Data.Services;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
-
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Services;
 
 namespace Boards_WP.ViewModels
 {
@@ -28,6 +31,8 @@ namespace Boards_WP.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(PostImageSource))]
         [NotifyPropertyChangedFor(nameof(PostImageVisibility))]
+        [NotifyPropertyChangedFor(nameof(AuthorUsername))]
+        [NotifyPropertyChangedFor(nameof(CurrentPostTags))]
         private Post _currentPost;
 
         [ObservableProperty]
@@ -41,6 +46,9 @@ namespace Boards_WP.ViewModels
 
         [ObservableProperty]
         private string _selectedChatName;
+
+        [ObservableProperty]
+        private bool _canDeletePost;
 
         public ObservableCollection<string> HardcodedChats { get; } = new()
         {
@@ -66,6 +74,8 @@ namespace Boards_WP.ViewModels
 
         public BitmapImage PostImageSource => ConvertToBitmap(CurrentPost?.Image);
         public Visibility PostImageVisibility => CurrentPost?.Image?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        public string AuthorUsername => CurrentPost?.Owner?.Username ?? "Unknown";
+        public IEnumerable<Tag> CurrentPostTags => CurrentPost?.Tags ?? new List<Tag>();
 
         public ObservableCollection<Comment> PostComments { get; } = new();
 
@@ -88,7 +98,44 @@ namespace Boards_WP.ViewModels
             
             var fullPost = _postsService.GetPostByPostID(post.PostID);
             CurrentPost = fullPost ?? post;
+
+            if (CurrentPost != null && _userSession.CurrentUser != null)
+            {
+                int currentUserId = _userSession.CurrentUser.UserID;
+
+                
+                bool isOwner = CurrentPost.Owner?.UserID == currentUserId;
+
+                bool isAdmin = CurrentPost.ParentCommunity?.Admin?.UserID == currentUserId;
+
+                _canDeletePost = isOwner || isAdmin;
+            }
+
             LoadComments();
+        }
+
+        [RelayCommand]
+        private void DeletePost()
+        {
+            if (CurrentPost == null) return;
+
+            try
+            {
+                
+                _postsService.DeletePost(CurrentPost.PostID);
+
+                
+                var navService = App.Services.GetService<INavigationService>();
+                if (navService != null)
+                {
+                    navService.GoBack();
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to delete post: {ex.Message}");
+            }
         }
 
         private void LoadComments()

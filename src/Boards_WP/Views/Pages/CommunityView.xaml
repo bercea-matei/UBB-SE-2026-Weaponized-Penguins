@@ -62,6 +62,13 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+                <Button Content="Load More Posts"
+                    Command="{x:Bind ViewModel.LoadBatchCommand}"
+                    Visibility="{x:Bind GetVisibility(ViewModel.HasMorePosts), Mode=OneWay}"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,30"
+                    Padding="20,10"
+                    Background="#6A67E1" Foreground="White" CornerRadius="8"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

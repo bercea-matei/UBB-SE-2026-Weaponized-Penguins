@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
-
-using Boards_WP.Data.Models;
-using Boards_WP.Data.Services;
-using Boards_WP.ViewModels;
+﻿using Boards_WP.ViewModels;
 using Boards_WP.Views.Pages;
 using Boards_WP;
 

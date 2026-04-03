@@ -111,9 +111,9 @@ public class BetsService : IBetsService
             CreatedBet.BetID = _betsRepository.AddBet(CreatedBet);
             _betsRepository.UpdateUserTokens(CreatorID, _betsRepository.GetUserTokens(CreatorID).TokensNumber - 5);
         }
-        catch
+        catch (SqlException ex)
         {
-            throw new Exception("Failed to create bet.");
+            System.Diagnostics.Debug.WriteLine($"SQL Error: {ex.Message}");
         }
     }
 

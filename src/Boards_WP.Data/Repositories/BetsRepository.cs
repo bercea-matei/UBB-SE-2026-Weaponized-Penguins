@@ -30,7 +30,7 @@ public class BetsRepository : IBetsRepository
         command.Parameters.Add("@endingTime", SqlDbType.DateTime).Value = b.EndingTime;
         command.Parameters.Add("@expression", SqlDbType.NVarChar).Value = b.Expression;
         command.Parameters.Add("@yesAmount", SqlDbType.Int).Value = b.YesAmount;
-        command.Parameters.Add("@noAmount", SqlDbType.Int).Value = b.NoAmount;
+        command.Parameters.Add("@notAmount", SqlDbType.Int).Value = b.NoAmount;
 
         connection.Open();
         return (int)command.ExecuteScalar()!;

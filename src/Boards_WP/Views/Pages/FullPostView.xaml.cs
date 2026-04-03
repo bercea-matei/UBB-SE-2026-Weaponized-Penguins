@@ -49,5 +49,11 @@ namespace Boards_WP.Views.Pages
             if (this.Frame.CanGoBack)
                 this.Frame.GoBack();
         }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            ViewModel?.OnExitView();
+            base.OnNavigatingFrom(e);
+        }
     }
 }
